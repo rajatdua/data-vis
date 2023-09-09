@@ -1,18 +1,17 @@
-# Next.js Enterprise Boilerplate
+# AU 2023 | Data Visualisation Project
 
-![Project intro image](./project-logo.png)
+Welcome to Data Visualisation Project by Group 10 of 2023. This project provides a holistic view of climate related data over multiple regions in Denmark.
 
-Welcome to the _Next.js Enterprise Boilerplate_, an open-source template for enterprise projects! It's loaded with features that'll help you build a high-performance, maintainable, and enjoyable app. We've done all the heavy lifting for you, so sit back, relax, and get ready to conquer the world with your incredible app! 🌍
+## Members
+1. Barrena Calderón, Andrés
+2. Dua, Rajat
+3. Kratschmer, Anastasia Katharina
+4. Rammohan, Shivaram
 
-<br />
-<a href="https://discord.gg/fyWtyNKmfX" style="width: 100%; display: flex; justify-content: center;">
-  <img src="https://discordapp.com/api/guilds/1111676875782234175/widget.png?style=banner2" alt="Blazity Discord Banner"/>
-</a>
-<br />
 
-## 📚 Features
+## 📚 Technology Stack
 
-With this template, you get all the awesomeness you need:
+This project uses the following - 
 
 - 🏎️ **[Next.js](https://nextjs.org/)** - Fast by default, with config optimized for performance
 - 💅 **[Tailwind CSS](https://tailwindcss.com/)** - A utility-first CSS framework for rapid UI development
@@ -40,8 +39,8 @@ With this template, you get all the awesomeness you need:
 
 ## Table of Contents
 
-- [Next.js Enterprise Boilerplate](#nextjs-enterprise-boilerplate)
-  - [📚 Features](#-features)
+- [Data Visualisation Project](#au-2023-|-data-visualisation-project)
+  - [📚 Technology Stack](#-technology-stack)
   - [Table of Contents](#table-of-contents)
   - [🎯 Getting Started](#-getting-started)
   - [🚀 Deployment](#-deployment)
@@ -66,7 +65,7 @@ With this template, you get all the awesomeness you need:
 
 ## 🎯 Getting Started
 
-To get started with this boilerplate, follow these steps:
+To get started with this project, follow these steps:
 
 1. Fork & clone repository:
 
@@ -138,7 +137,7 @@ This will create a `graph.svg` file, which contains a graphical representation o
 
 ## 🧪 Testing
 
-This boilerplate comes with various testing setups to ensure your application's reliability and robustness.
+This project comes with various testing setups to ensure your application's reliability and robustness.
 
 ### Running Tests
 
@@ -186,13 +185,11 @@ export const FilledForm: Story = {
 
 ### Smoke Testing
 
-In this boilerplate, we use Storybook's out-of-the-box support for smoke testing to verify that components render correctly without any errors. Just run `yarn test-storybook` to perform smoke testing. Remember to write stories in JSX or TSX format only. Smoke testing and a lot of other functionalities dont work well with MDX stories.
+In this project, we use Storybook's out-of-the-box support for smoke testing to verify that components render correctly without any errors. Just run `yarn test-storybook` to perform smoke testing. Remember to write stories in JSX or TSX format only. Smoke testing and a lot of other functionalities dont work well with MDX stories.
 
 ## 🎨 Styling and Design System
 
-This boilerplate uses Tailwind CSS for styling and CVA for creating a powerful, easy-to-use design system. If you want to learn more about the setup, check out this fantastic video by Vercel:
-
-[![Styling and Design System](https://img.youtube.com/vi/T-Zv73yZ_QI/0.jpg)](https://www.youtube.com/watch?v=T-Zv73yZ_QI&ab_channel=Vercel)
+This project uses Tailwind CSS for styling and CVA for creating a powerful, easy-to-use design system.
 
 ### CVA - A New Approach to Variants
 
@@ -202,7 +199,7 @@ Creating variants using traditional CSS can be a tedious task, requiring you to 
 
 ## 💾 State Management
 
-While this boilerplate doesn't include a specific state management library, we believe it's essential for you to choose the one that best suits your project's needs. Here are some libraries we recommend for state management:
+While this project doesn't include a specific state management library, we believe it's essential for you to choose the one that best suits your project's needs. Here are some libraries we recommend for state management:
 
 ### Zustand
 
@@ -266,10 +263,6 @@ Contributions are always welcome! To contribute, please follow these steps:
 4. Push your changes to the forked repository.
 5. Create a pull request, and we'll review your changes.
 
-## Support
-
-If you're looking for help or simply want to share your thoughts about the project, we encourage you to join our Discord community. Here's the link: [https://blazity.com/discord](https://blazity.com/discord). It's a space where we exchange ideas and help one another. Everyone's input is appreciated, and we look forward to welcoming you.
-
 ## 📜 License
 
 This project is licensed under the MIT License. For more information, see the [LICENSE](./LICENSE) file.
@@ -282,8 +275,7 @@ This project is licensed under the MIT License. For more information, see the [L
 <table>
   <tbody>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://bstefanski.com/"><img src="https://avatars.githubusercontent.com/u/28964599?v=4?s=100" width="100px;" alt="Bart Stefanski"/><br /><sub><b>Bart Stefanski</b></sub></a><br /><a href="https://github.com/Blazity/next-enterprise/commits?author=bmstefanski" title="Code">💻</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jjablonski-it"><img src="https://avatars.githubusercontent.com/u/51968772?v=4?s=100" width="100px;" alt="Jakub Jabłoński"/><br /><sub><b>Jakub Jabłoński</b></sub></a><br /><a href="#infra-jjablonski-it" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"></td>
     </tr>
   </tbody>
   <tfoot>
