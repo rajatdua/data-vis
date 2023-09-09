@@ -1,6 +1,6 @@
 {
-  "projectName": "next-enterprise",
-  "projectOwner": "Blazity",
+  "projectName": "data-vis",
+  "projectOwner": "Aarhus University",
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
@@ -11,21 +11,12 @@
   "commitConvention": "angular",
   "contributors": [
     {
-      "login": "bmstefanski",
-      "name": "Bart Stefanski",
-      "avatar_url": "https://avatars.githubusercontent.com/u/28964599?v=4",
-      "profile": "https://bstefanski.com/",
+      "login": "rajatdua",
+      "name": "Rajat Dua",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13480707?v=4",
+      "profile": "https://rajatdua.com/",
       "contributions": [
         "code"
-      ]
-    },
-    {
-      "login": "jjablonski-it",
-      "name": "Jakub Jabłoński",
-      "avatar_url": "https://avatars.githubusercontent.com/u/51968772?v=4",
-      "profile": "https://github.com/jjablonski-it",
-      "contributions": [
-        "infra"
       ]
     }
   ],

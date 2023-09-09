@@ -15,7 +15,7 @@ export default function Web() {
         <meta property="og:url" content="https://data-vis-wqyg.vercel.app/" />
         <meta
           property="og:image"
-          content="https://raw.githubusercontent.com/Blazity/next-enterprise/main/project-logo.png"
+          content="https://raw.githubusercontent.com/*/*.png"
         />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -30,10 +30,10 @@ export default function Web() {
             </h1>
             <p className="mb-6 max-w-2xl font-light text-gray-500 dark:text-gray-400 md:text-lg lg:mb-8 lg:text-xl">
               In this project, we have worked with multiple data sources
-              to provide us a holisitc view on climate and it's relation
+              to provide us a holisitc view on climate and its relation
               with other factors.
             </p>
-            <Button href="https://github.com/Blazity/next-enterprise" className="mr-3">
+            <Button href="/dashboard" className="mr-3">
               Get started
             </Button>
           </div>

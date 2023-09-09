@@ -43,7 +43,6 @@ This project uses the following -
   - [📚 Technology Stack](#-technology-stack)
   - [Table of Contents](#table-of-contents)
   - [🎯 Getting Started](#-getting-started)
-  - [🚀 Deployment](#-deployment)
   - [📃 Scripts Overview](#-scripts-overview)
   - [🔗 Coupling Graph](#-coupling-graph)
   - [🧪 Testing](#-testing)
@@ -94,12 +93,6 @@ yarn dev
 brew install pre-commit
 pre-commit install -t commit-msg
 ```
-
-## 🚀 Deployment
-
-Easily deploy your Next.js app with [Vercel](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=github&utm_campaign=next-enterprise) by clicking the button below:
-
-[![Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https://github.com/Blazity/next-enterprise)
 
 ## 📃 Scripts Overview
 
