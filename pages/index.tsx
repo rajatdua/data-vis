@@ -30,11 +30,10 @@ export default function Web() {
             </h1>
             <p className="mb-6 max-w-2xl font-light text-gray-500 dark:text-gray-400 md:text-lg lg:mb-8 lg:text-xl">
               In this project, we have worked with multiple data sources
-              to provide us a holisitc view on climate and its relation
-              with other factors.
+              to provide us a holisitc view on how Urbanisation has multiple effects.
             </p>
             <Button href="/dashboard" className="mr-3">
-              Get started
+              View Dashboard
             </Button>
           </div>
         </div>
@@ -42,7 +41,7 @@ export default function Web() {
       <section className="bg-white dark:bg-gray-900">
         <div className="mx-auto max-w-screen-xl px-4 py-8 sm:py-16 lg:px-6 pb-0">
           <div className="justify-center space-y-8">
-          <h3 className="mb-2 text-xl font-bold dark:text-white">Members:</h3>
+          <h3 className="mb-2 text-xl font-bold dark:text-white">Group 10 Members:</h3>
           {members.map((memberDetails, index) => {
             return (
               <p key={memberDetails.name} className="text-gray-500 dark:text-gray-400">{index + 1}. {memberDetails.name} ({memberDetails.email})</p>
