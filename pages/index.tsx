@@ -30,10 +30,10 @@ export default function Web() {
             </h1>
             <p className="mb-6 max-w-2xl font-light text-gray-500 dark:text-gray-400 md:text-lg lg:mb-8 lg:text-xl">
               In this project, we have worked with multiple data sources
-              to provide us a holisitc view on how Urbanisation has multiple effects.
+              to provide us a holistic view on how Trump&apos;s tweets had effect on US Election 2016.
             </p>
-            <Button href="/dashboard" className="mr-3">
-              View Dashboard
+            <Button href="/multi-variate-data" className="mr-3">
+              View Visualisation
             </Button>
           </div>
         </div>
