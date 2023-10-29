@@ -1,6 +1,6 @@
 # AU 2023 | Data Visualisation Project
 
-Welcome to Data Visualisation Project by Group 10 of 2023. This project provides a holistic view of climate related data over multiple regions in Denmark.
+Welcome to the Data Visualisation Project by Group 10 of Batch 2023. This project provides a holistic view of the effects of Trump's tweets on the polling data for US elections.
 
 ## Members
 1. Barrena Calderón, Andrés
