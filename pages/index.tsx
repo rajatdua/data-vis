@@ -15,7 +15,7 @@ export default function Web() {
         <meta property="og:url" content="https://data-vis-wqyg.vercel.app/" />
         <meta
           property="og:image"
-          content="https://raw.githubusercontent.com/*/*.png"
+          content="/banner.png"
         />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
