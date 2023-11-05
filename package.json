@@ -20,7 +20,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "xinstall": "rm -rf node_modules && yarn install --frozen-lockfile",
     "postinstall": "npx patch-package -y",
-    "preinstall": "npx only-allow yarn",
+    "preinstall": "npx only-allow yarn && rm -rf node_modules",
     "coupling-graph": "npx madge --extensions js,jsx,ts,tsx,css,md,mdx ./ --exclude '.next|tailwind.config.js|reset.d.ts|prettier.config.js|postcss.config.js|playwright.config.ts|next.config.js|next-env.d.ts|instrumentation.ts|e2e/|README.md|.storybook/|.eslintrc.js' --image graph.svg",
     "prepare": "husky install"
   },
