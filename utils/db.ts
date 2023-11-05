@@ -2,19 +2,21 @@
 import Papa from 'papaparse';
 import initSqlJs, { Database } from 'sql.js';
 import fs from 'fs';
-import path from 'path';
+// import path from 'path';
 import {convertToTimestamp, saveToJsonFile} from "./server";
 
 let dbInstance: null | Database = null;
 
-const wasmPath = path.resolve('node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
-const wasmBinary = fs.readFileSync(wasmPath);
+// const wasmUrl = path.resolve('node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
+const wasmUrl = 'https://sql.js.org/dist/sql-wasm.wasm';
 
 const getDB = async () => {
     if (!dbInstance) {
         console.log('No DB Instance Found: Creating DB Instance');
+        const response = await fetch(wasmUrl);
+        const wasmBinary = await response.arrayBuffer();
         const SQL = await initSqlJs({
-            locateFile: () => wasmPath,
+            locateFile: () => wasmUrl,
             wasmBinary,
         });
         const db = new SQL.Database();
