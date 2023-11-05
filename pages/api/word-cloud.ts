@@ -25,7 +25,7 @@ const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 
         const linksRegex = /https?:\/\/\S+/g;
         const mentionsRegex = /@([a-zA-Z0-9_]+)/g;
         const hashtagsRegex = /#([a-zA-Z0-9_]+)/g;
-        const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>]/g;
+        const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>-]/g;
 
         const words = content.toLowerCase().split(/\s+/);
         const filteredWords = words.map((word) => {
@@ -33,8 +33,8 @@ const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 
                 .replace(linksRegex, '')  // Remove links
                 .replace(mentionsRegex, '')  // Remove mentions
                 .replace(hashtagsRegex, '')  // Remove hashtags
-                .replace(specialCharsRegex, ' ') // Remove special characters
-        })
+                .replace(specialCharsRegex, '') // Remove special characters
+        }).filter(word => word !== '');
         const processedWords = processText(filteredWords);
         processedWords.forEach((word: string) => {
             if (!wordFrequency[word]) {
@@ -68,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const frequency = calculateFrequency(tweets);
         const freqArray = convertToWordCloudArray(frequency);
         const sortedArray = sortBySize(freqArray);
-        res.status(200).json({ data: sortedArray, success: true })
+        res.status(200).json({ data: sortedArray.slice(0, 200), success: true })
     }
     catch (e) {
         res.status(500).json({ error: e, success: false });
