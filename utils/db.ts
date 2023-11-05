@@ -2,7 +2,7 @@
 import Papa from 'papaparse';
 import initSqlJs, { Database } from 'sql.js';
 import fs from 'fs';
-// import path from 'path';
+import path from 'path';
 import {convertToTimestamp, saveToJsonFile} from "./server";
 
 let dbInstance: null | Database = null;
@@ -28,7 +28,11 @@ const getDB = async () => {
             { ':id' : 18, ':name' : 'John' }
         );
 
-        const csvData = fs.readFileSync('pages/api/realdonaldtrump.csv', 'utf8');
+        const filePath = path.resolve(process.cwd(), 'pages/api/realdonaldtrump.csv');
+        console.log({ filePath });
+        // const filePath = path.resolve(__dirname, 'realdonaldtrump.csv');
+
+        const csvData = fs.readFileSync(filePath, 'utf8');
         const parsedData = Papa.parse(csvData, {
             header: true,
             skipEmptyLines: true,
