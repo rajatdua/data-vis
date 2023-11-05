@@ -61,13 +61,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Content-Type', 'application/json');
     const {processedStart, processedEnd} = areDateParamsPresent(req, res);
     try {
+        console.time('load-db');
         const db = await getDB();
+        console.timeEnd('load-db');
+        console.time('fetch-db');
         const wordCloudQuery = `SELECT * FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
         const result = db.exec(wordCloudQuery);
+        console.timeEnd('fetch-db');
+        console.time('convert-result');
         const tweets = convertToObjects(result);
         const frequency = calculateFrequency(tweets);
         const freqArray = convertToWordCloudArray(frequency);
         const sortedArray = sortBySize(freqArray);
+        console.timeEnd('convert-result');
         res.status(200).json({ data: sortedArray.slice(0, 200), success: true })
     }
     catch (e) {

@@ -22,11 +22,11 @@ const getDB = async () => {
         const db = new SQL.Database();
 
         // Initialize your database schema and data here if needed
-        db.run('CREATE TABLE users (id INT, name TEXT)');
-        db.run(
-            "INSERT INTO users VALUES (:id, :name)",
-            { ':id' : 18, ':name' : 'John' }
-        );
+        // db.run('CREATE TABLE users (id INT, name TEXT)');
+        // db.run(
+        //     "INSERT INTO users VALUES (:id, :name)",
+        //     { ':id' : 18, ':name' : 'John' }
+        // );
 
         const filePath = path.resolve(process.cwd(), 'pages/api/realdonaldtrump.csv');
         console.log({ filePath });
@@ -113,7 +113,7 @@ const getDB = async () => {
         });
 
 
-        saveToJsonFile(parsedData, 'tweets.json');
+        // saveToJsonFile(parsedData, 'tweets.json');
 
         dbInstance = db;
 
