@@ -14,11 +14,6 @@ const config = withPlugins([[withBundleAnalyzer({ enabled: env.ANALYZE })]], {
       { source: "/api/healthz", destination: "/api/health" },
       { source: "/health", destination: "/api/health" },
       { source: "/ping", destination: "/api/health" },
-      // TODO: fix this for deployment
-      // {
-      //   source: '/sql-wasm.wasm',
-      //   destination: '/sql-wasm.wasm', // Adjust the destination path
-      // },
     ]
   },
 })
