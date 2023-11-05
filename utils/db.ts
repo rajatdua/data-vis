@@ -52,6 +52,7 @@ const getDB = async () => {
             }
         });
         console.timeEnd('parse-file');
+        console.time('table-created');
 
         const fields = parsedData?.meta?.fields || [];
         type Data = {
@@ -76,7 +77,7 @@ const getDB = async () => {
         });
         const createTableQuery = `CREATE TABLE tweets (${typeString})`;
         db.run(createTableQuery);
-
+        console.timeEnd('table-created');
         const allTweets: unknown[] = parsedData?.data || [];
 
         interface ITweet {
@@ -89,7 +90,7 @@ const getDB = async () => {
             mentions: string;
             hashtags: string;
         }
-
+        console.time('inserted-rows');
         allTweets.forEach((tweet) => {
             const {
                 id = '',
@@ -116,7 +117,7 @@ const getDB = async () => {
             );
         });
 
-
+        console.timeEnd('inserted-rows');
         // saveToJsonFile(parsedData, 'tweets.json');
 
         dbInstance = db;
