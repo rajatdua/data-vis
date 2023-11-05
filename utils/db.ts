@@ -8,8 +8,12 @@ let dbInstance: null | Database = null;
 
 const getDB = async () => {
     if (!dbInstance) {
-        console.log('No Instance Found!');
-        const SQL = await initSqlJs();
+        console.log('No DB Instance Found: Creating DB Instance');
+        const SQL = await initSqlJs({
+            locateFile(fileName: string, scriptDirectory: string): string {
+                return `${scriptDirectory}/${fileName}`
+            }
+        });
         const db = new SQL.Database();
 
         // Initialize your database schema and data here if needed

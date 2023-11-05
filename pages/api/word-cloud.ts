@@ -71,6 +71,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(200).json({ data: sortedArray.slice(0, 200), success: true })
     }
     catch (e) {
+        console.log(e);
         res.status(500).json({ error: e, success: false });
     }
 }
