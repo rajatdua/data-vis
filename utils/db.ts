@@ -90,7 +90,9 @@ const getDB = async () => {
             mentions: string;
             hashtags: string;
         }
+
         console.time('inserted-rows');
+
         allTweets.forEach((tweet) => {
             const {
                 id = '',
