@@ -1,3 +1,4 @@
+import {DateValueType} from "react-tailwindcss-datepicker";
 
 export interface ICandidate {
     id: string;
@@ -21,4 +22,17 @@ export interface IFetchData {
 
 export interface IFetchReq {
     data?: IFetchData
+}
+
+export interface ICommonChartProps {
+    date: DateValueType;
+    refreshCount: number;
+}
+
+export interface IFetchWordData {
+    word: string;
+    value: number;
+}
+export interface IFetchWordReq {
+    data?: IFetchWordData[]
 }
