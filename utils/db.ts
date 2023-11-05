@@ -32,7 +32,10 @@ const getDB = async () => {
         console.log({ filePath });
         // const filePath = path.resolve(__dirname, 'realdonaldtrump.csv');
 
+        console.time('read-file');
         const csvData = fs.readFileSync(filePath, 'utf8');
+        console.timeEnd('read-file');
+        console.time('parse-file');
         const parsedData = Papa.parse(csvData, {
             header: true,
             skipEmptyLines: true,
@@ -48,6 +51,7 @@ const getDB = async () => {
                 }
             }
         });
+        console.timeEnd('parse-file');
 
         const fields = parsedData?.meta?.fields || [];
         type Data = {
