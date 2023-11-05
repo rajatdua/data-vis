@@ -30,8 +30,8 @@ export interface ICommonChartProps {
 }
 
 export interface IFetchWordData {
-    word: string;
-    value: number;
+    text: string;
+    size: number;
 }
 export interface IFetchWordReq {
     data?: IFetchWordData[]

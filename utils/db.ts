@@ -7,7 +7,7 @@ import {convertToTimestamp, saveToJsonFile} from "./server";
 
 let dbInstance: null | Database = null;
 
-const wasmPath = path.resolve('node_modules', require.resolve('sql.js'), 'dist', 'sql-wasm.wasm');
+const wasmPath = path.resolve('node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
 const wasmBinary = fs.readFileSync(wasmPath);
 
 const getDB = async () => {

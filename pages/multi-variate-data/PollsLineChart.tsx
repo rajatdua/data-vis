@@ -24,15 +24,17 @@ const PollsLineChart: React.FC<ICommonChartProps> = ({ date, refreshCount }) => 
             const parseDate = (dateString: string): number => new Date(dateString).getTime();
             rcp_avg.sort((a, b) => parseDate(a.date) - parseDate(b.date));
             return (
-                <LineChart width={600} height={400} data={rcp_avg}>
-                    <CartesianGrid strokeDasharray="3 3"/>
-                    <XAxis dataKey="date"/>
-                    <YAxis/>
-                    <Tooltip/>
-                    <Legend/>
-                    <Line type="monotone" dataKey="candidate[0].value" name="Democrat" stroke="blue"/>
-                    <Line type="monotone" dataKey="candidate[1].value" name="Republican" stroke="red"/>
-                </LineChart>
+                <div className="flex justify-center">
+                    <LineChart width={600} height={400} data={rcp_avg}>
+                        <CartesianGrid strokeDasharray="3 3"/>
+                        <XAxis dataKey="date"/>
+                        <YAxis/>
+                        <Tooltip/>
+                        <Legend/>
+                        <Line type="monotone" dataKey="candidate[0].value" name="Democrat" stroke="blue"/>
+                        <Line type="monotone" dataKey="candidate[1].value" name="Republican" stroke="red"/>
+                    </LineChart>
+                </div>
             )
         } else return <div>No data found!</div>
     }

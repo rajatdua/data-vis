@@ -19,7 +19,11 @@ const WordCloud: React.FC<ICommonChartProps>  = ({ date, refreshCount }) => {
     if (isLoading) return <div>Loading...</div>
     return (
         <div>
-            Hi
+            <ul className="grid grid-cols-4 gap-16">
+                {wordCloudData.map((item) => {
+                    return <li className="border p-4 text-center" key={item.text}><p><b>{item.text}</b></p><span>{item.size}</span></li>;
+                })}
+            </ul>
         </div>
     );
 }
