@@ -42,7 +42,7 @@ export interface IFetchWordReq {
 export interface IFrequencyObj { [key: string]: tweetMetaType }
 
 
-export type ID3Object = {
+export interface ID3Object {
     text: string
     size: number
     font: string

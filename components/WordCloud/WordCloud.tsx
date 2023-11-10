@@ -6,7 +6,7 @@ import {ID3Object, IFetchWordData} from "../../types";
 
 interface Props {
     data: IFetchWordData[]
-    handleWordClick: (event: PointerEvent, d3Object: ID3Object) => void
+    handleWordClick: (d3Object: ID3Object) => void
 }
 
 const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
@@ -18,9 +18,7 @@ const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
             size: Math.sqrt(item.textMeta.count)
         }));
 
-        console.log({ words });
-
-        function draw(words: IFetchWordData[]) {
+        function draw(words: ID3Object[]) {
             const svg = d3.select(svgRef.current);
 
             svg.selectAll('*').remove();
@@ -33,13 +31,13 @@ const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
                 .selectAll('text')
                 .data(words)
                 .enter().append('text')
-                .style('font-size', (d: { size: number }) => d.size + 'px')
+                .style('font-size', (d) => d.size + 'px')
                 .style('fill', '#000') // Change this to adjust the color of your words
                 .attr('text-anchor', 'middle')
-                .on('click', handleWordClick) // Add click event handler
+                .on('click', (_, d) => handleWordClick(d)) // Add click event handler
                 .attr('cursor', 'pointer') // Change cursor to indicate clickable
-                .attr('transform', (d: { x: number; y: number; rotate: number; }) => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
-                .text((d: { text: string }) => d.text);
+                .attr('transform', (d) => 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')')
+                .text((d) => d.text);
         }
 
         const layout = cloud()
@@ -48,7 +46,7 @@ const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
             .padding(10)
             .rotate(() => 0)
             // .rotate(() => ~~(Math.random() * 2) * 90)
-            .fontSize((d: { size: number }) => d.size)
+            .fontSize((d) => d.size || 22)
             .on('end', draw);
 
         layout.start();

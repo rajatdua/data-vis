@@ -55,7 +55,6 @@ const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 
         const filteredWords = words.filter(word => word !== '');
         const processedWords = processText(filteredWords);
         processedWords.forEach((word: string) => {
-            if (word === 'mt') console.log({ cleanedContent, content });
             if (isEmpty(wordFrequency[word])) {
                 wordFrequency[word] = {
                     count: 1,

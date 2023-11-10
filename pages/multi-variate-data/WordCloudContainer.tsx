@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import WordCloud from "../../components/WordCloud/WordCloud";
 import {ICommonChartProps, ID3Object, IFetchWordData, IFetchWordReq} from "../../types";
 import {createDateQuery} from "../../utils/client";
@@ -26,7 +26,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount }
         return () => {
             document.removeEventListener('click', handleClickOutside);
         };
-    }, []); // Empty dependency array ensures the effect runs only once on mount
+    }, []);
 
 
 
@@ -41,7 +41,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount }
         fetchWordCloud();
     }, [refreshCount]);
 
-    const handleWordClick = (_: PointerEvent, d3Object: ID3Object) => {
+    const handleWordClick = (d3Object: ID3Object) => {
         const selectedWord = wordCloudData.filter(word => word.text === d3Object.text);
         setMenu(true);
         setWord(selectedWord[0]);
