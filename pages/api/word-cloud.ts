@@ -63,7 +63,7 @@ const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 
             } else {
                 wordFrequency[word] = {
                     count: wordFrequency[word].count + 1,
-                    tweets: [...wordFrequency[word].tweets, content]
+                    tweets: wordFrequency[word].tweets.length <= 10 ? [...wordFrequency[word].tweets, content] : wordFrequency[word].tweets
                 };
             }
         });
