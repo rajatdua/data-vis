@@ -1,8 +1,11 @@
+import {isEmpty} from "lodash";
 import {NextApiRequest, NextApiResponse} from "next";
 import {QueryExecResult, SqlValue} from "sql.js";
 import {removeStopwords} from 'stopword';
+import {IFrequencyObj, tweetMetaType} from "../../types";
+import {getErrorMessage} from "../../utils/common";
 import getDB from '../../utils/db';
-import {areDateParamsPresent} from "../../utils/server";
+import {areDateParamsPresent /*, saveToJsonFile*/} from "../../utils/server";
 
 function convertToObjects(queryResult: QueryExecResult[]): FlatArray<{ [p: string]: SqlValue }[][], 1>[] {
     return queryResult.map((data) => {
@@ -16,31 +19,53 @@ function convertToObjects(queryResult: QueryExecResult[]): FlatArray<{ [p: strin
     }).flat();
 }
 
+const filterOne = (word: string) => {
+    // Remove links
+    return word.replace(/(https?:\/\/[^\s]+|www\.[^\s]+|\b(?:[a-z\d]+\.)+[a-z]{2,}\b)/g, '')
+    // Remove mentions and hashtags
+        .replace(/(@\s*\w+|#\s*\w+)/g, '')
+    // remove plural
+        .replace(/[’|']s|i'm|via|mr|say|cant|/g, '')
+    // Remove special characters and extra quotes
+        .replace(/[^\w\s]|['’"`]/g, '')
+    // Remove numbers less than 4 digits
+        .replace(/\b\d{1,3}\b/g, '');
+};
+
+// const filterTwo = (word: string) => {
+//     const linksRegex = /[https|http]?:\/\/\S+/g;
+//     const mentionsRegex = /@ ([a-zA-Z0-9_]+)/g;
+//     const hashtagsRegex = /#([a-zA-Z0-9_]+)/g;
+//     const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>-]/g;
+//     return word
+//         .replace(linksRegex, '')  // Remove links
+//         .replace(mentionsRegex, '')  // Remove mentions
+//         .replace(hashtagsRegex, '')  // Remove hashtags
+//         .replace(specialCharsRegex, '') // Remove special characters
+// };
+
 const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 1>[]) => {
-    const wordFrequency: { [key: string]: number } = {};
+    const wordFrequency: IFrequencyObj = {};
 
     dataArray.forEach((item) => {
         // Tokenize the content
-        const content: SqlValue | undefined = (item?.content ?? '').toString();
-        const linksRegex = /https?:\/\/\S+/g;
-        const mentionsRegex = /@([a-zA-Z0-9_]+)/g;
-        const hashtagsRegex = /#([a-zA-Z0-9_]+)/g;
-        const specialCharsRegex = /[!@#$%^&*(),.?":{}|<>-]/g;
-
-        const words = content.toLowerCase().split(/\s+/);
-        const filteredWords = words.map((word) => {
-            return word
-                .replace(linksRegex, '')  // Remove links
-                .replace(mentionsRegex, '')  // Remove mentions
-                .replace(hashtagsRegex, '')  // Remove hashtags
-                .replace(specialCharsRegex, '') // Remove special characters
-        }).filter(word => word !== '');
+        const content: SqlValue | undefined = (item?.content ?? '').toString().toLowerCase();
+        const cleanedContent = filterOne(content);
+        const words = cleanedContent.split(/\s+/);
+        const filteredWords = words.filter(word => word !== '');
         const processedWords = processText(filteredWords);
         processedWords.forEach((word: string) => {
-            if (!wordFrequency[word]) {
-                wordFrequency[word] = 1;
+            if (word === 'mt') console.log({ cleanedContent, content });
+            if (isEmpty(wordFrequency[word])) {
+                wordFrequency[word] = {
+                    count: 1,
+                    tweets: [content]
+                };
             } else {
-                wordFrequency[word]++;
+                wordFrequency[word] = {
+                    count: wordFrequency[word].count + 1,
+                    tweets: [...wordFrequency[word].tweets, content]
+                };
             }
         });
     });
@@ -51,11 +76,8 @@ function processText(input: string[]) {
     return removeStopwords(input);
 }
 
-function convertToWordCloudArray(wordFrequency:  { [key: string]: number }) {
-    return Object.entries(wordFrequency).map(([text, size]) => ({ text, size }));
-}
-
-const sortBySize = (data: {text: string; size: number }[]) => data.sort((a, b) => b.size - a.size);
+const convertToWordCloudArray = (wordFrequency:  IFrequencyObj) => Object.entries(wordFrequency).map(([text, textMeta]) => ({ text, textMeta }))
+const sortBySize = (data: {text: string; textMeta: tweetMetaType }[]) => data.sort((a, b) => b.textMeta.count - a.textMeta.count);
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.setHeader('Content-Type', 'application/json');
@@ -74,10 +96,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const freqArray = convertToWordCloudArray(frequency);
         const sortedArray = sortBySize(freqArray);
         console.timeEnd('convert-result');
-        res.status(200).json({ data: sortedArray.slice(0, 200), success: true })
+        res.status(200).json({ data: sortedArray.slice(0, 100), success: true })
     }
     catch (e) {
-        console.log(e);
-        res.status(500).json({ error: e, success: false });
+        const errorMessage = getErrorMessage(e);
+        res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /word-cloud' });
     }
 }

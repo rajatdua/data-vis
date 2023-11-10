@@ -2,8 +2,9 @@ import {isEmpty} from "lodash";
 import {NextApiRequest, NextApiResponse} from "next";
 import {ParseResult} from "papaparse";
 import fs from 'fs';
+import {IFrequencyObj} from "../types";
 
-export const saveToJsonFile = (data: never | ParseResult<unknown>, filePath: string) => {
+export const saveToJsonFile = (data: never | ParseResult<unknown> | IFrequencyObj, filePath: string) => {
     try {
         const jsonData = JSON.stringify(data, null, 2);
         fs.writeFileSync(filePath, jsonData, 'utf8');

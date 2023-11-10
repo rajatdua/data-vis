@@ -1,9 +1,9 @@
 // db.js
 import Papa from 'papaparse';
-import initSqlJs, { Database } from 'sql.js';
+import initSqlJs, {Database} from 'sql.js';
 import fs from 'fs';
 import path from 'path';
-import {convertToTimestamp, saveToJsonFile} from "./server";
+import {convertToTimestamp/*, saveToJsonFile */} from "./server";
 
 let dbInstance: null | Database = null;
 
@@ -21,17 +21,7 @@ const getDB = async () => {
         });
         const db = new SQL.Database();
 
-        // Initialize your database schema and data here if needed
-        // db.run('CREATE TABLE users (id INT, name TEXT)');
-        // db.run(
-        //     "INSERT INTO users VALUES (:id, :name)",
-        //     { ':id' : 18, ':name' : 'John' }
-        // );
-
         const filePath = path.resolve(process.cwd(), 'pages/api/realdonaldtrump.csv');
-        console.log({ filePath });
-        // const filePath = path.resolve(__dirname, 'realdonaldtrump.csv');
-
         console.time('read-file');
         const csvData = fs.readFileSync(filePath, 'utf8');
         console.timeEnd('read-file');

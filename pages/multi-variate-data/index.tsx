@@ -1,17 +1,22 @@
 import {isEqual} from "lodash";
 import Head from "next/head";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
 import PollsLineChart from "./PollsLineChart";
-import WordCloud from "./WordCloud";
+import WordCloudContainer from "./WordCloudContainer";
 import {END_DATE, START_DATE} from "../../constants";
 
-// const getErrorMessage = (error: unknown) => {
-//     if (error instanceof Error) return error.message
-//     return String(error)
-// }
-
 export default function MultiVariateData() {
+    const [isInit, setInit] = useState(true);
+    const [isError, setError] = useState(false);
+    useEffect(() => {
+        const callInit = async () => {
+            const response = await (await fetch('/api/init')).json() as { success: boolean };
+            if (!response?.success) setError(true);
+            setInit(false);
+        }
+        callInit();
+    }, []);
     const [refreshCount, setRefreshCount] = useState(0);
     const [value, setValue] = useState<DateValueType>({
         startDate: START_DATE,
@@ -21,6 +26,17 @@ export default function MultiVariateData() {
     const handleValueChange = (newValue: DateValueType) => {
         setValue(newValue);
         if (!isEqual(value, newValue)) setRefreshCount(prevState => prevState + 1);
+    };
+
+    const renderCharts = () => {
+        if (isInit) return <div>Loading...</div>
+        if (isError) return <div>An error occurred...</div>
+        return (
+            <div className="mx-auto place-self-center">
+                <PollsLineChart date={value} refreshCount={refreshCount}/>
+                <WordCloudContainer date={value} refreshCount={refreshCount}/>
+            </div>
+        );
     };
 
     return (
@@ -43,10 +59,7 @@ export default function MultiVariateData() {
                         onChange={handleValueChange}
                         startFrom={new Date(START_DATE)}
                     />
-                    <div className="mx-auto place-self-center">
-                        <PollsLineChart date={value} refreshCount={refreshCount} />
-                        <WordCloud date={value} refreshCount={refreshCount} />
-                    </div>
+                    {renderCharts()}
                 </div>
             </section>
         </>

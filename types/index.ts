@@ -29,10 +29,36 @@ export interface ICommonChartProps {
     refreshCount: number;
 }
 
+export type tweetMetaType = { count: number, tweets: string[] }
+
 export interface IFetchWordData {
     text: string;
-    size: number;
+    textMeta: tweetMetaType;
 }
 export interface IFetchWordReq {
     data?: IFetchWordData[]
+}
+
+export interface IFrequencyObj { [key: string]: tweetMetaType }
+
+
+export type ID3Object = {
+    text: string
+    size: number
+    font: string
+    style: string
+    weight: string
+    rotate: number
+    padding: number
+    x: number
+    y: number
+    width: number
+    height: number
+    xoff: number
+    yoff: number
+    x1: number
+    y1: number
+    x0: number
+    y0: number
+    hasText: boolean
 }
