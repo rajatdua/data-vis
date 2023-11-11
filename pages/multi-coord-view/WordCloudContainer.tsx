@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import Spinner from "../../components/Spinner/Spinner";
 import WordCloud from "../../components/WordCloud/WordCloud";
 import {ICommonChartProps, ID3Object, IFetchWordData, IFetchWordReq} from "../../types";
 import {createDateQuery} from "../../utils/client";
@@ -47,7 +48,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount }
         setWord(selectedWord[0]);
     };
 
-    if (isLoading) return <div>Loading...</div>
+    if (isLoading) return <div className="flex justify-center" style={{ height: '600px' }}><Spinner /></div>
     return (
         <div>
             <div className="grid grid-cols-4 gap-16">

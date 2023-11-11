@@ -41,7 +41,7 @@ const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
         }
 
         const layout = cloud()
-            .size([1400, 600])
+            .size([1080, 600])
             .words(words)
             .padding(10)
             .rotate(() => 0)
