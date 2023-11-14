@@ -12,6 +12,14 @@ export interface IRCPAvg {
     candidate: ICandidate[];
     date: string;
 }
+
+export interface IDataPoint {
+    date: string;
+    candidate: ICandidate[];
+    democratValue?: number,
+    republicanValue?: number,
+}
+
 export interface IFetchData {
     rcp_avg?: IRCPAvg[];
     id?: string;

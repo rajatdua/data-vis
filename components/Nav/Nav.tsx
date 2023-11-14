@@ -6,7 +6,7 @@ interface INavProps {
 }
 const Nav: React.FC<INavProps> = ({ btnTitle, btnHref }) => {
     return (
-        <nav className="relative z-50 h-24 select-none" /*x-data="{ showMenu: false }"*/>
+        <nav className="relative z-10 h-24 select-none" /*x-data="{ showMenu: false }"*/>
             <div
                 className="container relative flex flex-wrap items-center justify-between h-24 mx-auto overflow-hidden font-medium border-b border-gray-200 md:overflow-visible lg:justify-center sm:px-4 md:px-2 lg:px-0">
                 <div className="flex items-center justify-start h-full pr-4">
