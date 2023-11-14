@@ -2,12 +2,12 @@ import {isEqual} from "lodash";
 import Head from "next/head";
 import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
+import WordCloudContainer from "./WordCloudContainer";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import Footer from "../../components/Footer/Footer";
 import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
 import PollsLineChart from "./PollsLineChart";
-import WordCloudContainer from "./WordCloudContainer";
 import {END_DATE, START_DATE} from "../../constants";
 
 export default function MultiVariateData() {

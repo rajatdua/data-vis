@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {CartesianGrid, Label, Legend, Line, LineChart, ResponsiveContainer, Text, Tooltip, XAxis, YAxis} from 'recharts';
 import Spinner from "../../components/Spinner/Spinner";
-import {ICommonChartProps, IFetchData, IFetchReq} from "../../types";
+import {ICommonChartProps, IDataPoint, IFetchData, IFetchReq} from "../../types";
 import {createDateQuery} from "../../utils/client";
 
 
@@ -23,7 +23,7 @@ const PollsLineChart: React.FC<ICommonChartProps> = ({ date, refreshCount }) => 
         const {rcp_avg} = pollData;
         if (rcp_avg !== undefined) {
             const parseDate = (dateString: string): number => new Date(dateString).getTime();
-            const processedData = rcp_avg.sort((a, b) => parseDate(a.date) - parseDate(b.date)).map(item => ({
+            const processedData: IDataPoint[] = rcp_avg.sort((a, b) => parseDate(a.date) - parseDate(b.date)).map(item => ({
                 ...item,
                 date: new Date(item.date).toLocaleDateString(), // Format the date
             }));

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import Spinner from "../../components/Spinner/Spinner";
 import WordCloud from "../../components/WordCloud/WordCloud";
@@ -41,6 +42,11 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount }
         };
         fetchWordCloud();
     }, [refreshCount]);
+
+    useEffect(() => {
+        if (isSidebar) document.body.style.overflow = "hidden";
+        else document.body.style.overflow = "auto"
+    }, [isSidebar]);
 
     const handleWordClick = (d3Object: ID3Object) => {
         const selectedWord = wordCloudData.filter(word => word.text === d3Object.text);
@@ -86,34 +92,36 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount }
                 {isSidebar && (
                     <div
                         ref={sidebarRef}
-                        className={`fixed top-0 right-0 text-left h-full bg-gray-800 text-white w-${isSidebar ? '1/2' : '0'} overflow-x-hidden transition-all duration-300`}
+                        className={`drop-shadow-md fixed top-0 right-0 text-left z-20 h-full bg-gray-200 text-white w-${isSidebar ? '1/2' : '0'} overflow-x-hidden transition-all duration-300 overflow-y-scroll`}
                     >
-                        <div className="sticky top-0 z-10 bg-gray-800 p-4">
+                        <div className="sticky top-0 z-10 bg-black p-4">
                         <div className="flex justify-between items-center p-4">
-                            <div className="text-lg font-bold">Sample Tweets for {selectedWord?.text}</div>
+                            <div className="text-lg font-bold">Some Tweets for &quot;{selectedWord?.text}&quot;</div>
                             <button onClick={() => { setSidebar(false); setWord(null); }} className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring focus:border-blue-300">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-5 w-5"
-                                    viewBox="0 0 20 20"
-                                    fill="currentColor"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M6.293 7.293a1 1 0 011.414 0L10 10.586l2.293-2.293a1 1 0 011.414 1.414l-2.293 2.293 2.293 2.293a1 1 0 01-1.414 1.414L10 13.414l-2.293 2.293a1 1 0 01-1.414-1.414L8.586 12 6.293 9.707a1 1 0 010-1.414z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
+                                <Image src="/close-icon.svg" width={24} height={24} alt="close" />
                             </button>
                         </div>
                         </div>
-
                         <ul className="px-4">
-                            {selectedWord?.textMeta.tweets.map((tweet, index) => (
-                                <li key={index} className={`mb-2 ${index < selectedWord?.textMeta.tweets.length - 1 ? 'border-b border-gray-600' : ''}`}>
-                                    <p className="text-gray-300">{tweet}</p>
-                                </li>
-                            ))}
+                            {selectedWord?.textMeta.tweets.map((tweet, index) => {
+                                const replacedWithWord = tweet.replaceAll(selectedWord?.text, `<span class="font-bold">${selectedWord?.text}</span>`);
+                                return (
+                                  <li key={index}>
+                                      {/*<p className="text-black">{tweet}</p>*/}
+                                      <div className="flex flex-row bg-white p-4 rounded-xl shadow-md m-5">
+                                          <Image width={42} height={42} className="h-12 w-12 rounded-full object-cover" src="/donald-trump.png" alt="Profile picture" />
+                                          <div className="ml-4">
+                                              <div className="flex items-center">
+                                                  <span className="font-bold text-gray-800 text-lg">Donald J. Trump</span>
+                                                  <span className="text-gray-500 text-sm">&nbsp;@realDonaldTrump</span>
+                                                  {/*<span className="text-gray-500 ml-2 text-sm">Jun 27</span>*/}
+                                              </div>
+                                              <p className="mt-2 text-gray-800" dangerouslySetInnerHTML={{ __html: replacedWithWord }}/>
+                                          </div>
+                                      </div>
+                                  </li>
+                                );
+                            })}
                         </ul>
                     </div>
                 )}
