@@ -2,18 +2,19 @@ import {isEqual} from "lodash";
 import Head from "next/head";
 import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
+import PollsLineChart from "./PollsLineChart";
 import WordCloudContainer from "./WordCloudContainer";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import Footer from "../../components/Footer/Footer";
 import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
-import PollsLineChart from "./PollsLineChart";
 import {END_DATE, START_DATE} from "../../constants";
 
 export default function MultiVariateData() {
     const [isInit, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const [shouldHide, setHide] = useState(false);
     useEffect(() => {
         const callInit = async () => {
             const response = await (await fetch('/api/init')).json() as { success: boolean };
@@ -22,6 +23,19 @@ export default function MultiVariateData() {
         }
         callInit();
     }, []);
+
+    useEffect(() => {
+        const onScroll = () => {
+            if (!shouldHide && window.scrollY > 100) setHide(true)
+            else if (shouldHide && window.scrollY <= 100) setHide(false)
+        };
+        // clean up code
+        window.removeEventListener('scroll', onScroll);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, [shouldHide]);
+
+
     const [refreshCount, setRefreshCount] = useState(0);
     const [value, setValue] = useState<DateValueType>({
         startDate: START_DATE,
@@ -92,7 +106,7 @@ export default function MultiVariateData() {
                     {/* Toggle Button */}
                     <CustomButton
                         style={{ top: '6.75rem' }}
-                        className="fixed right-6 z-10"
+                        className={`fixed right-6 z-10 ${shouldHide ? 'hidden' : ''}`}
                         handleClick={() => setSidebarOpen((isSidebarOpen) => !isSidebarOpen)}
                         icon={!isSidebarOpen ? '/hide-icon.svg' : '/view-icon.svg'}
                         title="Filter"

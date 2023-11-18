@@ -16,8 +16,6 @@ export interface IRCPAvg {
 export interface IDataPoint {
     date: string;
     candidate: ICandidate[];
-    democratValue?: number,
-    republicanValue?: number,
 }
 
 export interface IFetchData {
