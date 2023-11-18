@@ -95,12 +95,12 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount }
                         className={`drop-shadow-md fixed top-0 right-0 text-left z-20 h-full bg-gray-200 text-white w-${isSidebar ? '1/2' : '0'} overflow-x-hidden transition-all duration-300 overflow-y-scroll`}
                     >
                         <div className="sticky top-0 z-10 bg-black p-4">
-                        <div className="flex justify-between items-center p-4">
-                            <div className="text-lg font-bold">Some Tweets for &quot;{selectedWord?.text}&quot;</div>
-                            <button onClick={() => { setSidebar(false); setWord(null); }} className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring focus:border-blue-300">
-                                <Image src="/close-icon.svg" width={24} height={24} alt="close" />
-                            </button>
-                        </div>
+                            <div className="flex justify-between items-center p-4">
+                                <div className="text-lg font-bold">Some Tweets for &quot;{selectedWord?.text}&quot;</div>
+                                <button onClick={() => { setSidebar(false); setWord(null); }} className="text-gray-400 hover:text-gray-600 focus:outline-none focus:ring focus:border-blue-300">
+                                    <Image src="/close-icon.svg" width={24} height={24} alt="close" />
+                                </button>
+                            </div>
                         </div>
                         <ul className="px-4">
                             {selectedWord?.textMeta.tweets.map((tweet, index) => {
