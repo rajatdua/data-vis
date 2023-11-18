@@ -10,14 +10,43 @@ interface Props {
     handleWordClick: (d3Object: ID3Object) => void
 }
 
+interface IInterimWord {
+    text: string
+    size: number
+}
+
+function calculateScalingFactor(data: IInterimWord[]): { min: number; max: number } {
+    const maxCount = Math.max(...data.map(item => item.size));
+    const minCount = Math.min(...data.map(item => item.size));
+
+    const maxFontSize = 120; // Adjust this value based on the maximum font size you want
+    const minFontSize = 12; // Adjust this value based on the minimum font size you want
+
+
+    const maxScalingFactor = maxFontSize / maxCount;
+    const minScalingFactor = minFontSize / minCount;
+
+    return { min: minScalingFactor, max: maxScalingFactor };
+}
+
+// Function to normalize font sizes for a given case
+function normalizeFontSizes(data: IInterimWord[], scalingFactor: { min: number; max: number }) {
+    return data.map((item, index) => ({
+        ...item,
+        size: index < 20 ? item.size * scalingFactor.max : item.size * scalingFactor.min
+    }));
+}
+
 const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
     const svgRef = useRef(null);
 
     useEffect(() => {
-        const words = data.map(item => ({
+        let words: IInterimWord[] = data.map(item => ({
             text: item.text,
-            size: Math.sqrt(item.textMeta.count)
+            size: item.textMeta.count
         }));
+
+        words = normalizeFontSizes(words, calculateScalingFactor(words))
 
         const maxWordSize = d3.max(words, (d) => d.size) || 0; // Use 0 if max size is undefined
 
@@ -34,6 +63,7 @@ const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
             // return d3.interpolateRgb('#999', '#ff5733')(colorScale(size));
             return d3.interpolateRgb(schemeCategory10[0], schemeCategory10[1])(colorScale(size));
         }
+
 
         function draw(words: ID3Object[]) {
             const svg = d3.select(svgRef.current);
@@ -65,6 +95,7 @@ const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
             .words(words)
             .padding(10)
             .rotate(() => 0)
+            .font('Impact')
             // .rotate(() => ~~(Math.random() * 2) * 90)
             .fontSize((d) => d.size || 22)
             .on('end', draw);

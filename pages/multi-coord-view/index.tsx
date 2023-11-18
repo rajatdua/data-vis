@@ -15,6 +15,10 @@ export default function MultiVariateData() {
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(true);
     const [shouldHide, setHide] = useState(false);
+    const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
+    const handleSecClick = () => {
+        setSecBtnState((prev) => ({...prev, isCollapsed: !prev.isCollapsed}))
+    };
     useEffect(() => {
         const callInit = async () => {
             const response = await (await fetch('/api/init')).json() as { success: boolean };
@@ -43,6 +47,7 @@ export default function MultiVariateData() {
     });
 
     const handleValueChange = (newValue: DateValueType) => {
+        console.log({ newValue });
         setValue(newValue);
         if (!isEqual(value, newValue)) setRefreshCount(prevState => prevState + 1);
     };
@@ -52,8 +57,8 @@ export default function MultiVariateData() {
         if (isError) return <div>An error occurred...</div>
         return (
             <div className="mx-auto place-self-center">
-                <PollsLineChart date={value} refreshCount={refreshCount}/>
-                <WordCloudContainer date={value} refreshCount={refreshCount}/>
+                <PollsLineChart date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
+                <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
             </div>
         );
     };
@@ -73,7 +78,7 @@ export default function MultiVariateData() {
             </Head>
             <section className="w-full px-6 pb-2 antialiased bg-white">
                 <div className="mx-auto max-w-7xl">
-                    <Nav btnTitle="Back" btnHref="/" />
+                    <Nav btnTitle="Back" btnHref="/" secBtnIcon={secBtnState.isCollapsed ? '/expand-icon.svg' : '/collapse-icon.svg'} secBtnClick={handleSecClick} secBtnState={secBtnState} />
                 </div>
             </section>
 

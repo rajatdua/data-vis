@@ -2,11 +2,11 @@ import Image from 'next/image'
 import React from "react";
 
 interface ICustomButtonProps {
-    title: string;
-    className: string;
+    title?: string;
+    className?: string;
     icon: string;
-    handleClick: (e: React.MouseEvent<HTMLElement>) => void;
-    style: object;
+    handleClick?: (e: React.MouseEvent<HTMLElement>) => void;
+    style?: object;
 }
 const CustomButton: React.FC<ICustomButtonProps> = ({ className, icon, style, title, handleClick }) => {
     return (

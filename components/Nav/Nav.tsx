@@ -1,14 +1,18 @@
-import React from "react";
+import React, {useState} from "react";
+import CustomButton from "../CustomButton/CustomButton";
 
 interface INavProps {
     btnTitle: string
     btnHref: string
+    secBtnClick?: (e: React.MouseEvent<HTMLElement>) => void
+    secBtnIcon?: string
+    secBtnState?: { isCollapsed?: boolean }
 }
-const Nav: React.FC<INavProps> = ({ btnTitle, btnHref }) => {
+const Nav: React.FC<INavProps> = ({ btnTitle, btnHref, secBtnClick, secBtnIcon , secBtnState }) => {
     return (
-        <nav className="relative z-10 h-24 select-none" /*x-data="{ showMenu: false }"*/>
+        <nav className={`relative z-10 ${secBtnState?.isCollapsed ? 'h-12' : 'h-24'} select-none`} /*x-data="{ showMenu: false }"*/>
             <div
-                className="container relative flex flex-wrap items-center justify-between h-24 mx-auto overflow-hidden font-medium border-b border-gray-200 md:overflow-visible lg:justify-center sm:px-4 md:px-2 lg:px-0">
+                className={`container relative flex flex-wrap items-center justify-between ${secBtnState?.isCollapsed ? 'h-12' : 'h-24'} mx-auto overflow-hidden font-medium border-b border-gray-200 md:overflow-visible lg:justify-center sm:px-4 md:px-2 lg:px-0`}>
                 <div className="flex items-center justify-start h-full pr-4">
                     <a href="/" className="inline-block py-4 md:py-0">
                         <span className="p-1 text-xl font-black leading-none text-gray-900">AU 2023 | Data Visualisation</span>
@@ -42,6 +46,7 @@ const Nav: React.FC<INavProps> = ({ btnTitle, btnHref }) => {
                             {/*</a>*/}
                         </div>
                         <div className="flex flex-col items-start justify-end w-full pt-4 md:items-center md:w-1/3 md:flex-row md:py-0">
+                            {secBtnIcon && <CustomButton icon={secBtnIcon} handleClick={secBtnClick} className="mr-1" />}
                             <a href={btnHref} className="inline-flex items-center w-full px-6 py-3 text-sm font-medium leading-4 text-white bg-indigo-600 md:px-3 md:w-auto md:rounded-full lg:px-5 hover:bg-indigo-500 focus:outline-none md:focus:ring-2 focus:ring-0 focus:ring-offset-2 focus:ring-indigo-600">{btnTitle}</a>
                         </div>
                     </div>
