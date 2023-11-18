@@ -5,7 +5,7 @@ import {ICommonChartProps, IDataPoint, IFetchData, IFetchReq} from "../../types"
 import {createDateQuery} from "../../utils/client";
 
 
-const PollsLineChart: React.FC<ICommonChartProps> = ({ date, refreshCount }) => {
+const PollsLineChart: React.FC<ICommonChartProps> = ({ date, refreshCount, updateDateRange }) => {
     const [pollData, setPollData] = useState<IFetchData>({});
     const [isLoading, setLoading] = useState(true);
 
@@ -30,7 +30,7 @@ const PollsLineChart: React.FC<ICommonChartProps> = ({ date, refreshCount }) => 
             }));
             return (
                 <div className="flex flex-col">
-                    <D3PollsLineChart data={processedData} />
+                    <D3PollsLineChart data={processedData} updateDateRange={updateDateRange} />
                 </div>
             )
         } else return <div>No data found!</div>

@@ -33,6 +33,7 @@ export interface IFetchReq {
 export interface ICommonChartProps {
     date: DateValueType;
     refreshCount: number;
+    updateDateRange: (date: DateValueType) => void
 }
 
 export type tweetMetaType = { count: number, tweets: string[] }
