@@ -46,6 +46,15 @@ export interface IFetchWordReq {
     data?: IFetchWordData[]
 }
 
+export interface IFetchTweetMapData {
+    timeAfter: number,
+    timeBefore: number
+}
+
+export interface IFetchTweetMapReq {
+    data?: IFetchTweetMapData[]
+}
+
 export interface IFrequencyObj { [key: string]: tweetMetaType }
 
 
