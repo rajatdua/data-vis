@@ -94,8 +94,7 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('transform', 'rotate(-90)')
-      .text('Percentage Distribution')
-    ;
+      .text('Percentage Distribution');
 
     // Add legends
     const legends = svg.append('g')
