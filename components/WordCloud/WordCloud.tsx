@@ -71,8 +71,9 @@ const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
             svg.selectAll('*').remove();
 
             svg
-                .attr('width', layout.size()[0])
-                .attr('height', layout.size()[1])
+                .attr("viewBox", `0 0 ${layout.size()[0]} ${layout.size()[1]}`)
+                // .attr('width', layout.size()[0])
+                // .attr('height', layout.size()[1])
                 .append('g')
                 .attr('transform', 'translate(' + layout.size()[0] / 2 + ',' + layout.size()[1] / 2 + ')')
                 .selectAll('text')

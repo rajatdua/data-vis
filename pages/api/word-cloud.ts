@@ -1,23 +1,11 @@
 import {isEmpty} from "lodash";
 import {NextApiRequest, NextApiResponse} from "next";
-import {QueryExecResult, SqlValue} from "sql.js";
+import {SqlValue} from "sql.js";
 import {removeStopwords} from 'stopword';
 import {IFrequencyObj, tweetMetaType} from "../../types";
 import {getErrorMessage} from "../../utils/common";
 import getDB from '../../utils/db';
-import {areDateParamsPresent /*, saveToJsonFile*/} from "../../utils/server";
-
-function convertToObjects(queryResult: QueryExecResult[]): FlatArray<{ [p: string]: SqlValue }[][], 1>[] {
-    return queryResult.map((data) => {
-        return data.values.map((row) => {
-            const obj: { [key: string]: SqlValue } = {};
-            data.columns.forEach((column, index) => {
-                obj[column] = row[index];
-            });
-            return obj;
-        });
-    }).flat();
-}
+import {areDateParamsPresent, convertToObjects /*, saveToJsonFile*/} from "../../utils/server";
 
 const filterOne = (word: string) => {
     // Remove links

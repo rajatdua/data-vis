@@ -20,11 +20,12 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
   });
   const margin = { top: 20, right: 20, bottom: 65, left: 70 },
     width = 1280 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 450 - margin.top - margin.bottom;
   if (ref !== null) {
     const svg = d3.select(ref.current)
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+      // .attr("width", width + margin.left + margin.right)
+      // .attr("height", height + margin.top + margin.bottom)
+      .attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`)
       .append("g")
       .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
@@ -93,8 +94,7 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('transform', 'rotate(-90)')
-      .text('Percentage Distribution')
-    ;
+      .text('Percentage Distribution');
 
     // Add legends
     const legends = svg.append('g')
@@ -117,6 +117,7 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
       .attr('y', 9)
       .attr('dy', '.35em')
       .style('text-anchor', 'start')
+      .style('font-size', '12')
       .text((d) => d.name);
 
 

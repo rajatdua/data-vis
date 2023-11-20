@@ -1,6 +1,7 @@
 import {isEmpty} from "lodash";
 import {NextApiRequest, NextApiResponse} from "next";
 import {ParseResult} from "papaparse";
+import {QueryExecResult, SqlValue} from "sql.js";
 import fs from 'fs';
 import {IFrequencyObj} from "../types";
 
@@ -45,9 +46,29 @@ export const areDateParamsPresent = (req: NextApiRequest, res: NextApiResponse) 
     }
 };
 
+interface ISQLConfig {
+    renameColumn: { [key: string]: string }
+}
+export function convertToObjects(queryResult: QueryExecResult[], config: ISQLConfig = { renameColumn: {} }): FlatArray<{ [p: string]: SqlValue }[][], 1>[] {
+    const { renameColumn = {} } = config;
+    return queryResult.map((data) => {
+        return data.values.map((row) => {
+            const obj: { [key: string]: SqlValue } = {};
+            data.columns.forEach((column, index) => {
+                const selectedFromConfig = renameColumn[column];
+                const newColumnName = selectedFromConfig ?? column;
+                obj[newColumnName] = row[index];
+            });
+            return obj;
+        });
+    }).flat();
+}
+
+
 const FUNCTIONS = {
     saveToJsonFile,
     convertToTimestamp,
     areDateParamsPresent,
+    convertToObjects,
 };
 export default FUNCTIONS;

@@ -3,6 +3,7 @@ import Head from "next/head";
 import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
 import PollsLineChart from "./PollsLineChart";
+import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import Footer from "../../components/Footer/Footer";
@@ -47,7 +48,6 @@ export default function MultiVariateData() {
     });
 
     const handleValueChange = (newValue: DateValueType) => {
-        console.log({ newValue });
         setValue(newValue);
         if (!isEqual(value, newValue)) setRefreshCount(prevState => prevState + 1);
     };
@@ -57,8 +57,18 @@ export default function MultiVariateData() {
         if (isError) return <div>An error occurred...</div>
         return (
             <div className="mx-auto place-self-center">
+                <h2>General Election 2016 Poll Average (Trump vs Clinton)</h2>
                 <PollsLineChart date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
-                <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
+                <div className="grid grid-cols-2 gap-1">
+                    <div>
+                        <h2 className='mt-6 mb-2'>Word Frequency for Trump&apos;s Tweet</h2>
+                        <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
+                    </div>
+                    <div>
+                        <h2 className='mt-6 mb-2'>Trump&apos;s Tweeting Pattern</h2>
+                        <TweetPatternContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
+                    </div>
+                </div>
             </div>
         );
     };

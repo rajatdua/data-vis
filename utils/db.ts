@@ -21,7 +21,8 @@ const getDB = async () => {
         });
         const db = new SQL.Database();
 
-        const filePath = path.resolve(process.cwd(), 'pages/api/realdonaldtrump.csv');
+        // const filePath = path.resolve(process.cwd(), 'pages/api/realdonaldtrump.csv');
+        const filePath = path.resolve(process.cwd(), 'pages/api/tweets_with_time_diff.csv');
         console.time('read-file');
         const csvData = fs.readFileSync(filePath, 'utf8');
         console.timeEnd('read-file');
@@ -33,6 +34,8 @@ const getDB = async () => {
                 switch (field) {
                     case 'retweets':
                     case 'favorites':
+                    case 'time_before':
+                    case 'time_after':
                         return parseInt(value, 10);
                     case 'date':
                         return convertToTimestamp(value);
@@ -57,6 +60,8 @@ const getDB = async () => {
             retweets: 'INT',
             date: 'INT',
             favorites: 'INT',
+            time_before: 'INT',
+            time_after: 'INT'
         };
         let typeString = '';
         let insertColString = '';
@@ -79,6 +84,8 @@ const getDB = async () => {
             favorites: number;
             mentions: string;
             hashtags: string;
+            time_before: number;
+            time_after: number;
         }
 
         console.time('inserted-rows');
@@ -92,7 +99,9 @@ const getDB = async () => {
                 retweets = 0,
                 favorites = 0,
                 mentions = '',
-                hashtags = ''
+                hashtags = '',
+                time_before = 0,
+                time_after = 0
             } = tweet as ITweet;
             db.run(
                 `INSERT INTO tweets VALUES (${insertColString})`,
@@ -104,7 +113,9 @@ const getDB = async () => {
                     ":retweets": retweets,
                     ":favorites": favorites,
                     ":mentions": mentions,
-                    ":hashtags": hashtags
+                    ":hashtags": hashtags,
+                    ":time_before": time_before,
+                    ":time_after": time_after
                 }
             );
         });
