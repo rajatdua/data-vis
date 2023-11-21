@@ -2,10 +2,12 @@ import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import Spinner from "../../components/Spinner/Spinner";
 import WordCloud from "../../components/WordCloud/WordCloud";
-import {ICommonChartProps, ID3Object, IFetchWordData, IFetchWordReq} from "../../types";
+import WordCloudV2 from "../../components/WordCloud/WordCloudV2";
+import ParentSize from '@visx/responsive/lib/components/ParentSize';
+import {ICommonChartProps, ID3Object, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
 import {createDateQuery} from "../../utils/client";
 
-const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount }) => {
+const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2 }) => {
     const sidebarRef = useRef<HTMLDivElement>(null);
     const [isLoading, setLoading] = useState(true);
     const [wordCloudData, setWordCloud] = useState<IFetchWordData[]>([]);
@@ -54,11 +56,25 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount }
         setWord(selectedWord[0]);
     };
 
+    const handleWordClickV2 = (event: React.MouseEvent) => {
+        const target = event.target as HTMLElement;
+        const innerHTML = target.innerHTML;
+
+        const selectedWord = wordCloudData.filter(word => word.text === innerHTML);
+        setMenu(true);
+        setWord(selectedWord[0]);
+    }
+
     if (isLoading) return <div className="flex justify-center" style={{ height: '600px' }}><Spinner /></div>
+    const updated: IInterimWordData[] = wordCloudData.map(item => ({
+        text: item.text,
+        value: item.textMeta.count
+    }));
     return (
       <div>
           <div className="relative">
-              <WordCloud data={wordCloudData} handleWordClick={handleWordClick} />
+              {!version2 && <WordCloud data={wordCloudData} handleWordClick={handleWordClick} />}
+              {version2 &&  <ParentSize>{({ width }: { width: number }) => <WordCloudV2 words={updated} width={width} handleWordClick={handleWordClickV2} />}</ParentSize>}
               {/* Popup menu */}
               {isMenuOpen && (
                 <div className="origin-top-right top-0 absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">

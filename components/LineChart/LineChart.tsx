@@ -5,7 +5,7 @@ import {IDataPoint} from "../../types";
 
 interface IPartyData { date: Date | null, value: number }
 
-const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data: IDataPoint[], updateDateRange: (date: DateValueType) => void) => {
+const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data: IDataPoint[], updateDateRange: (date: DateValueType) => void, resetDateRange?: () => void) => {
   const parseDate = d3.timeParse("%a, %d %b %Y %H:%M:%S %Z");
 
   const democratData: IPartyData[] = [];
@@ -36,6 +36,10 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
         [width, height],
       ])
       .on('end', (event) => {
+        if (!event?.selection && resetDateRange) {
+          resetDateRange();
+          return;
+        }
         if (event && event.selection) {
           const [start, end]: [Date, Date] = event.selection.map(x.invert);
           const formattedDate = (currentDate: Date) => currentDate.toISOString().split('T')[0];
@@ -199,13 +203,14 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
 interface LineProps {
   data: IDataPoint[]
   updateDateRange: (date: DateValueType) => void
+  resetDateRange?: () => void
 }
 
-const LineChart: React.FC<LineProps> = ({ data, updateDateRange }) => {
+const LineChart: React.FC<LineProps> = ({ data, updateDateRange, resetDateRange }) => {
   const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
-    createLineGraph(ref, data, updateDateRange);
+    createLineGraph(ref, data, updateDateRange, resetDateRange);
   }, []);
   return <svg ref={ref}/>;
 };

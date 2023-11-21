@@ -1,13 +1,15 @@
 import * as d3 from 'd3';
+import {ScaleLinear, ScaleLogarithmic} from "d3-scale";
 import React, { useEffect, useRef } from 'react';
 
 
 interface ITweetData { timeBefore: number; timeAfter: number }
 interface ScatterPlotProps {
   data: ITweetData[];
+  scale: 'log' | 'linear'
 }
 
-const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
+const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log' }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
@@ -21,15 +23,71 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
 
     svg.selectAll('*').remove();
 
+    let xScale: ScaleLogarithmic<number, number> | ScaleLinear<number, number>;
+    let yScale: ScaleLogarithmic<number, number> | ScaleLinear<number, number>;
+
+    if (scale === 'log') {
+      xScale = d3.scaleLog().domain([1, d3.max(data, (d) => d.timeBefore)!]).range([0, width]);
+      yScale = d3.scaleLog().domain([1, d3.max(data, (d) => d.timeAfter)!]).range([height, 0]);
+    } else {
+      xScale = d3.scaleLinear().domain([0, d3.max(data, (d) => d.timeBefore)!]).range([0, width]);
+      yScale = d3.scaleLinear().domain([0, d3.max(data, (d) => d.timeAfter)!]).range([height, 0]);
+    }
+
+
+    const brush = d3
+      .brush()
+      .extent([
+        [0, 0],
+        [width, height],
+      ])
+      .on('end', (event) => {
+        if (!event?.selection) {
+          // Reset colors when brushing ends without selection
+          svg.selectAll('.point').classed('selected', false).classed('non-selected', false);
+          return;
+        }
+        if (event && event.selection) {
+          let [[x0, y0], [x1, y1]] = event.selection;
+
+          x0 = x0 - margin.left;
+          y0 = y0 - margin.top;
+          x1 = x1 - margin.left;
+          y1 = y1 - margin.top;
+
+
+          // Remove previous classes
+          svg.selectAll('.point').classed('selected', false).classed('non-selected', false);
+
+          // Select points within the brush area
+          const selectedPoints = data.filter(
+            (d) => xScale(d.timeBefore) >= x0 && xScale(d.timeBefore) <= x1 && yScale(d.timeAfter) >= y0 && yScale(d.timeAfter) <= y1
+          );
+
+          // Add classes to selected and non-selected points
+          svg
+            .selectAll('.point')
+            .data(data)
+            .classed('selected', (d) => selectedPoints.includes(d))
+            .classed('non-selected', (d) => !selectedPoints.includes(d));
+
+          const [pX0Value, pX1Value] = [x0,x1].map(xScale.invert)
+          const [pY0Value, pY1Value] = [y0,y1].map(yScale.invert)
+
+          console.log(`(x0,y0) = (${pX0Value}, ${pY0Value})`)
+          console.log(`(x1,y1) = (${pX1Value}, ${pY1Value})`)
+
+
+
+          // console.log(event.selection.map(xScale.invert));
+          // const formattedDate = (currentDate: Date) => currentDate.toISOString().split('T')[0];
+        }
+      });
+
+    svg.append("g")
+      .call(brush);
+
     svg.attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
-
-    // Set up scales
-    // const xScale = d3.scaleLinear().domain([0, d3.max(data, (d) => d.timeBefore)!]).range([0, width]);
-    // const yScale = d3.scaleLinear().domain([0, d3.max(data, (d) => d.timeAfter)!]).range([height, 0]);
-
-    const xScale = d3.scaleLog().domain([1, d3.max(data, (d) => d.timeBefore)!]).range([0, width]);
-    const yScale = d3.scaleLog().domain([1, d3.max(data, (d) => d.timeAfter)!]).range([height, 0]);
-
 
     const removeDecimalIfZero = (value: string) => {
       const number = value.split('.');
@@ -52,7 +110,14 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
       }
     };
 
-    const tickValues = [1, 2, 10, 20, 100, 200, 1000, 2000, 10000, 20000, 80000];
+    let tickValues: number[] = [];
+    if (scale === 'log') {
+      // const tickValues = [1, 2, 10, 20, 100, 200, 1000, 2000, 10000, 20000, 80000];
+      tickValues = [1, 2, 10, 20, 120, 240, 600, 1200, 7200, 14400, 79200];
+    } else {
+      tickValues = [0, 7200, 14400, 21600, 28800, 36000, 43200, 50400, 57600, 64800, 72000, 79200];
+    }
+
 
 
     // Add X-axis
@@ -130,8 +195,6 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
       // .attr('transform', 'rotate(180)')
       .text('Time Before Tweet');
 
-    console.log({ length: data.length });
-
     const getRadius = (totalData: ITweetData[]): number => {
       if (totalData.length > 15000) return 1.5;
       if (totalData.length > 4000 && totalData.length < 8000) return 2.5;
@@ -140,10 +203,12 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
 
     // Add scatterplot points
     svg
-      .selectAll('circle')
+      .selectAll('.point')
+      // .selectAll('circle')
       .data(data)
       .enter()
       .append('circle')
+      .attr('class', 'point')
       .attr('cx', (d) => xScale(d.timeBefore) + margin.left)
       .attr('cy', (d) => yScale(d.timeAfter) + margin.top)
       // .attr('cx', (d) => xScale(d.timeBefore) + margin.left + Math.random() * 5) // Adjust jittering here
@@ -158,7 +223,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data }) => {
 
 
 
-  }, [data]);
+  }, [data, scale]);
 
   return (
     <svg ref={svgRef}>
