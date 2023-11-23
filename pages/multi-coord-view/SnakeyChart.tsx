@@ -1,5 +1,5 @@
 // Place Holder file
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const PlotlyChart: React.FC = () => {
   const [startDate, setStartDate] = useState<string>(''); // State for the start date
@@ -37,9 +37,7 @@ const PlotlyChart: React.FC = () => {
     setEndDate(event.target.value);
   };
 
-  return (
-
-  );
+  return (<></>);
 };
 
 export default PlotlyChart;
