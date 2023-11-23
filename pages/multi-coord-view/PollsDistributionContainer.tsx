@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import D3PollsLineChart from "./D3PollsLineChart";
+import LineChart from "../../components/LineChart/LineChart";
 import Spinner from "../../components/Spinner/Spinner";
 import {ICommonChartProps, IDataPoint, IFetchData, IFetchReq} from "../../types";
 import {createDateQuery} from "../../utils/client";
 
 
-const PollsLineChart: React.FC<ICommonChartProps> = ({ date, refreshCount, updateDateRange }) => {
+const PollsDistributionContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, updateDateRange, resetDateRange }) => {
     const [pollData, setPollData] = useState<IFetchData>({});
     const [isLoading, setLoading] = useState(true);
 
@@ -30,11 +30,11 @@ const PollsLineChart: React.FC<ICommonChartProps> = ({ date, refreshCount, updat
             }));
             return (
                 <div className="flex flex-col">
-                    <D3PollsLineChart data={processedData} updateDateRange={updateDateRange} />
+                    <LineChart data={processedData} updateDateRange={updateDateRange} resetDateRange={resetDateRange} />
                 </div>
             )
         } else return <div>No data found!</div>
     }
 }
 
-export default PollsLineChart;
+export default PollsDistributionContainer;

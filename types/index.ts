@@ -34,9 +34,13 @@ export interface ICommonChartProps {
     date: DateValueType;
     refreshCount: number;
     updateDateRange: (date: DateValueType) => void
+    resetDateRange?: () => void
+    version2?: boolean;
 }
 
 export type tweetMetaType = { count: number, tweets: string[] }
+
+export interface IInterimWordData { text: string, value: number }
 
 export interface IFetchWordData {
     text: string;
