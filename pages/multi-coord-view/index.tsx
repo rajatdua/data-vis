@@ -2,7 +2,7 @@ import {isEqual} from "lodash";
 import Head from "next/head";
 import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
-import PollsLineChart from "./PollsLineChart";
+import PollsDistributionContainer from "./PollsDistributionContainer";
 import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
 import CustomButton from "../../components/CustomButton/CustomButton";
@@ -52,23 +52,34 @@ export default function MultiVariateData() {
         if (!isEqual(value, newValue)) setRefreshCount(prevState => prevState + 1);
     };
 
+    const handleResetDate = () => {
+        setValue({
+            startDate: START_DATE,
+            endDate: END_DATE,
+        });
+        setRefreshCount(prevState => prevState + 1)
+    };
+
     const renderCharts = () => {
         if (isInit) return <div className="flex justify-center" style={{ width: '100%', height: '77vh' }}><Spinner /></div>
         if (isError) return <div>An error occurred...</div>
         return (
             <div className="mx-auto place-self-center">
-                <h2>General Election 2016 Poll Average (Trump vs Clinton)</h2>
-                <PollsLineChart date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
+                <h2 className='font-bold'>General Election 2016 Poll Average (Trump vs Clinton)</h2>
+                <PollsDistributionContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange} resetDateRange={handleResetDate}/>
                 <div className="grid grid-cols-2 gap-1">
                     <div>
-                        <h2 className='mt-6 mb-2'>Word Frequency for Trump&apos;s Tweet</h2>
-                        <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
+                        <h2 className='mt-6 mb-2 font-bold'>Word Frequency for Trump&apos;s Tweet</h2>
+                        <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange} version2={true}/>
                     </div>
                     <div>
-                        <h2 className='mt-6 mb-2'>Trump&apos;s Tweeting Pattern</h2>
+                        <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Tweeting Pattern</h2>
                         <TweetPatternContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
                     </div>
                 </div>
+                {/*<div className="grid grid-cols-2 gap-1">*/}
+                {/*    <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange} version2={true}/>*/}
+                {/*</div>*/}
             </div>
         );
     };
