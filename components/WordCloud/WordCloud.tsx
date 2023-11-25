@@ -8,6 +8,7 @@ import {ID3Object, IFetchWordData} from "../../types";
 interface Props {
     data: IFetchWordData[]
     handleWordClick: (d3Object: ID3Object) => void
+    onChartRender: () => void
 }
 
 interface IInterimWord {
@@ -37,7 +38,7 @@ function normalizeFontSizes(data: IInterimWord[], scalingFactor: { min: number; 
     }));
 }
 
-const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
+const WordCloud: React.FC<Props> = ({ data, handleWordClick, onChartRender }) => {
     const svgRef = useRef(null);
 
     useEffect(() => {
@@ -103,10 +104,13 @@ const WordCloud: React.FC<Props> = ({ data, handleWordClick }) => {
 
         layout.start();
 
+        d3.select('#word-cloud')
+          .on('end', onChartRender);
+
 
     }, [data]);
 
-    return <svg ref={svgRef} />;
+    return <svg id='word-cloud' ref={svgRef} />;
 }
 
 export default WordCloud;

@@ -2,6 +2,7 @@ import {isEqual} from "lodash";
 import Head from "next/head";
 import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
+import ChartOverlay from "../../components/ChartOverlay/ChartOverlay";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
@@ -43,6 +44,7 @@ export default function MultiVariateData() {
 
 
     const [refreshCount, setRefreshCount] = useState(0);
+    const [isRefreshing, setRefreshing] = useState(false);
     const [value, setValue] = useState<DateValueType>({
         startDate: START_DATE,
         endDate: END_DATE,
@@ -67,15 +69,36 @@ export default function MultiVariateData() {
         return (
             <div className="mx-auto place-self-center">
                 <h2 className='font-bold'>General Election 2016 Poll Average (Trump vs Clinton)</h2>
-                <PollsDistributionContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange} resetDateRange={handleResetDate}/>
+                <PollsDistributionContainer
+                  date={value}
+                  refreshCount={refreshCount}
+                  updateDateRange={handleValueChange}
+                  resetDateRange={handleResetDate}
+                  setRefreshing={setRefreshing}
+                />
                 <div className="grid grid-cols-2 gap-1">
                     <div>
                         <h2 className='mt-6 mb-2 font-bold'>Word Frequency for Trump&apos;s Tweet</h2>
-                        <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange} version2={true}/>
+                        <ChartOverlay isLoading={isRefreshing}>
+                            <WordCloudContainer
+                              date={value}
+                              refreshCount={refreshCount}
+                              updateDateRange={handleValueChange}
+                              version2={true}
+                              setRefreshing={setRefreshing}
+                            />
+                        </ChartOverlay>
                     </div>
                     <div>
                         <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Tweeting Pattern</h2>
-                        <TweetPatternContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
+                        <ChartOverlay isLoading={isRefreshing}>
+                            <TweetPatternContainer
+                              date={value}
+                              refreshCount={refreshCount}
+                              updateDateRange={handleValueChange}
+                              setRefreshing={setRefreshing}
+                            />
+                        </ChartOverlay>
                     </div>
                 </div>
                 {/*<div className="grid grid-cols-2 gap-1">*/}

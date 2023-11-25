@@ -1,12 +1,11 @@
 import * as d3 from "d3";
-import {Mouse} from "playwright-core";
 import React, {useEffect, useRef} from 'react';
 import {DateValueType} from "react-tailwindcss-datepicker";
 import {IDataPoint} from "../../types";
 
 interface IPartyData { date: Date | null, value: number }
 
-const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data: IDataPoint[], updateDateRange: (date: DateValueType) => void, resetDateRange?: () => void) => {
+const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data: IDataPoint[], updateDateRange: (date: DateValueType) => void, onChartRender: () => void, resetDateRange?: () => void) => {
   const parseDate = d3.timeParse("%a, %d %b %Y %H:%M:%S %Z");
 
   const democratData: IPartyData[] = [];
@@ -224,6 +223,8 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
       .on('mouseover', handleMouseOver)
       .on('mouseout', handleMouseOut);
 
+    d3.select('#line-chart')
+      .on('end', onChartRender);
 
   }
 
@@ -233,15 +234,16 @@ interface LineProps {
   data: IDataPoint[]
   updateDateRange: (date: DateValueType) => void
   resetDateRange?: () => void
+  onChartRender: () => void
 }
 
-const LineChart: React.FC<LineProps> = ({ data, updateDateRange, resetDateRange }) => {
+const LineChart: React.FC<LineProps> = ({ data, updateDateRange, resetDateRange, onChartRender }) => {
   const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
-    createLineGraph(ref, data, updateDateRange, resetDateRange);
+    createLineGraph(ref, data, updateDateRange, onChartRender, resetDateRange);
   }, []);
-  return <><svg ref={ref}/><div id="tooltip" style={{ position: 'absolute', opacity: 0, color: 'white', textShadow: 'black 0px 0px 2px' }} /></>;
+  return <><svg id='line-chart' ref={ref}/><div id="tooltip" style={{ position: 'absolute', opacity: 0, color: 'white', textShadow: 'black 0px 0px 2px' }} /></>;
 };
 
 export default LineChart;

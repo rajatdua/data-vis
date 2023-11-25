@@ -10,7 +10,7 @@ import {createDateQuery} from "../../utils/client";
 
 const scaleOptions = [{value: 'log', label: 'Log Scale'}, {value: 'linear', label: 'Linear Scale'}];
 
-const TweetPatternContainer: React.FC<ICommonChartProps> = ({ date, refreshCount }) => {
+const TweetPatternContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing }) => {
   const [isLoading, setLoading] = useState(true);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
   const [fetchedTweets, setFetchedTweets] = useState<IFetchTweetData[]>([])
@@ -28,10 +28,10 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({ date, refreshCount
   
   useEffect(() => {
     const fetchTweetTimeMap = async () => {
-      setLoading(true);
+      setRefreshing(true);
       const query = createDateQuery(date, '/api/tweet-time-map');
       const fetchedData = await (await fetch(query)).json() as IFetchTweetMapReq;
-      setTweetMapData(fetchedData?.data ?? [])
+      setTweetMapData(fetchedData?.data ?? []);
       setLoading(false);
     };
     fetchTweetTimeMap();
@@ -75,13 +75,17 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({ date, refreshCount
     setMenu(true);
   };
 
+  const handleChartRender = () => {
+    setRefreshing(false);
+  };
+
   return (
     <div>
       <div className="flex justify-end">
         <Select handleChange={handleChange} options={scaleOptions} preSelected={selectedScale} />
       </div>
       <div className='relative'>
-        <ScatterPlot data={tweetMapData} scale={selectedScale} onBrush={handleBrush}/>
+        <ScatterPlot data={tweetMapData} scale={selectedScale} onBrush={handleBrush} onChartRender={handleChartRender}/>
         {isMenuOpen && (
           <Popup options={options} />
         )}
