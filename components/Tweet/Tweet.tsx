@@ -14,7 +14,7 @@ const Tweet: React.FC<ITweetProps> = ({ tweetHTML = '' }) => {
           <span className="text-gray-500 text-sm">&nbsp;@realDonaldTrump</span>
           {/*<span className="text-gray-500 ml-2 text-sm">Jun 27</span>*/}
         </div>
-        <p className="mt-2 text-gray-800" dangerouslySetInnerHTML={{ __html: tweetHTML }}/>
+        <p className="mt-2 text-gray-800" style={{ overflowWrap: 'anywhere' }} dangerouslySetInnerHTML={{ __html: tweetHTML }}/>
       </div>
     </div>
   );
