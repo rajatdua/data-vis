@@ -1,15 +1,16 @@
 import * as d3 from 'd3';
 import {ScaleLinear, ScaleLogarithmic} from "d3-scale";
 import React, { useEffect, useRef } from 'react';
+import {IFetchTweetMapData} from "../../types";
 
 
-interface ITweetData { timeBefore: number; timeAfter: number }
 interface ScatterPlotProps {
-  data: ITweetData[];
+  data: IFetchTweetMapData[];
   scale: 'log' | 'linear'
+  onBrush: (selectedPoints: IFetchTweetMapData[]) => void
 }
 
-const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log' }) => {
+const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
@@ -71,11 +72,15 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log' }) => {
             .classed('selected', (d) => selectedPoints.includes(d))
             .classed('non-selected', (d) => !selectedPoints.includes(d));
 
-          const [pX0Value, pX1Value] = [x0,x1].map(xScale.invert)
-          const [pY0Value, pY1Value] = [y0,y1].map(yScale.invert)
+          // const [pX0Value, pX1Value] = [x0,x1].map(xScale.invert)
+          // const [pY0Value, pY1Value] = [y0,y1].map(yScale.invert)
 
-          console.log(`(x0,y0) = (${pX0Value}, ${pY0Value})`)
-          console.log(`(x1,y1) = (${pX1Value}, ${pY1Value})`)
+          // console.log(`(x0,y0) = (${pX0Value}, ${pY0Value})`)
+          // console.log(`(x1,y1) = (${pX1Value}, ${pY1Value})`)
+
+
+          onBrush(selectedPoints)
+          // console.log({selectedPoints});
 
 
 
@@ -195,7 +200,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log' }) => {
       // .attr('transform', 'rotate(180)')
       .text('Time Before Tweet');
 
-    const getRadius = (totalData: ITweetData[]): number => {
+    const getRadius = (totalData: IFetchTweetMapData[]): number => {
       if (totalData.length > 15000) return 1.5;
       if (totalData.length > 4000 && totalData.length < 8000) return 2.5;
       else return 3.5;

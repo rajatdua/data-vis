@@ -51,12 +51,21 @@ export interface IFetchWordReq {
 }
 
 export interface IFetchTweetMapData {
+    id: string;
     timeAfter: number,
     timeBefore: number
 }
 
 export interface IFetchTweetMapReq {
     data?: IFetchTweetMapData[]
+}
+
+export interface IFetchTweetData {
+    content: string;
+}
+
+export interface IFetchTweetReq {
+    data?: IFetchTweetData[]
 }
 
 export interface IFrequencyObj { [key: string]: tweetMetaType }
