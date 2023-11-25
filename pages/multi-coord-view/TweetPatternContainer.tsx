@@ -19,8 +19,16 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({ date, refreshCount
   const [isSidebar, setSidebar] = useState(false);
   const [tweetMapData, setTweetMapData] = useState<IFetchTweetMapData[]>([])
   const [selectedScale, setScale] = useState<'log' | 'linear'>('log');
+
+  useEffect(() => {
+    if (isSidebar) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "auto"
+  }, [isSidebar]);
+
+  
   useEffect(() => {
     const fetchTweetTimeMap = async () => {
+      setLoading(true);
       const query = createDateQuery(date, '/api/tweet-time-map');
       const fetchedData = await (await fetch(query)).json() as IFetchTweetMapReq;
       setTweetMapData(fetchedData?.data ?? [])
@@ -83,7 +91,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({ date, refreshCount
             setLoadingTweets(true);
             setDataPoints([]);
             setFetchedTweets([]);
-          }} title={`Tweets for selected data points`}>
+          }} title={`Tweets for selected data points ${isLoadingTweets ? '...' : `(${fetchedTweets.length})`}`}>
             {isLoadingTweets ? <div className='pt-48'><Spinner/></div> : sidebarChildren()}
           </Sidebar>
         )}

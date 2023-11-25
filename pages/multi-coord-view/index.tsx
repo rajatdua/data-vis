@@ -10,6 +10,7 @@ import Footer from "../../components/Footer/Footer";
 import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
 import {END_DATE, START_DATE} from "../../constants";
+import {debounce} from "../../utils/client";
 
 export default function MultiVariateData() {
     const [isInit, setInit] = useState(true);
@@ -30,10 +31,10 @@ export default function MultiVariateData() {
     }, []);
 
     useEffect(() => {
-        const onScroll = () => {
+        const onScroll = debounce(() => {
             if (!shouldHide && window.scrollY > 100) setHide(true)
             else if (shouldHide && window.scrollY <= 100) setHide(false)
-        };
+        }, 150);
         // clean up code
         window.removeEventListener('scroll', onScroll);
         window.addEventListener('scroll', onScroll, { passive: true });
@@ -131,7 +132,7 @@ export default function MultiVariateData() {
                 <div className={`flex-1 transition-all`}>
                     {/* Toggle Button */}
                     <CustomButton
-                        style={{ top: '6.75rem' }}
+                        style={{ top: '4.6rem' }}
                         className={`fixed right-6 z-10 ${shouldHide ? 'hidden' : ''}`}
                         handleClick={() => setSidebarOpen((isSidebarOpen) => !isSidebarOpen)}
                         icon={!isSidebarOpen ? '/hide-icon.svg' : '/view-icon.svg'}

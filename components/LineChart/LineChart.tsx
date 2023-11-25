@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import {Mouse} from "playwright-core";
 import React, {useEffect, useRef} from 'react';
 import {DateValueType} from "react-tailwindcss-datepicker";
 import {IDataPoint} from "../../types";
@@ -158,18 +159,20 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
 
 
     // Tooltip setup
-    const tooltip =  svg.append('div')
-      .attr('class', 'tooltip')
-      // .style('opacity', 0)
-      .style("visibility", "hidden")
-      .style('position', 'absolute')
-      .style('background', 'black')
-      .style('pointer-events', 'none')
+    // const tooltip =  svg.append('div')
+    //   .attr('class', 'tooltip')
+    //   // .style('opacity', 0)
+    //   .style("visibility", "hidden")
+    //   .style('position', 'absolute')
+    //   .style('background', 'black')
+    //   .style('pointer-events', 'none')
+    //
+    //
+    const tooltip = d3.select('#tooltip');
 
-
-    svg.selectAll('.data-line')
-      .on('mouseover', function (event) {
-        const selectedClass = event.target.getAttribute('x-class');
+    const handleMouseOver = (event: MouseEvent) => {
+      if (event.target !== null) {
+        const selectedClass = (event.target as Element).getAttribute('x-class');
         const mousePos = d3.pointer(event);
         const selectedData = selectedClass === 'democrat' ? democratData : republicanData;
         const bisectDate = d3.bisector((d: IPartyData) => d.date).left;
@@ -179,21 +182,47 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
         const d1 = selectedData[i];
         const hoveredData = (x0.getTime() - (d0.date === null ? 0 : d0.date.getTime())) > ((d1.date === null ? 0 : d1.date.getTime()) - x0.getTime()) ? d1 : d0;
 
-        tooltip.transition()
-          .duration(200)
+        const strokeColor = (event.target as Element).getAttribute('stroke');
+
+        const bgColor = `linear-gradient(180deg, ${strokeColor}, white)`;
+
+        tooltip
+          // .transition()
+          // .duration(200)
           .style('opacity', 0.9)
           .style("visibility", "visible")
-          .style('background', event.target.getAttribute('stroke'))
+          .style('background', bgColor)
+          .style('border', 'solid 1.5px black')
+          .style('padding', '8px')
           .style('left', (event.pageX) + 'px')
           .style('top', (event.pageY - 28) + 'px');
-          tooltip.text(`Date: ${d3.timeFormat('%B %d, %Y')(hoveredData.date ?? new Date())}<br/>Value: ${hoveredData?.value}`);
-      })
-      .on('mouseout', function () {
-        tooltip.transition()
-          .duration(500)
-          .style("visibility", "hidden")
-          .style('opacity', 0);
-      });
+        tooltip.html(`Date: ${d3.timeFormat('%B %d, %Y')(hoveredData.date ?? new Date())}<br/>Value: ${hoveredData?.value}%`);
+      }
+    };
+
+    const handleMouseOut = () => {
+      tooltip
+        // .transition()
+        // .duration(500)
+        .style("visibility", "hidden")
+        .style('opacity', 0);
+    };
+
+    // svg.selectAll('.data-line')
+    //   .on('mouseover', handleMouseOver)
+    //   .on('mouseout', handleMouseOut);
+
+    const line = svg.selectAll('.data-line');
+
+// Create an invisible overlay for each line that will capture the mouse events
+    const overlay = line.clone()
+      .style('stroke', 'transparent')
+      .style('stroke-width', '20px') // Adjust the stroke width to your needs
+      .classed('data-line-overlay', true);
+
+    overlay
+      .on('mouseover', handleMouseOver)
+      .on('mouseout', handleMouseOut);
 
 
   }
@@ -212,7 +241,7 @@ const LineChart: React.FC<LineProps> = ({ data, updateDateRange, resetDateRange 
   useEffect(() => {
     createLineGraph(ref, data, updateDateRange, resetDateRange);
   }, []);
-  return <svg ref={ref}/>;
+  return <><svg ref={ref}/><div id="tooltip" style={{ position: 'absolute', opacity: 0, color: 'white', textShadow: 'black 0px 0px 2px' }} /></>;
 };
 
 export default LineChart;

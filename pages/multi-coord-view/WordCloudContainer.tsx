@@ -38,6 +38,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
 
     useEffect(() => {
         const fetchWordCloud = async () => {
+            setLoading(true);
             const query = createDateQuery(date, '/api/word-cloud');
             const fetchedData = await (await fetch(query)).json() as IFetchWordReq;
             const wordList = fetchedData?.data ?? [];
