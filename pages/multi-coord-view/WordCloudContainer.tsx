@@ -106,7 +106,6 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
           <div className="relative">
               {!version2 && <WordCloud data={wordCloudData} handleWordClick={handleWordClick} onChartRender={handleChartRender} />}
               {version2 &&  <ParentSize>{({ width }: { width: number }) => <WordCloudV2 words={updated} width={width} handleWordClick={handleWordClickV2} />}</ParentSize>}
-              {/* Popup menu */}
               {isMenuOpen && (
                 <Popup options={options} />
               )}
