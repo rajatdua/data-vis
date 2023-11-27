@@ -35,6 +35,7 @@ export interface ICommonChartProps {
     refreshCount: number;
     updateDateRange: (date: DateValueType) => void
     resetDateRange?: () => void
+    setRefreshing: (flag: boolean) => void
     version2?: boolean;
 }
 

@@ -8,9 +8,10 @@ interface ScatterPlotProps {
   data: IFetchTweetMapData[];
   scale: 'log' | 'linear'
   onBrush: (selectedPoints: IFetchTweetMapData[]) => void
+  onChartRender: () => void
 }
 
-const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush }) => {
+const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush, onChartRender }) => {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
@@ -226,12 +227,15 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush 
       .style('fill', '#66c2a5') // adjust the color based on your preference
       .style('opacity', 0.7); // Adjust the transparency here
 
+    d3.select('#scatter-plot')
+      .on('end', onChartRender);
+
 
 
   }, [data, scale]);
 
   return (
-    <svg ref={svgRef}>
+    <svg ref={svgRef} id='scatter-plot'>
       {/* SVG content will be added dynamically */}
     </svg>
   );

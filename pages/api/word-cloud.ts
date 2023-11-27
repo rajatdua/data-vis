@@ -1,11 +1,14 @@
 import {isEmpty} from "lodash";
+import natural from 'natural';
 import {NextApiRequest, NextApiResponse} from "next";
+import normalize from 'normalize-text';
 import {SqlValue} from "sql.js";
-import {removeStopwords} from 'stopword';
+import {eng, removeStopwords} from 'stopword';
 import {IFrequencyObj, tweetMetaType} from "../../types";
 import {getErrorMessage} from "../../utils/common";
 import getDB from '../../utils/db';
 import {areDateParamsPresent, convertToObjects /*, saveToJsonFile*/} from "../../utils/server";
+const stemmer = natural.PorterStemmer;
 
 const filterOne = (word: string) => {
     // Remove links
@@ -32,16 +35,64 @@ const filterOne = (word: string) => {
 //         .replace(specialCharsRegex, '') // Remove special characters
 // };
 
-const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 1>[]) => {
+const preProcessContent = (content: string) => {
+    // 1. Remove formatting: HTML tags
+    content = content.replace(/<[^>]*>/g, "");
+
+    // 2. Remove Noise
+    content = normalize(content)
+    content = content.replace(/(@\s*\w+|#\s*\w+)/g, '')
+    content = content.replace(/[’|']s|i'm/g, '')
+    content = content.replace(/[^\w\s]|['’"`]/g, '')
+    // content = content.replace(/[\u2018\u2019]/g, "'"); // Replace special single-quotes
+    // content = content.replace(/[\u201C\u201D]/g, '"'); // Replace special double-quotes
+    // content = content.replace(/[^\x00-\x7F]/g, ""); // Remove non-ASCII chars
+    content = content.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ''); // Remove URLs
+
+
+    // 3. Lowercasing
+    content = content.toLowerCase();
+
+    // 4. Normalisation: This is tricky as it requires understanding the context and language nuances
+    content = content.replace(/\bu\b/g, 'you');
+    // pm or am
+    content = content.replace(/\bpm\b/g, '');
+    content = content.replace(/\bam\b/g, '');
+    // mr. or mr
+    content = content.replace(/\bmr\.?\s*/g, '');
+
+    // 5. Stopword Removal
+    content = removeStopwords(content.split(' '), eng).join(' ');
+
+    // 6. Stemming
+    content = stemmer.stem(content);
+
+    // 7. Lemmatization: Natural library doesn't support lemmatization for English.
+    // might need to use a Python library like NLTK or SpaCy for this.
+
+    content = content.split(/\s+/).filter(word => word!=='').join(' ')
+
+    return content;
+
+};
+
+const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 1>[], version = 1) => {
     const wordFrequency: IFrequencyObj = {};
 
     dataArray.forEach((item) => {
         // Tokenize the content
         const content: SqlValue | undefined = (item?.content ?? '').toString().toLowerCase();
-        const cleanedContent = filterOne(content);
-        const words = cleanedContent.split(/\s+/);
-        const filteredWords = words.filter(word => word !== '');
-        const processedWords = processText(filteredWords);
+        let processedWords: string[] = []
+        if (version === 1) {
+            const cleanedContent = filterOne(content);
+            const words = cleanedContent.split(/\s+/);
+            const filteredWords = words.filter(word => word !== '');
+            processedWords = processText(filteredWords);
+        }
+        else if (version === 2) {
+            const processedContent = preProcessContent(content);
+            processedWords = processedContent.split(/\s+/);
+        }
         processedWords.forEach((word: string) => {
             if (isEmpty(wordFrequency[word])) {
                 wordFrequency[word] = {
@@ -70,19 +121,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.setHeader('Content-Type', 'application/json');
     const {processedStart, processedEnd} = areDateParamsPresent(req, res);
     try {
-        console.time('load-db');
         const db = await getDB();
-        console.timeEnd('load-db');
-        console.time('fetch-db');
         const wordCloudQuery = `SELECT * FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
         const result = db.exec(wordCloudQuery);
-        console.timeEnd('fetch-db');
-        console.time('convert-result');
         const tweets = convertToObjects(result);
-        const frequency = calculateFrequency(tweets);
+        const frequency = calculateFrequency(tweets, parseInt((req.query?.version ?? '1').toString() ?? '1'));
         const freqArray = convertToWordCloudArray(frequency);
         const sortedArray = sortBySize(freqArray);
-        console.timeEnd('convert-result');
         res.status(200).json({ data: sortedArray.slice(0, 100), success: true })
     }
     catch (e) {

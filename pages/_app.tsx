@@ -1,5 +1,6 @@
 import "../styles/tailwind.css"
 import "../styles/scatterplot.css"
+import "../styles/overlay.css"
 
 import { AppProps } from "next/app"
 

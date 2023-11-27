@@ -2,6 +2,7 @@ import {isEqual} from "lodash";
 import Head from "next/head";
 import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
+import ChartOverlay from "../../components/ChartOverlay/ChartOverlay";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
@@ -10,6 +11,7 @@ import Footer from "../../components/Footer/Footer";
 import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
 import {END_DATE, START_DATE} from "../../constants";
+import {debounce} from "../../utils/client";
 
 export default function MultiVariateData() {
     const [isInit, setInit] = useState(true);
@@ -30,10 +32,10 @@ export default function MultiVariateData() {
     }, []);
 
     useEffect(() => {
-        const onScroll = () => {
+        const onScroll = debounce(() => {
             if (!shouldHide && window.scrollY > 100) setHide(true)
             else if (shouldHide && window.scrollY <= 100) setHide(false)
-        };
+        }, 150);
         // clean up code
         window.removeEventListener('scroll', onScroll);
         window.addEventListener('scroll', onScroll, { passive: true });
@@ -42,6 +44,7 @@ export default function MultiVariateData() {
 
 
     const [refreshCount, setRefreshCount] = useState(0);
+    const [isRefreshing, setRefreshing] = useState(false);
     const [value, setValue] = useState<DateValueType>({
         startDate: START_DATE,
         endDate: END_DATE,
@@ -66,15 +69,36 @@ export default function MultiVariateData() {
         return (
             <div className="mx-auto place-self-center">
                 <h2 className='font-bold'>General Election 2016 Poll Average (Trump vs Clinton)</h2>
-                <PollsDistributionContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange} resetDateRange={handleResetDate}/>
+                <PollsDistributionContainer
+                  date={value}
+                  refreshCount={refreshCount}
+                  updateDateRange={handleValueChange}
+                  resetDateRange={handleResetDate}
+                  setRefreshing={setRefreshing}
+                />
                 <div className="grid grid-cols-2 gap-1">
                     <div>
                         <h2 className='mt-6 mb-2 font-bold'>Word Frequency for Trump&apos;s Tweet</h2>
-                        <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange} version2={true}/>
+                        <ChartOverlay isLoading={isRefreshing}>
+                            <WordCloudContainer
+                              date={value}
+                              refreshCount={refreshCount}
+                              updateDateRange={handleValueChange}
+                              version2={true}
+                              setRefreshing={setRefreshing}
+                            />
+                        </ChartOverlay>
                     </div>
                     <div>
                         <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Tweeting Pattern</h2>
-                        <TweetPatternContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange}/>
+                        <ChartOverlay isLoading={isRefreshing}>
+                            <TweetPatternContainer
+                              date={value}
+                              refreshCount={refreshCount}
+                              updateDateRange={handleValueChange}
+                              setRefreshing={setRefreshing}
+                            />
+                        </ChartOverlay>
                     </div>
                 </div>
                 {/*<div className="grid grid-cols-2 gap-1">*/}
@@ -131,7 +155,7 @@ export default function MultiVariateData() {
                 <div className={`flex-1 transition-all`}>
                     {/* Toggle Button */}
                     <CustomButton
-                        style={{ top: '6.75rem' }}
+                        style={{ top: '4.6rem' }}
                         className={`fixed right-6 z-10 ${shouldHide ? 'hidden' : ''}`}
                         handleClick={() => setSidebarOpen((isSidebarOpen) => !isSidebarOpen)}
                         icon={!isSidebarOpen ? '/hide-icon.svg' : '/view-icon.svg'}

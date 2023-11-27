@@ -9,7 +9,7 @@ import WordCloudV2 from "../../components/WordCloud/WordCloudV2";
 import {ICommonChartProps, ID3Object, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
 import {createDateQuery} from "../../utils/client";
 
-const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2 }) => {
+const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing }) => {
     const sidebarRef = useRef<HTMLDivElement>(null);
     const [isLoading, setLoading] = useState(true);
     const [wordCloudData, setWordCloud] = useState<IFetchWordData[]>([]);
@@ -38,10 +38,12 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
 
     useEffect(() => {
         const fetchWordCloud = async () => {
-            const query = createDateQuery(date, '/api/word-cloud');
+            setRefreshing(true);
+            const query = createDateQuery(date, '/api/word-cloud', '&version=2');
             const fetchedData = await (await fetch(query)).json() as IFetchWordReq;
             const wordList = fetchedData?.data ?? [];
             setWordCloud(wordList);
+            setRefreshing(false);
             setLoading(false);
         };
         fetchWordCloud();
@@ -94,12 +96,16 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
             );
         })
     };
+
+    const handleChartRender = () => {
+        setRefreshing(false);
+    };
+
     return (
       <div>
           <div className="relative">
-              {!version2 && <WordCloud data={wordCloudData} handleWordClick={handleWordClick} />}
+              {!version2 && <WordCloud data={wordCloudData} handleWordClick={handleWordClick} onChartRender={handleChartRender} />}
               {version2 &&  <ParentSize>{({ width }: { width: number }) => <WordCloudV2 words={updated} width={width} handleWordClick={handleWordClickV2} />}</ParentSize>}
-              {/* Popup menu */}
               {isMenuOpen && (
                 <Popup options={options} />
               )}
