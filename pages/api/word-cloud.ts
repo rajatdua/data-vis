@@ -3,7 +3,7 @@ import natural from 'natural';
 import {NextApiRequest, NextApiResponse} from "next";
 import normalize from 'normalize-text';
 import {SqlValue} from "sql.js";
-import {removeStopwords, eng} from 'stopword';
+import {eng, removeStopwords} from 'stopword';
 import {IFrequencyObj, tweetMetaType} from "../../types";
 import {getErrorMessage} from "../../utils/common";
 import getDB from '../../utils/db';
