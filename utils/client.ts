@@ -9,10 +9,10 @@ export const debounce = <F extends (...args: never[]) => void>(func: F, delay: n
     }
 }
 
-export const createDateQuery = (date: DateValueType, prefix = '/') => {
+export const createDateQuery = (date: DateValueType, prefix = '/', suffix = '') => {
     const selectedStartDate = date?.startDate ?? '';
     const selectedEndDate = date?.endDate ?? '';
-    return `${prefix}${selectedStartDate !== '' ? `?start=${selectedStartDate}` : ''}${selectedEndDate !== '' ? `&end=${selectedEndDate}` : ''}`;
+    return `${prefix}${selectedStartDate !== '' ? `?start=${selectedStartDate}` : ''}${selectedEndDate !== '' ? `&end=${selectedEndDate}` : ''}${suffix}`;
 };
 
 const CLIENT_FUNCTIONS = {
