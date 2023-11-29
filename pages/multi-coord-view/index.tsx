@@ -2,10 +2,11 @@ import {isEqual} from "lodash";
 import Head from "next/head";
 import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
-import ChartOverlay from "../../components/ChartOverlay/ChartOverlay";
 import PollsDistributionContainer from "./PollsDistributionContainer";
+import SentimentContainer from "./SentimentContainer";
 import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
+import ChartOverlay from "../../components/ChartOverlay/ChartOverlay";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import Footer from "../../components/Footer/Footer";
 import Nav from "../../components/Nav/Nav";
@@ -19,6 +20,7 @@ export default function MultiVariateData() {
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [shouldHide, setHide] = useState(false);
     const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
+    const [totalTweets, setTotalTweets] = useState(0);
     const handleSecClick = () => {
         setSecBtnState((prev) => ({...prev, isCollapsed: !prev.isCollapsed}))
     };
@@ -76,6 +78,26 @@ export default function MultiVariateData() {
                   resetDateRange={handleResetDate}
                   setRefreshing={setRefreshing}
                 />
+                <div className="grid grid-cols-2 gap-1">
+                    <div>
+                        <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Tweets Sentiment (Count: {totalTweets})</h2>
+                        <ChartOverlay isLoading={isRefreshing}>
+                            <SentimentContainer
+                              date={value}
+                              refreshCount={refreshCount}
+                              updateDateRange={handleValueChange}
+                              setRefreshing={setRefreshing}
+                              setTotalTweets={setTotalTweets}
+                            />
+                        </ChartOverlay>
+                    </div>
+                    <div>
+                        <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Most Interacted Tweets</h2>
+                        <ChartOverlay isLoading={isRefreshing}>
+                            Pending...
+                        </ChartOverlay>
+                    </div>
+                </div>
                 <div className="grid grid-cols-2 gap-1">
                     <div>
                         <h2 className='mt-6 mb-2 font-bold'>Word Frequency for Trump&apos;s Tweet</h2>

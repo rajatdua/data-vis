@@ -30,6 +30,21 @@ export interface IFetchReq {
     data?: IFetchData
 }
 
+export type SentimentItem = {
+    group: string;
+    value: number;
+};
+
+export interface IFetchSentimentData {
+    positive: number;
+    neutral: number;
+    negative: number;
+}
+
+export interface IFetchSentimentReq {
+    data?: IFetchSentimentData
+}
+
 export interface ICommonChartProps {
     date: DateValueType;
     refreshCount: number;
@@ -37,6 +52,7 @@ export interface ICommonChartProps {
     resetDateRange?: () => void
     setRefreshing: (flag: boolean) => void
     version2?: boolean;
+    setTotalTweets?: (count: number) => void
 }
 
 export type tweetMetaType = { count: number, tweets: string[] }
