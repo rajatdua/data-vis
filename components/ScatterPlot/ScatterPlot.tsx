@@ -138,7 +138,8 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
           // .ticks(6, '.1s')
           .tickValues(tickValues)
           .tickFormat((d) => formatTickLabel(d.valueOf()))
-      );
+      )
+      .style('font-size', '14px');
 
 
     // Add Y-axis
@@ -147,7 +148,8 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
       .attr('transform', `translate(${margin.left}, ${margin.top})`)
       .call(d3.axisLeft(yScale)
         .tickValues(tickValues)
-        .tickFormat((d) => formatTickLabel(d.valueOf())));
+        .tickFormat((d) => formatTickLabel(d.valueOf())))
+      .style('font-size', '14px');
 
     // const isEqualTimePattern = (selectedData: ITweetData, index: number) => data.every(
     //   (d, i, arr) => selectedData.timeBefore - d.timeBefore === arr[1].timeBefore - arr[0].timeBefore
@@ -187,7 +189,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
 
 
     svg.append('g')
-      .attr('transform', 'translate(' + margin.right + ', ' + height/2 + ')')
+      .attr('transform', 'translate(' + (margin.right - 5) + ', ' + height/2 + ')')
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('transform', 'rotate(-90)')
@@ -195,7 +197,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
 
 
     svg.append('g')
-      .attr('transform', 'translate(' +  (width/2 + margin.left) + ', ' + (height + margin.bottom) + ')')
+      .attr('transform', 'translate(' +  (width/2 + margin.left) + ', ' + (height + margin.bottom + 10) + ')')
       .append('text')
       .attr('text-anchor', 'middle')
       // .attr('transform', 'rotate(180)')

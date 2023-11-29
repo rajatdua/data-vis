@@ -8,7 +8,8 @@ import {convertToTimestamp/*, saveToJsonFile */} from "./server";
 let dbInstance: null | Database = null;
 
 // const wasmUrl = path.resolve('node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
-const wasmUrl = 'https://sql.js.org/dist/sql-wasm.wasm';
+// const wasmUrl = 'https://sql.js.org/dist/sql-wasm.wasm';
+const wasmUrl = 'http://localhost:3000/sql-wasm.wasm';
 
 const getDB = async () => {
     if (!dbInstance) {
@@ -22,7 +23,7 @@ const getDB = async () => {
         const db = new SQL.Database();
 
         // const filePath = path.resolve(process.cwd(), 'pages/api/realdonaldtrump.csv');
-        const filePath = path.resolve(process.cwd(), 'pages/api/tweets_with_time_diff.csv');
+        const filePath = path.resolve(process.cwd(), 'pages/api/tweets_with_time_diff_senti.csv');
         console.time('read-file');
         const csvData = fs.readFileSync(filePath, 'utf8');
         console.timeEnd('read-file');
@@ -37,6 +38,8 @@ const getDB = async () => {
                     case 'time_before':
                     case 'time_after':
                         return parseInt(value, 10);
+                    case 'sentiment':
+                        return parseFloat(value);
                     case 'date':
                         return convertToTimestamp(value);
                     default:
@@ -61,7 +64,8 @@ const getDB = async () => {
             date: 'INT',
             favorites: 'INT',
             time_before: 'INT',
-            time_after: 'INT'
+            time_after: 'INT',
+            sentiment: 'FLOAT'
         };
         let typeString = '';
         let insertColString = '';
@@ -86,6 +90,7 @@ const getDB = async () => {
             hashtags: string;
             time_before: number;
             time_after: number;
+            sentiment: number;
         }
 
         console.time('inserted-rows');
@@ -101,7 +106,8 @@ const getDB = async () => {
                 mentions = '',
                 hashtags = '',
                 time_before = 0,
-                time_after = 0
+                time_after = 0,
+                sentiment = 0
             } = tweet as ITweet;
             db.run(
                 `INSERT INTO tweets VALUES (${insertColString})`,
@@ -115,7 +121,8 @@ const getDB = async () => {
                     ":mentions": mentions,
                     ":hashtags": hashtags,
                     ":time_before": time_before,
-                    ":time_after": time_after
+                    ":time_after": time_after,
+                    ":sentiment": sentiment
                 }
             );
         });
@@ -124,6 +131,8 @@ const getDB = async () => {
         // saveToJsonFile(parsedData, 'tweets.json');
 
         dbInstance = db;
+
+
 
 
     }

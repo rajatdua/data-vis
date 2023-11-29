@@ -1,14 +1,11 @@
 import {isEmpty} from "lodash";
-import natural from 'natural';
 import {NextApiRequest, NextApiResponse} from "next";
-import normalize from 'normalize-text';
 import {SqlValue} from "sql.js";
-import {eng, removeStopwords} from 'stopword';
+import {removeStopwords} from 'stopword';
 import {IFrequencyObj, tweetMetaType} from "../../types";
 import {getErrorMessage} from "../../utils/common";
 import getDB from '../../utils/db';
-import {areDateParamsPresent, convertToObjects /*, saveToJsonFile*/} from "../../utils/server";
-const stemmer = natural.PorterStemmer;
+import {areDateParamsPresent, convertToObjects, preProcessContent /*, saveToJsonFile*/} from "../../utils/server";
 
 const filterOne = (word: string) => {
     // Remove links
@@ -34,47 +31,6 @@ const filterOne = (word: string) => {
 //         .replace(hashtagsRegex, '')  // Remove hashtags
 //         .replace(specialCharsRegex, '') // Remove special characters
 // };
-
-const preProcessContent = (content: string) => {
-    // 1. Remove formatting: HTML tags
-    content = content.replace(/<[^>]*>/g, "");
-
-    // 2. Remove Noise
-    content = normalize(content)
-    content = content.replace(/(@\s*\w+|#\s*\w+)/g, '')
-    content = content.replace(/[’|']s|i'm/g, '')
-    content = content.replace(/[^\w\s]|['’"`]/g, '')
-    // content = content.replace(/[\u2018\u2019]/g, "'"); // Replace special single-quotes
-    // content = content.replace(/[\u201C\u201D]/g, '"'); // Replace special double-quotes
-    // content = content.replace(/[^\x00-\x7F]/g, ""); // Remove non-ASCII chars
-    content = content.replace(/(?:https?|ftp):\/\/[\n\S]+/g, ''); // Remove URLs
-
-
-    // 3. Lowercasing
-    content = content.toLowerCase();
-
-    // 4. Normalisation: This is tricky as it requires understanding the context and language nuances
-    content = content.replace(/\bu\b/g, 'you');
-    // pm or am
-    content = content.replace(/\bpm\b/g, '');
-    content = content.replace(/\bam\b/g, '');
-    // mr. or mr
-    content = content.replace(/\bmr\.?\s*/g, '');
-
-    // 5. Stopword Removal
-    content = removeStopwords(content.split(' '), eng).join(' ');
-
-    // 6. Stemming
-    content = stemmer.stem(content);
-
-    // 7. Lemmatization: Natural library doesn't support lemmatization for English.
-    // might need to use a Python library like NLTK or SpaCy for this.
-
-    content = content.split(/\s+/).filter(word => word!=='').join(' ')
-
-    return content;
-
-};
 
 const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 1>[], version = 1) => {
     const wordFrequency: IFrequencyObj = {};

@@ -113,7 +113,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
           {isSidebar && (
             <Sidebar isSidebar={isSidebar} sidebarRef={sidebarRef} onClose={() => {
                 setSidebar(false); setWord(null);
-            }} title={`Some Tweets for "${selectedWord?.text}"`}>
+            }} title={`Some Tweets for "${selectedWord?.text.substring(0,20)}..."`}>
                 {sidebarChildren()}
             </Sidebar>
           )}

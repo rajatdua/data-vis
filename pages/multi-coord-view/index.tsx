@@ -16,7 +16,7 @@ import {debounce} from "../../utils/client";
 export default function MultiVariateData() {
     const [isInit, setInit] = useState(true);
     const [isError, setError] = useState(false);
-    const [isSidebarOpen, setSidebarOpen] = useState(true);
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [shouldHide, setHide] = useState(false);
     const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
     const handleSecClick = () => {
