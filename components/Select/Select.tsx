@@ -1,16 +1,21 @@
-import React, {ChangeEvent, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 
 interface IOptionProps {
-  value: string;
+  value: string | number;
   label: string
 }
 interface ISelectProps {
   handleChange: (value: string) => void;
   options: IOptionProps[]
-  preSelected: string
+  preSelected: string|number
+  hideLabel?: boolean
 }
-const DropdownSelect: React.FC<ISelectProps> = ({ handleChange, options, preSelected = '' }) => {
+const DropdownSelect: React.FC<ISelectProps> = ({ hideLabel, handleChange, options, preSelected = '' }) => {
   const [selectedOption, setSelectedOption] = useState(preSelected);
+
+  useEffect(() => {
+    setSelectedOption(preSelected)
+  }, [preSelected]);
 
   const handleChangeInternal = (e: ChangeEvent<HTMLSelectElement>) => {
       setSelectedOption(e.target.value);
@@ -20,7 +25,7 @@ const DropdownSelect: React.FC<ISelectProps> = ({ handleChange, options, preSele
   return (
     <div className="w-64 grid grid-cols-2">
       <label htmlFor="dropdown" className="text-sm text-gray-700 self-center">
-        Select an option:
+        {hideLabel ? '' : 'Select an option:'}
       </label>
       <select
         id="dropdown"

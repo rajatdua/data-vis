@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import React, {useEffect} from "react";
 
 interface ISidebarProps {
   sidebarRef?: React.Ref<HTMLDivElement>
@@ -10,6 +10,11 @@ interface ISidebarProps {
 }
 
 const Sidebar: React.FC<ISidebarProps> = ({ sidebarRef, isSidebar, title, onClose, children }) => {
+  useEffect(() => {
+    if (isSidebar) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "auto"
+    return () => { document.body.style.overflow = "auto" }
+  }, [isSidebar]);
   return (
     <div
       ref={sidebarRef}

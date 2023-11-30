@@ -21,12 +21,6 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
   const [selectedScale, setScale] = useState<'log' | 'linear'>('log');
 
   useEffect(() => {
-    if (isSidebar) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "auto"
-  }, [isSidebar]);
-
-
-  useEffect(() => {
     const fetchTweetTimeMap = async () => {
       setRefreshing(true);
       const query = createDateQuery(date, '/api/tweet-time-map');
@@ -91,6 +85,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
         <Select handleChange={handleChange} options={scaleOptions} preSelected={selectedScale}/>
       </div>
       <div className='relative'>
+        {/*<ParentSize>{({ width }: { width: number }) => <ScatterPlot width={width} data={tweetMapData} scale={selectedScale} onBrush={handleBrush} onChartRender={handleChartRender}/>}</ParentSize>*/}
         <ScatterPlot data={tweetMapData} scale={selectedScale} onBrush={handleBrush} onChartRender={handleChartRender}/>
         {isMenuOpen && (
           <Popup options={options}/>

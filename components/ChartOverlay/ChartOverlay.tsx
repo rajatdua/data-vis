@@ -11,7 +11,7 @@ const ChartOverlay: React.FC<IChartOverlayProps> = ({ children, isLoading }) => 
     <div className="relative">
       {isLoading && (
         <div className="absolute inset-0 flex justify-center z-50">
-          <div className="bg-gradient-radial opacity-30 w-full h-full flex items-center">
+          <div className="bg-gradient-radial opacity-30 w-full h-full flex items-center justify-center">
             <Spinner />
           </div>
         </div>

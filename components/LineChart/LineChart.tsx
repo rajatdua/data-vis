@@ -63,7 +63,7 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
       .axisBottom<Date>(x)
       .tickSize(-height)
       .ticks(d3.timeMonth.every(1))
-      .tickFormat(d3.timeFormat('%B %Y'));
+      .tickFormat(d3.timeFormat('%b \'%y'));
 
     const yAxisGrid = d3.axisLeft(y).tickSize(-width).ticks(10);
 
@@ -77,9 +77,9 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
 
 
     svg.selectAll('text') // Select all text elements
-      .attr('transform', 'rotate(-45)') // Rotate the text labels by -45 degrees
+      // .attr('transform', 'rotate(-45)') // Rotate the text labels by -45 degrees
       .style('text-anchor', 'end')
-      .attr('dx', '-0.5em');
+      .attr('dx', '1.5em');
 
 
 
@@ -98,7 +98,9 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('transform', 'rotate(-90)')
-      .text('Percentage Distribution');
+      .style('font-size', '14px')
+      .attr('dy', '1em')
+      .text('Intended Votes %');
 
     // Add legends
     const legends = svg.append('g')
@@ -106,7 +108,7 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
       .attr('transform', `translate(${width - 120}, 30)`);
 
     const legendItems = legends.selectAll('.legend')
-      .data([{ name: 'Democrat', color: 'blue' }, { name: 'Republican', color: 'red' }])
+      .data([{ name: 'Democrat (Clinton)', color: 'blue' }, { name: 'Republican (Trump)', color: 'red' }])
       .enter().append('g')
       .attr('class', 'legend')
       .attr('transform', (d, i) => `translate(0, ${i * 20})`);
@@ -114,12 +116,14 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
     legendItems.append('rect')
       .attr('width', 18)
       .attr('height', 18)
+      .attr('transform', 'translate(-24,0)')
       .style('fill', (d) => d.color);
 
     legendItems.append('text')
       .attr('x', 24)
       .attr('y', 9)
-      .attr('dy', '.35em')
+      .attr('dy', '0.35em')
+      .attr('dx', '-2em')
       .style('text-anchor', 'start')
       .style('font-size', '12')
       .text((d) => d.name);
@@ -177,8 +181,8 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
         const bisectDate = d3.bisector((d: IPartyData) => d.date).left;
         const x0 = x.invert(mousePos[0]);
         const i = bisectDate(selectedData, x0, 1);
-        const d0 = selectedData[i - 1];
-        const d1 = selectedData[i];
+        const d0 = selectedData[i - 1] ?? { date: null };
+        const d1 = selectedData[i] ?? { date: null };
         const hoveredData = (x0.getTime() - (d0.date === null ? 0 : d0.date.getTime())) > ((d1.date === null ? 0 : d1.date.getTime()) - x0.getTime()) ? d1 : d0;
 
         const strokeColor = (event.target as Element).getAttribute('stroke');
@@ -195,7 +199,8 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
           .style('padding', '8px')
           .style('left', (event.pageX) + 'px')
           .style('top', (event.pageY - 28) + 'px');
-        tooltip.html(`Date: ${d3.timeFormat('%B %d, %Y')(hoveredData.date ?? new Date())}<br/>Value: ${hoveredData?.value}%`);
+          const percentage: number = hoveredData?.value ?? 0;
+        tooltip.html(`Date: ${d3.timeFormat('%B %d, %Y')(hoveredData.date ?? new Date())}${percentage === 0 ? '' : `<br/>Value: ${percentage}%`}`);
       }
     };
 

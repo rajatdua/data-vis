@@ -49,11 +49,6 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
         fetchWordCloud();
     }, [refreshCount]);
 
-    useEffect(() => {
-        if (isSidebar) document.body.style.overflow = "hidden";
-        else document.body.style.overflow = "auto"
-    }, [isSidebar]);
-
     const handleWordClick = (d3Object: ID3Object) => {
         const selectedWord = wordCloudData.filter(word => word.text === d3Object.text);
         setMenu(true);
@@ -113,7 +108,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
           {isSidebar && (
             <Sidebar isSidebar={isSidebar} sidebarRef={sidebarRef} onClose={() => {
                 setSidebar(false); setWord(null);
-            }} title={`Some Tweets for "${selectedWord?.text}"`}>
+            }} title={`Some Tweets for "${selectedWord?.text.substring(0,20)}..."`}>
                 {sidebarChildren()}
             </Sidebar>
           )}

@@ -9,6 +9,7 @@ interface ScatterPlotProps {
   scale: 'log' | 'linear'
   onBrush: (selectedPoints: IFetchTweetMapData[]) => void
   onChartRender: () => void
+  width?: number
 }
 
 const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush, onChartRender }) => {
@@ -19,7 +20,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
 
     const margin = { top: 20, right: 20, bottom: 60, left: 70 };
     const width = 1080 - margin.left - margin.right;
-    const height = 700 - margin.top - margin.bottom;
+    const height = 650 - margin.top - margin.bottom;
 
     const svg = d3.select(svgRef.current);
 
@@ -93,6 +94,10 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
     svg.append("g")
       .call(brush);
 
+    // svg
+    //   .attr("width", width + margin.left + margin.right)
+    //   .attr("height", height + margin.top + margin.bottom);
+
     svg.attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
 
     const removeDecimalIfZero = (value: string) => {
@@ -138,7 +143,8 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
           // .ticks(6, '.1s')
           .tickValues(tickValues)
           .tickFormat((d) => formatTickLabel(d.valueOf()))
-      );
+      )
+      .style('font-size', '14px');
 
 
     // Add Y-axis
@@ -147,7 +153,8 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
       .attr('transform', `translate(${margin.left}, ${margin.top})`)
       .call(d3.axisLeft(yScale)
         .tickValues(tickValues)
-        .tickFormat((d) => formatTickLabel(d.valueOf())));
+        .tickFormat((d) => formatTickLabel(d.valueOf())))
+      .style('font-size', '14px');
 
     // const isEqualTimePattern = (selectedData: ITweetData, index: number) => data.every(
     //   (d, i, arr) => selectedData.timeBefore - d.timeBefore === arr[1].timeBefore - arr[0].timeBefore
@@ -187,7 +194,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
 
 
     svg.append('g')
-      .attr('transform', 'translate(' + margin.right + ', ' + height/2 + ')')
+      .attr('transform', 'translate(' + (margin.right - 5) + ', ' + height/2 + ')')
       .append('text')
       .attr('text-anchor', 'middle')
       .attr('transform', 'rotate(-90)')
@@ -195,14 +202,14 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
 
 
     svg.append('g')
-      .attr('transform', 'translate(' +  (width/2 + margin.left) + ', ' + (height + margin.bottom) + ')')
+      .attr('transform', 'translate(' +  (width/2 + margin.left) + ', ' + (height + margin.bottom + 10) + ')')
       .append('text')
       .attr('text-anchor', 'middle')
       // .attr('transform', 'rotate(180)')
       .text('Time Before Tweet');
 
     const getRadius = (totalData: IFetchTweetMapData[]): number => {
-      if (totalData.length > 15000) return 1.5;
+      if (totalData.length > 10000) return 1.5;
       if (totalData.length > 4000 && totalData.length < 8000) return 2.5;
       else return 3.5;
     }

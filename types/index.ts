@@ -30,6 +30,39 @@ export interface IFetchReq {
     data?: IFetchData
 }
 
+export type MostInteractedTweet = {
+    id: string;
+    link: string;
+    content: string;
+    totalInteractions: number;
+}
+
+
+export type SentimentItem = {
+    group: string;
+    value: ISentimentData;
+};
+
+export interface ISentimentData {
+    count: number;
+    tweets: string[];
+}
+
+export interface IFetchSentimentData {
+    positive: ISentimentData;
+    neutral: ISentimentData;
+    negative: ISentimentData;
+}
+
+export interface IFetchSentimentReq {
+    data?: IFetchSentimentData
+}
+
+export interface IFetchMostInteractedReq {
+    data?: MostInteractedTweet[]
+}
+
+
 export interface ICommonChartProps {
     date: DateValueType;
     refreshCount: number;
@@ -37,6 +70,7 @@ export interface ICommonChartProps {
     resetDateRange?: () => void
     setRefreshing: (flag: boolean) => void
     version2?: boolean;
+    setTotalTweets?: (count: number) => void
 }
 
 export type tweetMetaType = { count: number, tweets: string[] }
