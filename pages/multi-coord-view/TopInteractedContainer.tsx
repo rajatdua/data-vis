@@ -111,7 +111,7 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
         <Select hideLabel={true} handleChange={handleChangeTop} options={countOptions} preSelected={selectedTopCount}/>
         <Select handleChange={handleChange} options={sortOptions} preSelected={selectedSorting}/>
       </div>
-      <ParentSize>{({ width }: { width: number }) => <BarChart handleBarClick={handleBarClick} width={width} data={sortMostInteractedTweetData(mostInteractedTweets, selectedSorting)} onChartRender={handleChartRender} />}</ParentSize>
+      <ParentSize>{({ width }: { width: number }) => <BarChart selectedSorting={selectedSorting} handleBarClick={handleBarClick} width={width} data={sortMostInteractedTweetData(mostInteractedTweets, selectedSorting)} onChartRender={handleChartRender} />}</ParentSize>
         {isMenuOpen && (
           <Popup options={options}/>
         )}

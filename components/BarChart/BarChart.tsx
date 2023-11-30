@@ -7,26 +7,32 @@ interface IBarChartProps {
   onChartRender: () => void
   handleBarClick: (event: React.MouseEvent, datum: MostInteractedTweet) => void
   width: number
+  selectedSorting: 'asc' | 'desc',
 }
 
-const getColorRange = (lengthOfData: number): string[] => {
+const checkReverse = (selectedSorting: string) => selectedSorting === 'desc';
+
+const executeReverse = (array: string[], flag: boolean) => flag ? array.toReversed() : array;
+
+const getColorRange = (lengthOfData: number, selectedSorting: 'asc' | 'desc'): string[] => {
+  const shouldReverse = checkReverse(selectedSorting);
   switch (lengthOfData) {
     case 3:
     default:
-      return ['#f0f0f0',
+      return executeReverse(['#f0f0f0',
       '#bdbdbd',
-      '#636363'];
+      '#636363'], shouldReverse);
     case 4:
-      return ['#f7f7f7',
+      return executeReverse(['#f7f7f7',
       '#cccccc',
       '#969696',
-      '#525252'];
+      '#525252'], shouldReverse);
     case 5:
-      return ['#f7f7f7',
+      return executeReverse(['#f7f7f7',
       '#cccccc',
       '#969696',
       '#636363',
-      '#252525'];
+      '#252525'], shouldReverse);
   }
 };
 
@@ -35,7 +41,7 @@ function formatNumber(number: number) {
   return formatter.format(number);
 }
 
-const BarChart: React.FC<IBarChartProps> = ({ data, onChartRender, width = 600, handleBarClick }) => {
+const BarChart: React.FC<IBarChartProps> = ({ data, selectedSorting, onChartRender, width = 600, handleBarClick }) => {
   const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
@@ -59,7 +65,7 @@ const BarChart: React.FC<IBarChartProps> = ({ data, onChartRender, width = 600, 
 
     const colorScale = d3.scaleLinear<string>()
     .domain(data.map(tweet => tweet.totalInteractions))
-    .range(getColorRange(data.length));
+    .range(getColorRange(data.length, selectedSorting));
 
     const yScale = d3
       .scaleBand<number>()
