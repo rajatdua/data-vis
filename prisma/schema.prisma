@@ -1,0 +1,23 @@
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tweet {
+  id          String @unique
+  link        String
+  content     String @db.VarChar(5000)
+  date        Int
+  retweets    Int
+  favorites   Int
+  mentions    String
+  hashtags    String
+  time_before Int
+  time_after  Int
+  sentiment  Float
+}

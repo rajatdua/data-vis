@@ -13,10 +13,11 @@ import Footer from "../../components/Footer/Footer";
 import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
 import {END_DATE, START_DATE} from "../../constants";
+import { env } from "../../env.mjs"
 import {debounce} from "../../utils/client";
 
 export default function MultiVariateData() {
-    const [isInit, setInit] = useState(true);
+    const [isInitialising, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [shouldHide, setHide] = useState(false);
@@ -31,7 +32,8 @@ export default function MultiVariateData() {
             if (!response?.success) setError(true);
             setInit(false);
         }
-        callInit();
+        if(env.NEXT_PUBLIC_DATABASE_VERSION_CLIENT === 1)
+            callInit();
     }, []);
 
     useEffect(() => {
@@ -67,7 +69,7 @@ export default function MultiVariateData() {
     };
 
     const renderCharts = () => {
-        if (isInit) return <div className="flex justify-center" style={{ width: '100%', height: '77vh' }}><Spinner /></div>
+        if (isInitialising && env.NEXT_PUBLIC_DATABASE_VERSION_CLIENT === 1) return <div className="flex justify-center" style={{ width: '100%', height: '77vh' }}><Spinner /></div>
         if (isError) return <div>An error occurred...</div>
         return (
             <div className="mx-auto place-self-center">

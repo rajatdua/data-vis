@@ -75,6 +75,7 @@ const getDB = async () => {
             typeString = typeString + `${field} ${selectedDataType}${index !== fields.length - 1 ? ', ' : ''}`
         });
         const createTableQuery = `CREATE TABLE tweets (${typeString})`;
+        console.log({ createTableQuery })
         db.run(createTableQuery);
         console.timeEnd('table-created');
         const allTweets: unknown[] = parsedData?.data || [];
