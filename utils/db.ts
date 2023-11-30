@@ -8,8 +8,8 @@ import {convertToTimestamp/*, saveToJsonFile */} from "./server";
 let dbInstance: null | Database = null;
 
 // const wasmUrl = path.resolve('node_modules', 'sql.js', 'dist', 'sql-wasm.wasm');
-// const wasmUrl = 'https://sql.js.org/dist/sql-wasm.wasm';
-const wasmUrl = 'http://localhost:3000/sql-wasm.wasm';
+const wasmUrl = 'https://sql.js.org/dist/sql-wasm.wasm';
+// const wasmUrl = 'http://localhost:3000/sql-wasm.wasm';
 
 const getDB = async () => {
     if (!dbInstance) {
