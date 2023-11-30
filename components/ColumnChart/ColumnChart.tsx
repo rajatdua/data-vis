@@ -2,7 +2,7 @@ import * as d3 from "d3";
 import React, {useEffect, useRef} from "react";
 import {SentimentItem} from "../../types";
 
-interface IHistogramProps {
+interface IColumnChartProps {
   data: SentimentItem[]
   onChartRender: () => void
   width: number
@@ -21,7 +21,7 @@ function getColor(group: string): string {
   }
 }
 
-const ColumnChart: React.FC<IHistogramProps> = ({ data, onChartRender, width = 600 }) => {
+const ColumnChart: React.FC<IColumnChartProps> = ({ data, onChartRender, width = 600 }) => {
   const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {

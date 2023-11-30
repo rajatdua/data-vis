@@ -30,6 +30,14 @@ export interface IFetchReq {
     data?: IFetchData
 }
 
+export type MostInteractedTweet = {
+    id: string;
+    link: string;
+    content: string;
+    totalInteractions: number;
+}
+
+
 export type SentimentItem = {
     group: string;
     value: ISentimentData;
@@ -49,6 +57,11 @@ export interface IFetchSentimentData {
 export interface IFetchSentimentReq {
     data?: IFetchSentimentData
 }
+
+export interface IFetchMostInteractedReq {
+    data?: MostInteractedTweet[]
+}
+
 
 export interface ICommonChartProps {
     date: DateValueType;

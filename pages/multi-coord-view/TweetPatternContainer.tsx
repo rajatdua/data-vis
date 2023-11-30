@@ -1,4 +1,3 @@
-import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import React, {useEffect, useState} from "react";
 import Popup from "../../components/Popup/Popup";
 import ScatterPlot from "../../components/ScatterPlot/ScatterPlot";
@@ -20,12 +19,6 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
   const [isSidebar, setSidebar] = useState(false);
   const [tweetMapData, setTweetMapData] = useState<IFetchTweetMapData[]>([])
   const [selectedScale, setScale] = useState<'log' | 'linear'>('log');
-
-  useEffect(() => {
-    if (isSidebar) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "auto"
-  }, [isSidebar]);
-
 
   useEffect(() => {
     const fetchTweetTimeMap = async () => {

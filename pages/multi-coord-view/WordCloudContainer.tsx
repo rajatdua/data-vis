@@ -49,11 +49,6 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
         fetchWordCloud();
     }, [refreshCount]);
 
-    useEffect(() => {
-        if (isSidebar) document.body.style.overflow = "hidden";
-        else document.body.style.overflow = "auto"
-    }, [isSidebar]);
-
     const handleWordClick = (d3Object: ID3Object) => {
         const selectedWord = wordCloudData.filter(word => word.text === d3Object.text);
         setMenu(true);

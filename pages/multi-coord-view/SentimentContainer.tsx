@@ -13,20 +13,24 @@ function convertToSentimentArray(sentimentCounts: IFetchSentimentData, selectedS
     value,
   }));
 
-  if (selectedScale === 'group')
+  if (selectedScale === 'name')
   // Sort the array based on the "group" property
     sentimentArray.sort((a, b) => a.group.localeCompare(b.group));
   else if (selectedScale === 'value')
     sentimentArray.sort((a, b) => b.value.count - a.value.count);
+  // else if (selectedScale === 'semantics') {
+  //   const order = ['negative', 'neutral', 'positive'];
+  //   sentimentArray.sort((a, b) => order.indexOf(a.group) - order.indexOf(b.group));
+  // }
   return sentimentArray;
 }
 
-const scaleOptions = [{value: 'group', label: 'Sort by Group'}, {value: 'value', label: 'Sort by Value'}];
+const scaleOptions = [{value: 'name', label: 'Sort by Name'}, {value: 'value', label: 'Sort by Value'}];
 
 const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets }) => {
   const [sentimentData, setSentimentData] = useState<IFetchSentimentData>(INIT_SENTIMENT);
   const [isLoading, setLoading] = useState(true);
-  const [selectedScale, setScale] = useState<'group' | 'value'>('value');
+  const [selectedScale, setScale] = useState<'name' | 'value'>('value');
 
 
   useEffect(() => {
@@ -49,7 +53,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
   };
 
   const handleChange = (selectedScale: string) => {
-    if (selectedScale === 'group' || selectedScale === 'value')
+    if (selectedScale === 'name' || selectedScale === 'value')
       setScale(selectedScale)
     else throw Error(`Wrong scale selected: ${selectedScale}`)
   };

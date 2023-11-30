@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import SentimentContainer from "./SentimentContainer";
+import TopInteractedContainer from "./TopInteractedContainer";
 import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
 import ChartOverlay from "../../components/ChartOverlay/ChartOverlay";
@@ -94,7 +95,12 @@ export default function MultiVariateData() {
                     <div>
                         <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Most Interacted Tweets</h2>
                         <ChartOverlay isLoading={isRefreshing}>
-                            Pending...
+                            <TopInteractedContainer
+                              date={value}
+                              refreshCount={refreshCount}
+                              updateDateRange={handleValueChange}
+                              setRefreshing={setRefreshing}
+                            />
                         </ChartOverlay>
                     </div>
                 </div>
