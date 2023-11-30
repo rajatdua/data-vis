@@ -9,6 +9,7 @@ interface ScatterPlotProps {
   scale: 'log' | 'linear'
   onBrush: (selectedPoints: IFetchTweetMapData[]) => void
   onChartRender: () => void
+  width?: number
 }
 
 const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush, onChartRender }) => {
@@ -19,7 +20,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
 
     const margin = { top: 20, right: 20, bottom: 60, left: 70 };
     const width = 1080 - margin.left - margin.right;
-    const height = 700 - margin.top - margin.bottom;
+    const height = 650 - margin.top - margin.bottom;
 
     const svg = d3.select(svgRef.current);
 
@@ -92,6 +93,10 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
 
     svg.append("g")
       .call(brush);
+
+    // svg
+    //   .attr("width", width + margin.left + margin.right)
+    //   .attr("height", height + margin.top + margin.bottom);
 
     svg.attr("viewBox", `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`);
 
@@ -204,7 +209,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
       .text('Time Before Tweet');
 
     const getRadius = (totalData: IFetchTweetMapData[]): number => {
-      if (totalData.length > 15000) return 1.5;
+      if (totalData.length > 10000) return 1.5;
       if (totalData.length > 4000 && totalData.length < 8000) return 2.5;
       else return 3.5;
     }

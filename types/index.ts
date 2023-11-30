@@ -32,13 +32,18 @@ export interface IFetchReq {
 
 export type SentimentItem = {
     group: string;
-    value: number;
+    value: ISentimentData;
 };
 
+export interface ISentimentData {
+    count: number;
+    tweets: string[];
+}
+
 export interface IFetchSentimentData {
-    positive: number;
-    neutral: number;
-    negative: number;
+    positive: ISentimentData;
+    neutral: ISentimentData;
+    negative: ISentimentData;
 }
 
 export interface IFetchSentimentReq {

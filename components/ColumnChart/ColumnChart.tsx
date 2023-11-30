@@ -25,6 +25,7 @@ const ColumnChart: React.FC<IHistogramProps> = ({ data, onChartRender, width = 6
   const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
+    const total = data.reduce((acc, item) => { return acc + item.value.count}, 0);
     const svg = d3.select(ref.current);
     svg.selectAll('*').remove();
     // set the dimensions and margins of the graph
@@ -40,7 +41,7 @@ const ColumnChart: React.FC<IHistogramProps> = ({ data, onChartRender, width = 6
       .attr("transform",
         "translate(" + margin.left + "," + margin.top + ")");
 
-    const maxValue = d3.max(data, (d) => d.value) || 0;
+    const maxValue = d3.max(data, (d) => d.value.count) || 0;
 
     // Determine a suitable interval dynamically based on the maximum value
     const interval = Math.pow(10, Math.floor(Math.log10(maxValue))); // Calculate order of magnitude
@@ -102,9 +103,9 @@ const ColumnChart: React.FC<IHistogramProps> = ({ data, onChartRender, width = 6
 // Draw bars
     barGroups
       .append('rect')
-      .attr('y', (d) => yScale(d.value))
+      .attr('y', (d) => yScale(d.value.count))
       .attr('width', xScale.bandwidth())
-      .attr('height', (d) => height - margin.bottom - yScale(d.value))
+      .attr('height', (d) => height - margin.bottom - yScale(d.value.count))
       .attr('fill', (d) => colorScale(d.group))
       .attr('stroke', 'black') // Border color
       .attr('stroke-width', 1); // Border width
@@ -113,17 +114,28 @@ const ColumnChart: React.FC<IHistogramProps> = ({ data, onChartRender, width = 6
     barGroups
       .append('text')
       .attr('x', xScale.bandwidth() / 2)
-      .attr('y', (d) => yScale(d.value) - 5) // Adjust the vertical position
+      .attr('y', (d) => yScale(d.value.count) - 5) // Adjust the vertical position
       .attr('text-anchor', 'middle')
       .attr('fill', 'black')
       .style('font-size', '12px')
-      .text((d) => d.value);
+      .text((d) => d.value.count);
+
+    barGroups
+      .append('text')
+      .attr('x', xScale.bandwidth() / 2)
+      .attr('y', (d) => yScale(d.value.count) + 20) // Adjust the vertical position
+      .attr('text-anchor', 'middle')
+      .attr('fill', 'black')
+      .style('font-size', '12px')
+      .style('font-weight', '500')
+      .text((d) => `${d.value.count === 0 ? '' : `${((d.value.count/total) * 100).toFixed(2)}%`}`);
 
 
     // Draw x-axis
       svg
         .append('g')
         .attr('transform', `translate(0, ${height - margin.bottom})`)
+        .style('font-size', '12px')
         .call(d3.axisBottom(xScale));
 
     // Draw y-axis

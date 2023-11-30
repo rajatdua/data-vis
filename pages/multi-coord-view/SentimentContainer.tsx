@@ -17,7 +17,7 @@ function convertToSentimentArray(sentimentCounts: IFetchSentimentData, selectedS
   // Sort the array based on the "group" property
     sentimentArray.sort((a, b) => a.group.localeCompare(b.group));
   else if (selectedScale === 'value')
-    sentimentArray.sort((a, b) => b.value - a.value);
+    sentimentArray.sort((a, b) => b.value.count - a.value.count);
   return sentimentArray;
 }
 
@@ -37,7 +37,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
       const safeResult = result.data ?? INIT_SENTIMENT;
       setSentimentData(safeResult);
       let totalSum = 0;
-      Object.values(safeResult).forEach(value => totalSum+=value);
+      Object.values(safeResult).forEach(value => totalSum+=value.count);
       setTotalTweets && setTotalTweets(totalSum);
       setLoading(false);
     };
@@ -54,6 +54,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
     else throw Error(`Wrong scale selected: ${selectedScale}`)
   };
 
+  // TODO: Give ability to select bars and show pop-up menu for export
   if (isLoading) return <div className="flex flex-col justify-center" style={{ height: '420px' }}><Spinner /></div>
   else {
     return (

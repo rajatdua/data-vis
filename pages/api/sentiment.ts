@@ -50,13 +50,21 @@ function analyzeSentiment(score: number): string {
 
 const generateSentiment = (tweets: FlatArray<{ [p: string]: SqlValue }[][], 1>[]) => {
   const sentimentCounts = { positive: 0, neutral: 0, negative: 0 };
+  const tweetsList: { positive: string[], neutral: string[], negative: string[] } = { positive: [], neutral: [], negative: [] };
 
   for (const tweet of tweets) {
-    const { sentiment: sentimentValue = 0 } = tweet;
+    const { sentiment: sentimentValue = 0, id: tweetId = '' } = tweet;
     const sentiment: "positive" | "neutral" | "negative" = analyzeSentiment(parseFloat(String(sentimentValue))) as "positive" | "neutral" | "negative";
     sentimentCounts[sentiment]++;
+    tweetsList[sentiment].push((tweetId ?? '').toString());
   }
-  return sentimentCounts;
+
+  return ({
+    positive: { count: sentimentCounts.positive, tweets: tweetsList.positive },
+    negative: { count: sentimentCounts.negative, tweets: tweetsList.negative },
+    neutral: { count: sentimentCounts.neutral, tweets: tweetsList.neutral },
+  });
+
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -68,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const {processedStart, processedEnd} = areDateParamsPresent(req, res);
   try {
     const db = await getDB();
-    const sentimentTweets = `SELECT sentiment FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
+    const sentimentTweets = `SELECT id, sentiment FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
     const result = db.exec(sentimentTweets);
     const tweetsWithSentiment = convertToObjects(result);
     const sentimentData = generateSentiment(tweetsWithSentiment);

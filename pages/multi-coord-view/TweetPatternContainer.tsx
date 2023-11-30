@@ -1,3 +1,4 @@
+import ParentSize from "@visx/responsive/lib/components/ParentSize";
 import React, {useEffect, useState} from "react";
 import Popup from "../../components/Popup/Popup";
 import ScatterPlot from "../../components/ScatterPlot/ScatterPlot";
@@ -91,6 +92,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
         <Select handleChange={handleChange} options={scaleOptions} preSelected={selectedScale}/>
       </div>
       <div className='relative'>
+        {/*<ParentSize>{({ width }: { width: number }) => <ScatterPlot width={width} data={tweetMapData} scale={selectedScale} onBrush={handleBrush} onChartRender={handleChartRender}/>}</ParentSize>*/}
         <ScatterPlot data={tweetMapData} scale={selectedScale} onBrush={handleBrush} onChartRender={handleChartRender}/>
         {isMenuOpen && (
           <Popup options={options}/>
