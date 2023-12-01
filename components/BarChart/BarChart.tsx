@@ -1,5 +1,6 @@
 import * as d3 from "d3";
 import React, {useEffect, useRef} from "react";
+import {formatNumber, getColorRange, getIndex} from "./utils";
 import {MostInteractedTweet} from "../../types";
 
 interface IBarChartProps {
@@ -8,37 +9,6 @@ interface IBarChartProps {
   handleBarClick: (event: React.MouseEvent, datum: MostInteractedTweet) => void
   width: number
   selectedSorting: 'asc' | 'desc',
-}
-
-const checkReverse = (selectedSorting: string) => selectedSorting === 'desc';
-
-const executeReverse = (array: string[], flag: boolean) => flag ? array.toReversed() : array;
-
-const getColorRange = (lengthOfData: number, selectedSorting: 'asc' | 'desc'): string[] => {
-  const shouldReverse = checkReverse(selectedSorting);
-  switch (lengthOfData) {
-    case 3:
-    default:
-      return executeReverse(['#f0f0f0',
-      '#bdbdbd',
-      '#636363'], shouldReverse);
-    case 4:
-      return executeReverse(['#f7f7f7',
-      '#cccccc',
-      '#969696',
-      '#525252'], shouldReverse);
-    case 5:
-      return executeReverse(['#f7f7f7',
-      '#cccccc',
-      '#969696',
-      '#636363',
-      '#252525'], shouldReverse);
-  }
-};
-
-function formatNumber(number: number) {
-  const formatter = new Intl.NumberFormat('en-US');
-  return formatter.format(number);
 }
 
 const BarChart: React.FC<IBarChartProps> = ({ data, selectedSorting, onChartRender, width = 600, handleBarClick }) => {
@@ -129,7 +99,7 @@ const BarChart: React.FC<IBarChartProps> = ({ data, selectedSorting, onChartRend
       .attr('transform', `translate(${margin.left}, 0)`)
       .style('font-size', '12px')
       .call(d3.axisLeft(yScale)).selectAll('.tick text')  // Select all tick text elements
-      .text((_, index) => `#${index + 1} Tweet`);  // Update text content based on data
+      .text((_, index) => `#${getIndex(index, data.length, selectedSorting) + 1} Tweet`);  // Update text content based on data
 
     svg
       .append('g')

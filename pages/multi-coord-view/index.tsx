@@ -1,7 +1,8 @@
 import {isEqual} from "lodash";
 import Head from "next/head";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
+import InfoButton from "../../components/InfoButton/InfoButton";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import SentimentContainer from "./SentimentContainer";
 import TopInteractedContainer from "./TopInteractedContainer";
@@ -10,6 +11,7 @@ import WordCloudContainer from "./WordCloudContainer";
 import ChartOverlay from "../../components/ChartOverlay/ChartOverlay";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import Footer from "../../components/Footer/Footer";
+import Modal from "../../components/Modal/Modal";
 import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
 import {END_DATE, START_DATE} from "../../constants";
@@ -23,6 +25,10 @@ export default function MultiVariateData() {
     const [shouldHide, setHide] = useState(false);
     const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
     const [totalTweets, setTotalTweets] = useState(0);
+    const [isModalOpen, setModal] = useState(false);
+    const [modalTitle, setModalTitle] = useState('');
+    const [modalChildren, setModalChildren] = useState('');
+
     const handleSecClick = () => {
         setSecBtnState((prev) => ({...prev, isCollapsed: !prev.isCollapsed}))
     };
@@ -68,12 +74,57 @@ export default function MultiVariateData() {
         setRefreshCount(prevState => prevState + 1)
     };
 
+    const handleClose = () => {
+        setModal(false);
+        setModalTitle('')
+    };
+
+    const handleInfoClick = (chartType: string) => {
+        let modalTitle = '';
+        let modalChildren = '';
+        switch (chartType) {
+            case 'poll-average':
+                modalTitle = 'Poll Average Information';
+                modalChildren = '';
+
+                break;
+            case 'sentiment':
+                modalTitle = 'Sentiment Analysis Information';
+                modalChildren = '';
+
+                break;
+            case 'most-interacted':
+                modalTitle = 'Most Interacted Tweets Information';
+                modalChildren = '';
+
+                break;
+            case 'word-cloud':
+                modalTitle = 'Word Cloud Information';
+                modalChildren = '';
+
+                break;
+            case 'tweet-map':
+                modalTitle = 'Tweeting Pattern Information';
+                modalChildren = '';
+
+                break;
+            default:
+                modalTitle = '';
+                modalChildren = '';
+
+                break;
+        }
+        setModalTitle(modalTitle);
+        setModalChildren(modalChildren);
+        setModal(true);
+    };
+
     const renderCharts = () => {
         if (isInitialising && env.NEXT_PUBLIC_DATABASE_VERSION_CLIENT === 1) return <div className="flex justify-center" style={{ width: '100%', height: '77vh' }}><Spinner /></div>
         if (isError) return <div>An error occurred...</div>
         return (
             <div className="mx-auto place-self-center">
-                <h2 className='font-bold'>General Election 2016 Poll Average (Trump vs Clinton)</h2>
+                <h2 className='font-bold flex justify-center'>General Election 2016 Poll Average (Trump vs Clinton) <InfoButton handleClick={() => handleInfoClick('poll-average')} /></h2>
                 <PollsDistributionContainer
                   date={value}
                   refreshCount={refreshCount}
@@ -83,7 +134,7 @@ export default function MultiVariateData() {
                 />
                 <div className="grid grid-cols-2 gap-1">
                     <div>
-                        <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Tweets Sentiment (Count: {totalTweets})</h2>
+                        <h2 className='mt-6 mb-2 font-bold justify-center flex'>Trump&apos;s Tweets Sentiment (Count: {totalTweets}) <InfoButton handleClick={() => handleInfoClick('sentiment')} /></h2>
                         <ChartOverlay isLoading={isRefreshing}>
                             <SentimentContainer
                               date={value}
@@ -95,7 +146,7 @@ export default function MultiVariateData() {
                         </ChartOverlay>
                     </div>
                     <div>
-                        <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Most Interacted Tweets</h2>
+                        <h2 className='mt-6 mb-2 font-bold flex justify-center'>Trump&apos;s Most Interacted Tweets <InfoButton handleClick={() => handleInfoClick('most-interacted')} /></h2>
                         <ChartOverlay isLoading={isRefreshing}>
                             <TopInteractedContainer
                               date={value}
@@ -108,7 +159,7 @@ export default function MultiVariateData() {
                 </div>
                 <div className="grid grid-cols-2 gap-1">
                     <div>
-                        <h2 className='mt-6 mb-2 font-bold'>Word Frequency for Trump&apos;s Tweet</h2>
+                        <h2 className='mt-6 mb-2 font-bold flex justify-center'>Word Frequency for Trump&apos;s Tweet <InfoButton handleClick={() => handleInfoClick('word-cloud')} /></h2>
                         <ChartOverlay isLoading={isRefreshing}>
                             <WordCloudContainer
                               date={value}
@@ -120,7 +171,7 @@ export default function MultiVariateData() {
                         </ChartOverlay>
                     </div>
                     <div>
-                        <h2 className='mt-6 mb-2 font-bold'>Trump&apos;s Tweeting Pattern</h2>
+                        <h2 className='mt-6 mb-2 font-bold flex justify-center'>Trump&apos;s Tweeting Pattern <InfoButton handleClick={() => handleInfoClick('tweet-map')} /></h2>
                         <ChartOverlay isLoading={isRefreshing}>
                             <TweetPatternContainer
                               date={value}
@@ -131,9 +182,6 @@ export default function MultiVariateData() {
                         </ChartOverlay>
                     </div>
                 </div>
-                {/*<div className="grid grid-cols-2 gap-1">*/}
-                {/*    <WordCloudContainer date={value} refreshCount={refreshCount} updateDateRange={handleValueChange} version2={true}/>*/}
-                {/*</div>*/}
             </div>
         );
     };
@@ -197,6 +245,11 @@ export default function MultiVariateData() {
                 </div>
 
             </div>
+            {isModalOpen && (
+              <Modal onClose={handleClose} modalTitle={modalTitle}>
+                  {modalChildren}
+              </Modal>
+            )}
 
             <Footer />
         </>

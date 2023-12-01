@@ -1,6 +1,7 @@
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
 import React, {useEffect, useState} from "react";
 import BarChart from "../../components/BarChart/BarChart";
+import {getIndex} from "../../components/BarChart/utils";
 import Modal from "../../components/Modal/Modal";
 import Popup from "../../components/Popup/Popup";
 import Select from "../../components/Select/Select";
@@ -84,7 +85,8 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
         setMenu(false);
         const sortedTweets = sortMostInteractedTweetData(mostInteractedTweets, selectedSorting)
         const index = sortedTweets.findIndex((currTweet) => currTweet.id === selectedTweet.id);
-        setModalTitle(`#${index + 1} Tweet`)
+        const indexBySort = getIndex(index, sortedTweets.length, selectedSorting);
+        setModalTitle(`#${indexBySort + 1} Tweet`)
         setModal(true);
       }
     },
