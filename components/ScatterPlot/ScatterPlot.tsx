@@ -42,7 +42,8 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
       .brush()
       .extent([
         [0, 0],
-        [width, height],
+        // [width, height],
+        [1080, 650],
       ])
       .on('end', (event) => {
         if (!event?.selection) {
@@ -67,12 +68,18 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
             (d) => xScale(d.time_before) >= x0 && xScale(d.time_before) <= x1 && yScale(d.time_after) >= y0 && yScale(d.time_after) <= y1
           );
 
-          // Add classes to selected and non-selected points
-          svg
-            .selectAll('.point')
+          // Add classes to selected and non-selected points - Optimised
+          svg.selectAll('.point')
             .data(data)
-            .classed('selected', (d) => selectedPoints.includes(d))
-            .classed('non-selected', (d) => !selectedPoints.includes(d));
+            .join('circle')
+            .attr('class', d => `point ${selectedPoints.includes(d) ? 'selected' : 'non-selected'}`);
+
+          // Unoptimised
+          // svg
+          //   .selectAll('.point')
+          //   .data(data)
+          //   .classed('selected', (d) => selectedPoints.includes(d))
+          //   .classed('non-selected', (d) => !selectedPoints.includes(d));
 
           // const [pX0Value, pX1Value] = [x0,x1].map(xScale.invert)
           // const [pY0Value, pY1Value] = [y0,y1].map(yScale.invert)
