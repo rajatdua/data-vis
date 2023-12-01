@@ -1,8 +1,8 @@
-import {PrismaClient} from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next"
 import {env} from "../../env.mjs";
 import {getErrorMessage} from "../../utils/common";
 import getDB from "../../utils/db";
+import prisma from '../../utils/prisma';
 import {areDateParamsPresent, convertToObjects} from "../../utils/server";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -24,7 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
     case 2: {
-      const prisma = new PrismaClient();
       try {
         const tweetsFiltered = await prisma.tweet.findMany({
           where: {

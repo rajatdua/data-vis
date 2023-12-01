@@ -1,4 +1,3 @@
-import {PrismaClient} from "@prisma/client";
 import {isEmpty} from "lodash";
 import {NextApiRequest, NextApiResponse} from "next";
 import {SqlValue} from "sql.js";
@@ -7,6 +6,7 @@ import {env} from "../../env.mjs";
 import {IFrequencyObj, tweetMetaType} from "../../types";
 import {getErrorMessage} from "../../utils/common";
 import getDB from '../../utils/db';
+import prisma from '../../utils/prisma';
 import {areDateParamsPresent, convertToObjects, preProcessContent /*, saveToJsonFile*/} from "../../utils/server";
 
 const filterOne = (word: string) => {
@@ -99,7 +99,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             break;
         case 2:
         {
-            const prisma = new PrismaClient();
             try {
                 const tweetsInRange = await prisma.tweet.findMany({
                     where: {

@@ -1,6 +1,5 @@
 // import { parse, write } from 'fast-csv';
 // import natural from 'natural';
-import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from "next"
 import {SqlValue} from "sql.js";
 import {env} from "../../env.mjs";
@@ -8,6 +7,7 @@ import {env} from "../../env.mjs";
 // import path from "path";
 import {getErrorMessage} from "../../utils/common";
 import getDB from "../../utils/db";
+import prisma from '../../utils/prisma';
 import {areDateParamsPresent, convertToObjects /*, preProcessContent */ } from "../../utils/server";
 
 // const instance = new SentimentManager();
@@ -93,7 +93,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     break;
     case 2: {
-      const prisma = new PrismaClient();
       try {
         const tweetsInRange = await prisma.tweet.findMany({
           where: {
