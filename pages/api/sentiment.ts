@@ -1,9 +1,9 @@
 // import { parse, write } from 'fast-csv';
 // import natural from 'natural';
+import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from "next"
 import {SqlValue} from "sql.js";
 import {env} from "../../env.mjs";
-import { PrismaClient } from '@prisma/client';
 // import fs from "fs";
 // import path from "path";
 import {getErrorMessage} from "../../utils/common";
@@ -109,7 +109,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
         res.status(200).json({ success: true, data: generateSentiment(tweetsInRange) })
       } catch (error) {
-        res.status(500).json({ error: error, success: false, message: 'error whilst calling /sentiment' });
+        const errorMessage = getErrorMessage(error);
+        res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /sentiment' });
       } finally {
         await prisma.$disconnect();
       }
