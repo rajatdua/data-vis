@@ -2,9 +2,11 @@ import {isEmpty} from "lodash";
 import {NextApiRequest, NextApiResponse} from "next";
 import {SqlValue} from "sql.js";
 import {removeStopwords} from 'stopword';
+import {env} from "../../env.mjs";
 import {IFrequencyObj, tweetMetaType} from "../../types";
 import {getErrorMessage} from "../../utils/common";
 import getDB from '../../utils/db';
+import prisma from '../../utils/prisma';
 import {areDateParamsPresent, convertToObjects, preProcessContent /*, saveToJsonFile*/} from "../../utils/server";
 
 const filterOne = (word: string) => {
@@ -76,18 +78,51 @@ const sortBySize = (data: {text: string; textMeta: tweetMetaType }[]) => data.so
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.setHeader('Content-Type', 'application/json');
     const {processedStart, processedEnd} = areDateParamsPresent(req, res);
-    try {
-        const db = await getDB();
-        const wordCloudQuery = `SELECT * FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
-        const result = db.exec(wordCloudQuery);
-        const tweets = convertToObjects(result);
-        const frequency = calculateFrequency(tweets, parseInt((req.query?.version ?? '1').toString() ?? '1'));
-        const freqArray = convertToWordCloudArray(frequency);
-        const sortedArray = sortBySize(freqArray);
-        res.status(200).json({ data: sortedArray.slice(0, 100), success: true })
-    }
-    catch (e) {
-        const errorMessage = getErrorMessage(e);
-        res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /word-cloud' });
+    const selectedVersion = (req.query?.version ?? '1').toString();
+    switch (env.DATABASE_VERSION) {
+        case 1:
+        default:
+            try {
+                const db = await getDB();
+                const wordCloudQuery = `SELECT * FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
+                const result = db.exec(wordCloudQuery);
+                const tweets = convertToObjects(result);
+                const frequency = calculateFrequency(tweets, parseInt(selectedVersion));
+                const freqArray = convertToWordCloudArray(frequency);
+                const sortedArray = sortBySize(freqArray);
+                res.status(200).json({ data: sortedArray.slice(0, 100), success: true })
+            }
+            catch (e) {
+                const errorMessage = getErrorMessage(e);
+                res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /word-cloud' });
+            }
+            break;
+        case 2:
+        {
+            try {
+                const tweetsInRange = await prisma.tweet.findMany({
+                    where: {
+                        date: {
+                            gte: processedStart,
+                            lte: processedEnd,
+                        },
+                    },
+                    select: {
+                        id: true,
+                        content: true,
+                    },
+                });
+                const frequency = calculateFrequency(tweetsInRange, parseInt(selectedVersion));
+                const freqArray = convertToWordCloudArray(frequency);
+                const sortedArray = sortBySize(freqArray);
+                res.status(200).json({ success: true, data: sortedArray.slice(0, 100) })
+            } catch (error) {
+                const errorMessage = getErrorMessage(error);
+                res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /word-cloud' });
+            } finally {
+                await prisma.$disconnect();
+            }
+        }
+
     }
 }

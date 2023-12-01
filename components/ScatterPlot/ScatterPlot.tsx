@@ -30,11 +30,11 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
     let yScale: ScaleLogarithmic<number, number> | ScaleLinear<number, number>;
 
     if (scale === 'log') {
-      xScale = d3.scaleLog().domain([1, d3.max(data, (d) => d.timeBefore)!]).range([0, width]);
-      yScale = d3.scaleLog().domain([1, d3.max(data, (d) => d.timeAfter)!]).range([height, 0]);
+      xScale = d3.scaleLog().domain([1, d3.max(data, (d) => d.time_before)!]).range([0, width]);
+      yScale = d3.scaleLog().domain([1, d3.max(data, (d) => d.time_after)!]).range([height, 0]);
     } else {
-      xScale = d3.scaleLinear().domain([0, d3.max(data, (d) => d.timeBefore)!]).range([0, width]);
-      yScale = d3.scaleLinear().domain([0, d3.max(data, (d) => d.timeAfter)!]).range([height, 0]);
+      xScale = d3.scaleLinear().domain([0, d3.max(data, (d) => d.time_before)!]).range([0, width]);
+      yScale = d3.scaleLinear().domain([0, d3.max(data, (d) => d.time_after)!]).range([height, 0]);
     }
 
 
@@ -64,7 +64,7 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
 
           // Select points within the brush area
           const selectedPoints = data.filter(
-            (d) => xScale(d.timeBefore) >= x0 && xScale(d.timeBefore) <= x1 && yScale(d.timeAfter) >= y0 && yScale(d.timeAfter) <= y1
+            (d) => xScale(d.time_before) >= x0 && xScale(d.time_before) <= x1 && yScale(d.time_after) >= y0 && yScale(d.time_after) <= y1
           );
 
           // Add classes to selected and non-selected points
@@ -157,13 +157,13 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
       .style('font-size', '14px');
 
     // const isEqualTimePattern = (selectedData: ITweetData, index: number) => data.every(
-    //   (d, i, arr) => selectedData.timeBefore - d.timeBefore === arr[1].timeBefore - arr[0].timeBefore
+    //   (d, i, arr) => selectedData.time_before - d.time_before === arr[1].time_before - arr[0].time_before
     // );
 
     // Calculate Euclidean distance between points
     // const calculateDistance = (point1: ITweetData, point2: ITweetData) => {
     //   // console.log({ point1, point2 });
-    //   return Math.sqrt(Math.pow(point1.timeBefore - point2.timeBefore, 2) + Math.pow(point1.timeAfter - point2.timeAfter, 2));
+    //   return Math.sqrt(Math.pow(point1.time_before - point2.time_before, 2) + Math.pow(point1.time_after - point2.time_after, 2));
     // }
 
     // Calculate average distance within each cluster
@@ -182,14 +182,14 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
     // const colorScale = d3.scaleSequential(d3.interpolateTurbo).domain([0, d3.max(data, (_1, _2, array) => calculateAverageDistance(Array.from(array)))!]);
 
     // const colorScale = d3.scaleSequential()
-    //   .domain([d3.min(data, d => d.timeBefore), d3.max(data, d => d.timeBefore)])
+    //   .domain([d3.min(data, d => d.time_before), d3.max(data, d => d.time_before)])
     //   .interpolator(d3.interpolateCool);
 
     // const colors = ['#66c2a5', '#fc8d62', '#8da0cb'];
 
 // Create a color scale
 //     const colorScale = d3.scaleQuantize()
-//       .domain([d3.min(data, d => d.timeAfter), d3.max(data, d => d.timeAfter)])
+//       .domain([d3.min(data, d => d.time_after), d3.max(data, d => d.time_after)])
 //       .range(colors);
 
 
@@ -222,14 +222,14 @@ const ScatterPlot: React.FC<ScatterPlotProps> = ({ data, scale = 'log', onBrush,
       .enter()
       .append('circle')
       .attr('class', 'point')
-      .attr('cx', (d) => xScale(d.timeBefore) + margin.left)
-      .attr('cy', (d) => yScale(d.timeAfter) + margin.top)
-      // .attr('cx', (d) => xScale(d.timeBefore) + margin.left + Math.random() * 5) // Adjust jittering here
-      // .attr('cy', (d) => yScale(d.timeAfter) + margin.top + Math.random() * 5)
+      .attr('cx', (d) => xScale(d.time_before) + margin.left)
+      .attr('cy', (d) => yScale(d.time_after) + margin.top)
+      // .attr('cx', (d) => xScale(d.time_before) + margin.left + Math.random() * 5) // Adjust jittering here
+      // .attr('cy', (d) => yScale(d.time_after) + margin.top + Math.random() * 5)
 
       .attr('r', getRadius(data)) // adjust the radius based on your preference
       // .style('fill', (datum, index) => isEqualTimePattern(datum, index) ? 'blue' : 'orange') // Adjust colors here
-      // .style('fill', d => colorScale(d.timeBefore))
+      // .style('fill', d => colorScale(d.time_before))
     // .style('fill', (d, i, arr) => colorScale(i === arr.length - 1 ? 0 : calculateDistance(d, arr[i + 1])))
       .style('fill', '#66c2a5') // adjust the color based on your preference
       .style('opacity', 0.7); // Adjust the transparency here

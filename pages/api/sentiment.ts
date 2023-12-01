@@ -2,10 +2,12 @@
 // import natural from 'natural';
 import { NextApiRequest, NextApiResponse } from "next"
 import {SqlValue} from "sql.js";
+import {env} from "../../env.mjs";
 // import fs from "fs";
 // import path from "path";
 import {getErrorMessage} from "../../utils/common";
 import getDB from "../../utils/db";
+import prisma from '../../utils/prisma';
 import {areDateParamsPresent, convertToObjects /*, preProcessContent */ } from "../../utils/server";
 
 // const instance = new SentimentManager();
@@ -74,16 +76,43 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // updateCSV(inputFilePath, outputFilePath);
   res.setHeader('Content-Type', 'application/json');
   const {processedStart, processedEnd} = areDateParamsPresent(req, res);
-  try {
-    const db = await getDB();
-    const sentimentTweets = `SELECT id, sentiment FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
-    const result = db.exec(sentimentTweets);
-    const tweetsWithSentiment = convertToObjects(result);
-    const sentimentData = generateSentiment(tweetsWithSentiment);
-    res.status(200).json({ success: true, data: sentimentData })
-  }
-  catch (e) {
-    const errorMessage = getErrorMessage(e);
-    res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /sentiment' });
+  switch (env.DATABASE_VERSION) {
+    default:
+    case 1:
+      try {
+        const db = await getDB();
+        const sentimentTweets = `SELECT id, sentiment FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
+        const result = db.exec(sentimentTweets);
+        const tweetsWithSentiment = convertToObjects(result);
+        const sentimentData = generateSentiment(tweetsWithSentiment);
+        res.status(200).json({ success: true, data: sentimentData })
+      }
+      catch (e) {
+        const errorMessage = getErrorMessage(e);
+        res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /sentiment' });
+      }
+    break;
+    case 2: {
+      try {
+        const tweetsInRange = await prisma.tweet.findMany({
+          where: {
+            date: {
+              gte: processedStart,
+              lte: processedEnd,
+            },
+          },
+          select: {
+            id: true,
+            sentiment: true,
+          },
+        });
+        res.status(200).json({ success: true, data: generateSentiment(tweetsInRange) })
+      } catch (error) {
+        const errorMessage = getErrorMessage(error);
+        res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /sentiment' });
+      } finally {
+        await prisma.$disconnect();
+      }
+    }
   }
 }
