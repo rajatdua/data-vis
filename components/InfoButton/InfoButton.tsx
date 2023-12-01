@@ -20,7 +20,7 @@ const InfoButton: React.FC<IInfoProps> = ({ handleClick }) => {
       </button>
       {isHovered && (
         <div className="absolute z-50 w-48 p-2 -top-2 left-7 text-sm bg-white border border-gray-300 rounded-md shadow-md font-light">
-          Learn More
+          Click to Learn More
         </div>
       )}
     </div>
