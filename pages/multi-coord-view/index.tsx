@@ -14,7 +14,7 @@ import Footer from "../../components/Footer/Footer";
 import Modal from "../../components/Modal/Modal";
 import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
-import {END_DATE, START_DATE} from "../../constants";
+import {END_DATE, END_DATE_ALL, START_DATE, START_DATE_ALL} from "../../constants";
 import { env } from "../../env.mjs"
 import {debounce} from "../../utils/client";
 
@@ -66,11 +66,14 @@ export default function MultiVariateData() {
         if (!isEqual(value, newValue)) setRefreshCount(prevState => prevState + 1);
     };
 
-    const handleResetDate = () => {
-        setValue({
+    const handleResetDate = (identifier?: string) => {
+        setValue((identifier === 'all' ? {
+            startDate: START_DATE_ALL,
+            endDate: END_DATE_ALL,
+        } : {
             startDate: START_DATE,
             endDate: END_DATE,
-        });
+        }));
         setRefreshCount(prevState => prevState + 1)
     };
 
@@ -221,12 +224,12 @@ export default function MultiVariateData() {
                     </div>
 
                     {/* Add more filters here */}
-                    {/* Example:
                     <div className="mb-4">
-                        <h3 className="text-sm font-medium mb-2">Your Filter Title</h3>
-                        {/* Your filter component goes here
+                        <CustomButton handleClick={() => handleResetDate()} title='Reset Date' />
                     </div>
-                */}
+                    <div className="mb-4">
+                        <CustomButton handleClick={() => handleResetDate('all')} title='All Available Tweets' />
+                    </div>
                 </aside>}
 
                 {/* Main Content */}
