@@ -88,32 +88,32 @@ export default function MultiVariateData() {
         switch (chartType) {
             case 'poll-average':
                 modalTitle = 'Poll Average Information';
-                modalChildren = '';
+                modalChildren = 'Visualizing the average poll percentage distribution over time. The percentages does not add up to 100% because we only account for decided votes. "Decided Votes" are votes given to Hilliary Clinton or Donald Trump';
 
                 break;
             case 'sentiment':
                 modalTitle = 'Sentiment Analysis Information';
-                modalChildren = '';
+                modalChildren = 'Analyzing the sentiment (positive, negative, neutral) of Trump tweets. The criteria for positive is > +0.25, negative is < -0.25 and neutral is in-between that range.';
 
                 break;
             case 'most-interacted':
                 modalTitle = 'Most Interacted Tweets Information';
-                modalChildren = '';
+                modalChildren = 'Identifying the tweets with the highest engagement and interactions. It collates the interactions on the basis of favourites and retweets.';
 
                 break;
             case 'word-cloud':
                 modalTitle = 'Word Cloud Information';
-                modalChildren = '';
+                modalChildren = 'Displaying a word cloud based on the frequency of words in Trump tweets. To provide a general overview of usage of words in his tweets. Please note that the words do not have combined intended meanings - they are separate. \n We utilise the following normalisation techniques: Remove formatting, Removing Noise, Normalisation, Stopword Removal, Stemming.';
 
                 break;
             case 'tweet-map':
                 modalTitle = 'Tweeting Pattern Information';
-                modalChildren = '';
+                modalChildren = 'Mapping the time taken (before and after) a tweet that has been sent. There are two scales: Linear, Logarithmic. The line dots for logarithmic scale reveal a pattern that there might be tweets which were done with the help of bots. \n Mostly Trump used bots for retweeting positive tweets from his fans.';
 
                 break;
             default:
-                modalTitle = '';
-                modalChildren = '';
+                modalTitle = 'Trump Tweets Analysis';
+                modalChildren = 'Displaying Trump\'s Tweets data for analysis';
 
                 break;
         }
