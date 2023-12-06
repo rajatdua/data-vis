@@ -1,3 +1,4 @@
+import {saveAs} from "file-saver";
 import React, {useEffect, useState} from "react";
 import Popup from "../../components/Popup/Popup";
 import ScatterPlot from "../../components/ScatterPlot/ScatterPlot";
@@ -5,7 +6,14 @@ import Select from "../../components/Select/Select";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
-import {ICommonChartProps, IFetchTweetData, IFetchTweetMapData, IFetchTweetMapReq, IFetchTweetReq} from "../../types";
+import {
+  ICommonChartProps,
+  IExportReq,
+  IFetchTweetData,
+  IFetchTweetMapData,
+  IFetchTweetMapReq,
+  IFetchTweetReq
+} from "../../types";
 import {createDateQuery} from "../../utils/client";
 
 const scaleOptions = [{value: 'log', label: 'Log Scale'}, {value: 'linear', label: 'Linear Scale'}];
@@ -19,6 +27,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
   const [isSidebar, setSidebar] = useState(false);
   const [tweetMapData, setTweetMapData] = useState<IFetchTweetMapData[]>([])
   const [selectedScale, setScale] = useState<'log' | 'linear'>('log');
+  const [isExporting, setExportLoader] = useState(false);
 
   useEffect(() => {
     const fetchTweetTimeMap = async () => {
@@ -53,6 +62,27 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
         setLoadingTweets(false);
       }
     },
+    { label: 'Export Tweets', clickEvent: async () => {
+        setMenu(false);
+        setExportLoader(true);
+        try {
+          const allIds = selectedDataPoints.map(point => point.id);
+          const res = await (await fetch('/api/export?type=tweet-time-map', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: allIds })
+          })).json() as IExportReq;
+          const blob = new Blob([res.data], { type: 'text/csv' });
+          saveAs(blob, res.fileName);
+        } catch (err) {
+          console.error(err);
+        }
+        setDataPoints([]);
+        setFetchedTweets([]);
+        setExportLoader(false);
+      } },
     {
       label: 'Close', clickEvent: () => {
         setMenu(false);
@@ -101,6 +131,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
           </Sidebar>
         )}
       </div>
+      {isExporting && (<div className='fixed inset-0 bg-gray-400 pointer-events-none opacity-60 flex justify-center'><Spinner/></div>)}
     </div>
   );
 };

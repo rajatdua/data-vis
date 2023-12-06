@@ -1,10 +1,11 @@
 import * as d3 from "d3";
-import React, {useEffect, useRef} from "react";
+import React, {MouseEvent, useEffect, useRef} from "react";
 import {SentimentItem} from "../../types";
 
 interface IColumnChartProps {
   data: SentimentItem[]
   onChartRender: () => void
+  handleColumnClick: (_: MouseEvent, ColumnBar: SentimentItem) => void
   width: number
 }
 
@@ -21,7 +22,7 @@ function getColor(group: string): string {
   }
 }
 
-const ColumnChart: React.FC<IColumnChartProps> = ({ data, onChartRender, width = 600 }) => {
+const ColumnChart: React.FC<IColumnChartProps> = ({ data, handleColumnClick, onChartRender, width = 600 }) => {
   const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
@@ -108,7 +109,8 @@ const ColumnChart: React.FC<IColumnChartProps> = ({ data, onChartRender, width =
       .attr('height', (d) => height - margin.bottom - yScale(d.value.count))
       .attr('fill', (d) => colorScale(d.group))
       .attr('stroke', 'black') // Border color
-      .attr('stroke-width', 1); // Border width
+      .attr('stroke-width', 1) // Border width
+      .on('click', handleColumnClick);
 
 // Add text labels in the middle of each bar
     barGroups

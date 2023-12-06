@@ -2,7 +2,6 @@ import {isEqual} from "lodash";
 import Head from "next/head";
 import React, {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
-import InfoButton from "../../components/InfoButton/InfoButton";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import SentimentContainer from "./SentimentContainer";
 import TopInteractedContainer from "./TopInteractedContainer";
@@ -11,10 +10,11 @@ import WordCloudContainer from "./WordCloudContainer";
 import ChartOverlay from "../../components/ChartOverlay/ChartOverlay";
 import CustomButton from "../../components/CustomButton/CustomButton";
 import Footer from "../../components/Footer/Footer";
+import InfoButton from "../../components/InfoButton/InfoButton";
 import Modal from "../../components/Modal/Modal";
 import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
-import {END_DATE, START_DATE} from "../../constants";
+import {END_DATE, END_DATE_ALL, START_DATE, START_DATE_ALL} from "../../constants";
 import { env } from "../../env.mjs"
 import {debounce} from "../../utils/client";
 
@@ -66,11 +66,14 @@ export default function MultiVariateData() {
         if (!isEqual(value, newValue)) setRefreshCount(prevState => prevState + 1);
     };
 
-    const handleResetDate = () => {
-        setValue({
+    const handleResetDate = (identifier?: string) => {
+        setValue((identifier === 'all' ? {
+            startDate: START_DATE_ALL,
+            endDate: END_DATE_ALL,
+        } : {
             startDate: START_DATE,
             endDate: END_DATE,
-        });
+        }));
         setRefreshCount(prevState => prevState + 1)
     };
 
@@ -85,32 +88,32 @@ export default function MultiVariateData() {
         switch (chartType) {
             case 'poll-average':
                 modalTitle = 'Poll Average Information';
-                modalChildren = '';
+                modalChildren = 'Visualizing the average poll percentage distribution over time. The percentages does not add up to 100% because we only account for decided votes. "Decided Votes" are votes given to Hilliary Clinton or Donald Trump';
 
                 break;
             case 'sentiment':
                 modalTitle = 'Sentiment Analysis Information';
-                modalChildren = '';
+                modalChildren = 'Analyzing the sentiment (positive, negative, neutral) of Trump tweets. The criteria for positive is > +0.25, negative is < -0.25 and neutral is in-between that range.';
 
                 break;
             case 'most-interacted':
                 modalTitle = 'Most Interacted Tweets Information';
-                modalChildren = '';
+                modalChildren = 'Identifying the tweets with the highest engagement and interactions. It collates the interactions on the basis of favourites and retweets.';
 
                 break;
             case 'word-cloud':
                 modalTitle = 'Word Cloud Information';
-                modalChildren = '';
+                modalChildren = 'Displaying a word cloud based on the frequency of words in Trump tweets. To provide a general overview of usage of words in his tweets. Please note that the words do not have combined intended meanings - they are separate. \n We utilise the following normalisation techniques: Remove formatting, Removing Noise, Normalisation, Stopword Removal, Stemming.';
 
                 break;
             case 'tweet-map':
                 modalTitle = 'Tweeting Pattern Information';
-                modalChildren = '';
+                modalChildren = 'Mapping the time taken (before and after) a tweet that has been sent. There are two scales: Linear, Logarithmic. The line dots for logarithmic scale reveal a pattern that there might be tweets which were done with the help of bots. \n Mostly Trump used bots for retweeting positive tweets from his fans.';
 
                 break;
             default:
-                modalTitle = '';
-                modalChildren = '';
+                modalTitle = 'Trump Tweets Analysis';
+                modalChildren = 'Displaying Trump\'s Tweets data for analysis';
 
                 break;
         }
@@ -221,12 +224,12 @@ export default function MultiVariateData() {
                     </div>
 
                     {/* Add more filters here */}
-                    {/* Example:
                     <div className="mb-4">
-                        <h3 className="text-sm font-medium mb-2">Your Filter Title</h3>
-                        {/* Your filter component goes here
+                        <CustomButton handleClick={() => handleResetDate()} title='Reset Date' />
                     </div>
-                */}
+                    <div className="mb-4">
+                        <CustomButton handleClick={() => handleResetDate('all')} title='All Available Tweets' />
+                    </div>
                 </aside>}
 
                 {/* Main Content */}

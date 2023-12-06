@@ -65,7 +65,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
 
         // Calculate total interactions
-        const updatedTopTweets: TweetWithInteractions[] = topTweets.map(tweet => {
+        const updatedTopTweets: TweetWithInteractions[] = topTweets.map((tweet) => {
           return {
             ...tweet,
             totalInteractions: tweet.retweets + tweet.favorites

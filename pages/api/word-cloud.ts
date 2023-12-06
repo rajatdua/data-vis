@@ -39,6 +39,7 @@ const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 
 
     dataArray.forEach((item) => {
         // Tokenize the content
+        const id = (item?.id ?? '').toString()
         const content: SqlValue | undefined = (item?.content ?? '').toString().toLowerCase();
         let processedWords: string[] = []
         if (version === 1) {
@@ -55,12 +56,14 @@ const calculateFrequency = (dataArray: FlatArray<{ [p: string]: SqlValue }[][], 
             if (isEmpty(wordFrequency[word])) {
                 wordFrequency[word] = {
                     count: 1,
-                    tweets: [content]
+                    tweets: [content],
+                    ids: [id]
                 };
             } else {
                 wordFrequency[word] = {
                     count: wordFrequency[word].count + 1,
-                    tweets: wordFrequency[word].tweets.length <= 10 ? [...wordFrequency[word].tweets, content] : wordFrequency[word].tweets
+                    tweets: wordFrequency[word].tweets.length <= 10 ? [...wordFrequency[word].tweets, content] : wordFrequency[word].tweets,
+                    ids: [...wordFrequency[word].ids, id]
                 };
             }
         });
