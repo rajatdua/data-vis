@@ -4,10 +4,10 @@ import Nav from "../components/Nav/Nav";
 // import {useState} from "react";
 
 const members = [
-    {name: "Calderón, Andrés", email: "auXXXXXX@uni.au.dk", links: { github: 'https://github.com/XXX', twitter: 'https://twitter.com/XXX' }},
-    {name: "Dua, Rajat", email: "au747653@uni.au.dk", links: { github: 'https://github.com/rajatdua', twitter: 'https://twitter.com/rajatdua1' }},
-    {name: "Kratschmer, Anastasia", email: "auXXXXXX@uni.au.dk", links: { github: 'https://github.com/XXX', twitter: 'https://twitter.com/XXX' }},
-    {name: "Rammohan, Shivaram", email: "auXXXXXX@uni.au.dk", links: { github: 'https://github.com/XXX', twitter: 'https://twitter.com/XXX' }},
+    {name: "Calderón, Andrés", email: "au726679@uni.au.dk", links: { github: 'https://github.com/ABaCal', twitter: '' }},
+    {name: "Dua, Rajat", email: "202303549@post.au.dk", links: { github: 'https://github.com/rajatdua', twitter: 'https://twitter.com/rajatdua1' }},
+    {name: "Kratschmer, Anastasia", email: "201907407@post.au.dk", links: { github: 'https://github.com/AnastasiaKratschmer', twitter: '' }},
+    {name: "Rammohan, Shivaram", email: "au726920@uni.au.dk", links: { github: 'https://github.com/curiosfox', twitter: '' }},
 ];
 
 export default function Web() {
