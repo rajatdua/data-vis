@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const jsonData = req.body?.content ?? {};
     const parser = new Parser();
     let csv = null;
-    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Type', 'application/json');
     let fileName = '';
     switch (type) {
       case 'word-cloud':
@@ -68,7 +68,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
     }
-    res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+    // res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
     res.status(200).json({ data: csv, fileName: fileName });
   }
   catch (e) {

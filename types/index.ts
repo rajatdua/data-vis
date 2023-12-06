@@ -105,6 +105,10 @@ export interface IFetchTweetReq {
 
 export interface IFrequencyObj { [key: string]: tweetMetaType }
 
+export interface IExportReq {
+    data: string | Blob,
+    fileName: string
+}
 
 export interface ID3Object {
     text: string

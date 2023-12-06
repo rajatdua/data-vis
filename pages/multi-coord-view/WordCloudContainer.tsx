@@ -7,13 +7,8 @@ import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
 import WordCloud from "../../components/WordCloud/WordCloud";
 import WordCloudV2 from "../../components/WordCloud/WordCloudV2";
-import {ICommonChartProps, ID3Object, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
+import {ICommonChartProps, ID3Object, IExportReq, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
 import {createDateQuery} from "../../utils/client";
-
-interface IExportReq {
-    data: string | Blob,
-    fileName: string
-}
 
 const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing }) => {
     const sidebarRef = useRef<HTMLDivElement>(null);
@@ -93,11 +88,13 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
                         },
                         body: JSON.stringify({ content: selectedWord?.textMeta.ids, meta: { word: selectedWord?.text, count: selectedWord?.textMeta.count } })
                     })).json() as IExportReq;
-                    saveAs(res.data, res.fileName);
+                    const blob = new Blob([res.data], { type: 'text/csv' });
+                    saveAs(blob, res.fileName);
                 } catch (err) {
                     console.error(err);
                 }
                 setExportLoader(false);
+                setWord(null);
             } },
         { label: 'Close', clickEvent: () => {
                 setWord(null);
@@ -136,7 +133,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
                 {sidebarChildren()}
             </Sidebar>
           )}
-          {isExporting && (<div className='fixed inset-0 z-50 bg-gray-400 overflow-hidden opacity-60'><Spinner/></div>)}
+          {isExporting && (<div className='fixed inset-0 bg-gray-400 pointer-events-none opacity-60 flex justify-center'><Spinner/></div>)}
       </div>
     );
 }

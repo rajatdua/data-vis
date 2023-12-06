@@ -1,4 +1,5 @@
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
+import {saveAs} from "file-saver";
 import React, {MouseEvent, useEffect, useState} from "react";
 import ColumnChart from "../../components/ColumnChart/ColumnChart";
 import Popup from "../../components/Popup/Popup";
@@ -8,7 +9,7 @@ import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
 import {INIT_SENTIMENT} from "../../constants";
 import {
-  ICommonChartProps,
+  ICommonChartProps, IExportReq,
   IFetchSentimentData,
   IFetchSentimentReq,
   IFetchTweetData,
@@ -45,7 +46,9 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
   const [selectedScale, setScale] = useState<'name' | 'value'>('value');
   const [isMenuOpen, setMenu] = useState(false);
   const [tweetsToView, setTweets] = useState<string[]>([]);
+  const [selectedType, setType] = useState('');
   const [isSidebar, setSidebar] = useState(false);
+  const [isExporting, setExportLoader] = useState(false);
 
   useEffect(() => {
     const fetchPollData = async () => {
@@ -74,6 +77,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
 
   const handleColumnClick = (_: MouseEvent, selectedEntry: SentimentItem) => {
     setMenu(true);
+    setType(selectedEntry.group)
     setTweets(selectedEntry.value.tweets);
   };
 
@@ -90,6 +94,26 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
         setLoadingTweets(false);
       }
     },
+    { label: 'Export Tweets', clickEvent: async () => {
+        setMenu(false);
+        setExportLoader(true);
+        try {
+          const res = await (await fetch('/api/export?type=sentiment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ content: tweetsToView, meta: { type: selectedType } })
+          })).json() as IExportReq;
+          const blob = new Blob([res.data], { type: 'text/csv' });
+          saveAs(blob, res.fileName);
+        } catch (err) {
+          console.error(err);
+        }
+        setExportLoader(false);
+        setType('');
+        setTweets([]);
+      } },
     {
       label: 'Close', clickEvent: () => {
         setMenu(false);
@@ -129,6 +153,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
           {isLoadingTweets ? <div className='pt-48'><Spinner/></div> : sidebarChildren()}
         </Sidebar>
       )}
+      {isExporting && (<div className='fixed inset-0 bg-gray-400 pointer-events-none opacity-60 flex justify-center'><Spinner/></div>)}
       </div>
     );
   }
