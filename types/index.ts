@@ -73,7 +73,7 @@ export interface ICommonChartProps {
     setTotalTweets?: (count: number) => void
 }
 
-export type tweetMetaType = { count: number, tweets: string[] }
+export type tweetMetaType = { count: number, tweets: string[], ids: string[] }
 
 export interface IInterimWordData { text: string, value: number }
 

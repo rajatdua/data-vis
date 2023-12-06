@@ -1,5 +1,5 @@
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
-import React, {useEffect, useState, MouseEvent} from "react";
+import React, {MouseEvent, useEffect, useState} from "react";
 import ColumnChart from "../../components/ColumnChart/ColumnChart";
 import Popup from "../../components/Popup/Popup";
 import Select from "../../components/Select/Select";

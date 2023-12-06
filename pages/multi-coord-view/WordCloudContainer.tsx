@@ -1,4 +1,5 @@
 import ParentSize from '@visx/responsive/lib/components/ParentSize';
+import { saveAs } from 'file-saver';
 import React, { useEffect, useRef, useState } from "react";
 import Popup from "../../components/Popup/Popup";
 import Sidebar from "../../components/Sidebar/Sidebar";
@@ -9,9 +10,15 @@ import WordCloudV2 from "../../components/WordCloud/WordCloudV2";
 import {ICommonChartProps, ID3Object, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
 import {createDateQuery} from "../../utils/client";
 
+interface IExportReq {
+    data: string | Blob,
+    fileName: string
+}
+
 const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing }) => {
     const sidebarRef = useRef<HTMLDivElement>(null);
     const [isLoading, setLoading] = useState(true);
+    const [isExporting, setExportLoader] = useState(false);
     const [wordCloudData, setWordCloud] = useState<IFetchWordData[]>([]);
     const [selectedWord, setWord] = useState<IFetchWordData|null>(null);
     const [isMenuOpen, setMenu] = useState(false);
@@ -75,6 +82,23 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
                 setMenu(false);
                 setSidebar(true);
             } },
+        { label: 'Export Tweets', clickEvent: async () => {
+                setMenu(false);
+                setExportLoader(true);
+                try {
+                    const res = await (await fetch('/api/export?type=word-cloud', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ content: selectedWord?.textMeta.ids, meta: { word: selectedWord?.text, count: selectedWord?.textMeta.count } })
+                    })).json() as IExportReq;
+                    saveAs(res.data, res.fileName);
+                } catch (err) {
+                    console.error(err);
+                }
+                setExportLoader(false);
+            } },
         { label: 'Close', clickEvent: () => {
                 setWord(null);
                 setMenu(false);
@@ -112,6 +136,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
                 {sidebarChildren()}
             </Sidebar>
           )}
+          {isExporting && (<div className='fixed inset-0 z-50 bg-gray-400 overflow-hidden opacity-60'><Spinner/></div>)}
       </div>
     );
 }
