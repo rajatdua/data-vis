@@ -76,7 +76,8 @@
     "sql.js": "^1.8.0",
     "stopword": "^2.0.8",
     "tailwind-merge": "^1.10.0",
-    "zod": "^3.21.4"
+    "zod": "^3.21.4",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",

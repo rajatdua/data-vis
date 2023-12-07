@@ -50,7 +50,7 @@ function analyzeSentiment(score: number): string {
   return 'neutral';
 }
 
-const generateSentiment = (tweets: FlatArray<{ [p: string]: SqlValue }[][], 1>[]) => {
+export const generateSentiment = (tweets: FlatArray<{ [p: string]: SqlValue }[][], 1>[]) => {
   const sentimentCounts = { positive: 0, neutral: 0, negative: 0 };
   const tweetsList: { positive: string[], neutral: string[], negative: string[] } = { positive: [], neutral: [], negative: [] };
 

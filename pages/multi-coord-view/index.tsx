@@ -2,6 +2,7 @@ import {isEqual} from "lodash";
 import Head from "next/head";
 import React, {useEffect, useState} from "react";
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
+import FloatingChartsContainer from "./FloatingChartsContainer";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import SentimentContainer from "./SentimentContainer";
 import TopInteractedContainer from "./TopInteractedContainer";
@@ -16,9 +17,10 @@ import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
 import {END_DATE, END_DATE_ALL, START_DATE, START_DATE_ALL} from "../../constants";
 import { env } from "../../env.mjs"
+import { useAppStore } from '../../store/app';
 import {debounce} from "../../utils/client";
-
 export default function MultiVariateData() {
+    const { graphsToRender } = useAppStore();
     const [isInitialising, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -26,6 +28,7 @@ export default function MultiVariateData() {
     const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
     const [totalTweets, setTotalTweets] = useState(0);
     const [isModalOpen, setModal] = useState(false);
+    const [isFloatingWindow, setFloatingWindow] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalChildren, setModalChildren] = useState('');
 
@@ -125,6 +128,7 @@ export default function MultiVariateData() {
     const renderCharts = () => {
         if (isInitialising && env.NEXT_PUBLIC_DATABASE_VERSION_CLIENT === 1) return <div className="flex justify-center" style={{ width: '100%', height: '77vh' }}><Spinner /></div>
         if (isError) return <div>An error occurred...</div>
+
         return (
             <div className="mx-auto place-self-center">
                 <h2 className='font-bold flex justify-center'>General Election 2016 Poll Average (Trump vs Clinton) <InfoButton handleClick={() => handleInfoClick('poll-average')} /></h2>
@@ -188,6 +192,10 @@ export default function MultiVariateData() {
             </div>
         );
     };
+
+    useEffect(() => {
+        setFloatingWindow(Object.values(graphsToRender).some(graphValue => graphValue))
+    }, [graphsToRender]);
 
     return (
         <>
@@ -253,7 +261,15 @@ export default function MultiVariateData() {
                   {modalChildren}
               </Modal>
             )}
-
+            {isFloatingWindow && (
+              <FloatingChartsContainer
+                graphsToRender={graphsToRender}
+                date={value}
+                refreshCount={refreshCount}
+                updateDateRange={handleValueChange}
+                setRefreshing={setRefreshing}
+              />
+            )}
             <Footer />
         </>
     );
