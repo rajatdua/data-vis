@@ -28,7 +28,6 @@ export default function MultiVariateData() {
     const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
     const [totalTweets, setTotalTweets] = useState(0);
     const [isModalOpen, setModal] = useState(false);
-    const [isFloatingWindow, setFloatingWindow] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalChildren, setModalChildren] = useState('');
 
@@ -193,10 +192,6 @@ export default function MultiVariateData() {
         );
     };
 
-    useEffect(() => {
-        setFloatingWindow(Object.values(graphsToRender).some(graphValue => graphValue))
-    }, [graphsToRender]);
-
     return (
         <>
             <Head>
@@ -261,7 +256,7 @@ export default function MultiVariateData() {
                   {modalChildren}
               </Modal>
             )}
-            {isFloatingWindow && (
+            {Object.values(graphsToRender).some(graphValue => graphValue) && (
               <FloatingChartsContainer
                 graphsToRender={graphsToRender}
                 date={value}

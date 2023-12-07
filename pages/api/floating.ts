@@ -2,6 +2,8 @@ import {NextApiRequest, NextApiResponse} from "next"
 import {SqlValue} from "sql.js";
 import {generateSentiment} from "./sentiment";
 import {generateWordCloud} from "./word-cloud";
+import {IChartData} from "../../types";
+import {getErrorMessage} from "../../utils/common";
 import prisma from "../../utils/prisma";
 import {areDateParamsPresent} from "../../utils/server";
 
@@ -51,25 +53,53 @@ interface IGetGraphOpts {
   processedEnd: number,
   isRaw: boolean,
   topLimit: number,
+  ids: string[]
 }
 
 const getDataForGraph = async (graph: string, opts: IGetGraphOpts) => {
-  const {processedStart, processedEnd, isRaw = false, topLimit } = opts;
+  const {processedStart, processedEnd, isRaw = false, topLimit, ids = [] } = opts;
   const selectFields = getSelectFields(graph);
   const whereClause = getWhereClause(graph);
   let tweetsFiltered: FlatArray<{ [p: string]: SqlValue }[][], 1>[] = [];
   if (isRaw) {
-    tweetsFiltered = await prisma.$queryRaw`
-        SELECT id, link, content, retweets, favorites
-        FROM Tweet
-        WHERE date >= ${processedStart}
-            AND date <= ${processedEnd}
-        ORDER BY retweets + favorites DESC
-        LIMIT ${topLimit}`;
+    // let idClauseString = '';
+    // ids.forEach((id, index) => {
+    //   idClauseString = idClauseString + `id = ${id}${ids.length - 1 === index ? '' : ' OR '}`
+    // });
+    // console.log(`SELECT id, link, content, retweets, favorites FROM Tweet WHERE id IN (${ids.join(', ')}) AND (date >= ${processedStart} AND date <= ${processedEnd}) ORDER BY retweets + favorites DESC LIMIT ${topLimit}`);
+    tweetsFiltered = await prisma.tweet.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        date: {
+          gte: processedStart,
+          lte: processedEnd
+        }
+      },
+      orderBy: [
+        {retweets: 'desc'},
+        {favorites: 'desc'}
+      ],
+      take: topLimit,
+      select: {
+        id: true,
+        link: true,
+        content: true,
+        retweets: true,
+        favorites: true
+      }
+    })
+   // tweetsFiltered = await prisma.$queryRaw`SELECT id, link, content, retweets, favorites FROM Tweet WHERE id IN (${ids.join(', ')}) AND (date >= ${processedStart} AND date <= ${processedEnd}) ORDER BY retweets + favorites DESC LIMIT ${topLimit}`;
   }
   else {
     tweetsFiltered = await prisma.tweet.findMany({
       where: {
+        ...(ids.length > 0 ? {
+          id: {
+            in: ids,
+          },
+        } : {}),
         date: {
           gte: processedStart,
           lte: processedEnd,
@@ -106,36 +136,30 @@ const getDataForGraph = async (graph: string, opts: IGetGraphOpts) => {
   }
 };
 
-function isKey<T extends object>(
-  x: T,
-  k: PropertyKey
-): k is keyof T {
-  return k in x;
-}
-
-interface IChartData {
-  content: unknown,
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Content-Type', 'application/json');
   const {processedStart, processedEnd} = areDateParamsPresent(req, res);
   const graphsToProcess = (req.query?.graphs ?? '').toString().split(',');
+  const body = JSON.parse(req.body) as { ids: string[] };
+  const { ids = [] } = body;
   const finalData: {[key: string]: IChartData} = {};
   const opts: IGetGraphOpts = {
     processedEnd,
     processedStart,
     isRaw: false,
     topLimit: 3,
+    ids
   }
-
-  for (const graph of graphsToProcess) {
-    if (isKey(finalData, graph)) {
+  try {
+    for (const graph of graphsToProcess) {
       opts.isRaw = graph === 'top-interacted';
       finalData[graph] = {
         content: await getDataForGraph(graph, opts),
       };
     }
+    res.status(200).json({ data: finalData, success: true })
+  } catch (e) {
+    const errorMessage = getErrorMessage(e);
+    res.status(500).json({error: errorMessage, success: false, message: `error whilst calling /floating for ${graphsToProcess}`});
   }
-  res.status(200).json({ data: finalData, success: true })
 }

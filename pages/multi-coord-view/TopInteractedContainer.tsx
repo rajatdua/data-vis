@@ -14,7 +14,7 @@ import {
 } from "../../types";
 import {createDateQuery} from "../../utils/client";
 
-function sortMostInteractedTweetData(mostInteractedTweets: MostInteractedTweet[], selectedSort: string): MostInteractedTweet[] {
+export function sortMostInteractedTweetData(mostInteractedTweets: MostInteractedTweet[], selectedSort: string): MostInteractedTweet[] {
   if (selectedSort === 'asc')
   // Sort the array based on the "ascending" property
     return [...mostInteractedTweets].sort((a, b) => a.totalInteractions - b.totalInteractions);

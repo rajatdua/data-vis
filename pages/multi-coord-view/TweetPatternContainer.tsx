@@ -6,6 +6,7 @@ import Select from "../../components/Select/Select";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
+import {useAppStore} from "../../store/app";
 import {
   ICommonChartProps,
   IExportReq,
@@ -19,6 +20,7 @@ import {createDateQuery} from "../../utils/client";
 const scaleOptions = [{value: 'log', label: 'Log Scale'}, {value: 'linear', label: 'Linear Scale'}];
 
 const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing}) => {
+  const { setGraphToRender, setTweetIds } = useAppStore();
   const [isLoading, setLoading] = useState(true);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
   const [fetchedTweets, setFetchedTweets] = useState<IFetchTweetData[]>([])
@@ -82,6 +84,14 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
         setDataPoints([]);
         setFetchedTweets([]);
         setExportLoader(false);
+      } },
+    { label: 'Explore', clickEvent: () => {
+        const allIds = selectedDataPoints.map(point => point.id);
+        setGraphToRender('sentiment', true);
+        setGraphToRender('word-cloud', true);
+        setGraphToRender('top-interacted', true);
+        setTweetIds(allIds)
+        setMenu(false);
       } },
     {
       label: 'Close', clickEvent: () => {

@@ -59,7 +59,7 @@ const BarChart: React.FC<IBarChartProps> = ({ data, selectedSorting, onChartRend
     barGroups
       .append('rect')
       .attr('x', margin.left)
-      .attr('width', (d) => xScale(d.totalInteractions) - margin.left)
+      .attr('width', (d) => Math.abs(xScale(d.totalInteractions) - margin.left))
       .attr('height', yScale.bandwidth())
       .attr('fill', (d) => colorScale(d.totalInteractions))
       .attr('stroke', 'black')

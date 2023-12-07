@@ -1,15 +1,11 @@
 import React, {useEffect, useState} from "react";
 import ChartSwitcher from "./ChartSwitcher";
 import {useAppStore} from "../../store/app";
-import {ICommonChartProps} from "../../types";
+import {IChartData, ICommonChartProps} from "../../types";
 import {createDateQuery} from "../../utils/client";
 
 interface IFloatingChartProps extends ICommonChartProps {
   graphsToRender: { [key: string]: boolean }
-}
-
-export interface IChartData {
-  content: string[] //TODO: Change
 }
 
 interface IGraphReq {
@@ -29,7 +25,7 @@ const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({ date, graphsTo
       setFetchedGraphData(allGraphData?.data ?? {});
     };
     fetchAllGraphs();
-  }, []);
+  }, [tweetIds]);
   return (
     <div>
       {Object.keys(fetchedGraphData).map(graphKey => {

@@ -18,7 +18,7 @@ import {
 } from "../../types";
 import {createDateQuery} from "../../utils/client";
 
-function convertToSentimentArray(sentimentCounts: IFetchSentimentData, selectedScale: string): SentimentItem[] {
+export function convertToSentimentArray(sentimentCounts: IFetchSentimentData, selectedScale: string): SentimentItem[] {
   const sentimentArray: SentimentItem[] = Object.entries(sentimentCounts).map(([group, value]) => ({
     group,
     value,

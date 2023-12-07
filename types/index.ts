@@ -130,3 +130,7 @@ export interface ID3Object {
     y0: number
     hasText: boolean
 }
+
+export interface IChartData {
+    content: unknown[] | unknown,
+}
