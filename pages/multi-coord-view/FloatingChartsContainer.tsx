@@ -1,41 +1,29 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 import ChartSwitcher from "./ChartSwitcher";
-import {useAppStore} from "../../store/app";
-import {IChartData, ICommonChartProps} from "../../types";
-import {createDateQuery} from "../../utils/client";
+import {IDashboard} from "../../store/app";
+import {ICommonChartProps} from "../../types";
 
-interface IFloatingChartProps extends ICommonChartProps {
-  graphsToRender: { [key: string]: boolean }
-}
+interface IFloatingChartProps extends ICommonChartProps, IDashboard {}
 
-interface IGraphReq {
-  data: {
-    [key: string]: IChartData
-  }
-}
-
-const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({ date, graphsToRender }) => {
-  const { tweetIds } = useAppStore();
-  const [fetchedGraphData, setFetchedGraphData] = useState({});
-  useEffect(() => {
-    const fetchAllGraphs = async () => {
-      const graphKeys =  Object.keys(graphsToRender).join(',');
-      const query = createDateQuery(date, '/api/floating', `&graphs=${graphKeys}`);
-      const allGraphData = await (await fetch(query, { method: 'POST', body: JSON.stringify({ ids: tweetIds }) })).json() as IGraphReq
-      setFetchedGraphData(allGraphData?.data ?? {});
-    };
-    fetchAllGraphs();
-  }, [tweetIds]);
+const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({ date, dashboards, dashboardIds = [] }) => {
   return (
     <div>
-      {Object.keys(fetchedGraphData).map(graphKey => {
-        const chartData: IChartData = fetchedGraphData[graphKey as keyof typeof fetchedGraphData];
+      {dashboardIds.map(dashboardId => {
+        const selectedDashboard = dashboards[dashboardId]
         return (
-          <ChartSwitcher key={graphKey} chartType={graphKey} chartData={chartData} />
+          <div key={dashboardId}>
+            {selectedDashboard.title}
+            {Object.keys(selectedDashboard.graphsToRender ?? {}).map(graphKey => {
+              return (
+                <ChartSwitcher key={`${dashboardId}-${graphKey}`} chartType={graphKey} date={date} chartData={selectedDashboard.tweetIds} />
+              );
+            })}
+          </div>
         );
       })}
     </div>
   );
 };
+
 
 export default FloatingChartsContainer;

@@ -20,7 +20,7 @@ import { env } from "../../env.mjs"
 import { useAppStore } from '../../store/app';
 import {debounce} from "../../utils/client";
 export default function MultiVariateData() {
-    const { graphsToRender } = useAppStore();
+    const { dashboardIds, dashboards } = useAppStore();
     const [isInitialising, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -256,9 +256,10 @@ export default function MultiVariateData() {
                   {modalChildren}
               </Modal>
             )}
-            {Object.values(graphsToRender).some(graphValue => graphValue) && (
+            {dashboardIds.length > 0 && (
               <FloatingChartsContainer
-                graphsToRender={graphsToRender}
+                dashboardIds={dashboardIds}
+                dashboards={dashboards}
                 date={value}
                 refreshCount={refreshCount}
                 updateDateRange={handleValueChange}

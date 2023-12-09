@@ -15,12 +15,12 @@ import {
   IFetchTweetMapReq,
   IFetchTweetReq
 } from "../../types";
-import {createDateQuery} from "../../utils/client";
+import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
 const scaleOptions = [{value: 'log', label: 'Log Scale'}, {value: 'linear', label: 'Linear Scale'}];
 
-const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing}) => {
-  const { setGraphToRender, setTweetIds } = useAppStore();
+const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '' }}) => {
+  const { setGraphToRender, setTweetIds, setTitle } = useAppStore();
   const [isLoading, setLoading] = useState(true);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
   const [fetchedTweets, setFetchedTweets] = useState<IFetchTweetData[]>([])
@@ -31,6 +31,8 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
   const [selectedScale, setScale] = useState<'log' | 'linear'>('log');
   const [isExporting, setExportLoader] = useState(false);
 
+  const { ids, graphKey } = recursive;
+
   useEffect(() => {
     const fetchTweetTimeMap = async () => {
       setRefreshing(true);
@@ -39,12 +41,21 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
       setTweetMapData(fetchedData?.data ?? []);
       setLoading(false);
     };
-    fetchTweetTimeMap();
+    if (ids.length === 0) fetchTweetTimeMap();
   }, [refreshCount]);
+
+
+  useEffect(() => {
+    if (ids.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - TODO: I NEED TO USE setData as COMMON METHOD; LONG WAY IS USING TYPESCRIPT TEMPLATES I DON'T HAVE TIME FOR THIS
+      fetchFloatingType({ date, ids, graphKey }, { setData: setTweetMapData, setLoading });
+    }
+  }, [ids]);
 
   if (isLoading) return <div className="flex justify-center" style={{height: '600px'}}><Spinner/></div>
 
-  const handleChange = (selectedScale: string) => {
+  const handleChange = (selectedScale: string)  => {
     if (selectedScale === 'log' || selectedScale === 'linear')
       setScale(selectedScale)
     else throw Error(`Wrong scale selected: ${selectedScale}`)
@@ -87,10 +98,12 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
       } },
     { label: 'Explore', clickEvent: () => {
         const allIds = selectedDataPoints.map(point => point.id);
-        setGraphToRender('sentiment', true);
-        setGraphToRender('word-cloud', true);
-        setGraphToRender('top-interacted', true);
-        setTweetIds(allIds)
+        createDashboard(
+          allIds,
+          { 'word-cloud': true, 'top-interacted': true, 'sentiment': true },
+          { date, container: 'Tweet Time Map' },
+          { setGraphToRender, setTweetIds, setTitle }
+        );
         setMenu(false);
       } },
     {

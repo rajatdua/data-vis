@@ -8,11 +8,12 @@ import Select from "../../components/Select/Select";
 import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
 import {INIT_SELECTED_TWEET} from "../../constants";
+import {useAppStore} from "../../store/app";
 import {
   ICommonChartProps, IFetchMostInteractedReq,
   MostInteractedTweet,
 } from "../../types";
-import {createDateQuery} from "../../utils/client";
+import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
 export function sortMostInteractedTweetData(mostInteractedTweets: MostInteractedTweet[], selectedSort: string): MostInteractedTweet[] {
   if (selectedSort === 'asc')
@@ -27,7 +28,9 @@ export function sortMostInteractedTweetData(mostInteractedTweets: MostInteracted
 const sortOptions = [{value: 'asc', label: 'Ascending'}, {value: 'desc', label: 'Descending'}];
 const countOptions = [{value: 3, label: 'Top 3'}, {value: 4, label: 'Top 4'}, {value: 5, label: 'Top 5'}];
 
-const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing }) => {
+const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '' } }) => {
+  const { setGraphToRender, setTweetIds, setTitle } = useAppStore();
+
   const [mostInteractedTweets, setInteractedTweets] = useState<MostInteractedTweet[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [selectedSorting, setSort] = useState<'asc' | 'desc'>('desc');
@@ -36,6 +39,8 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
   const [isModalOpen, setModal] = useState(false);
   const [selectedTweet, setSelectedTweet] = useState<MostInteractedTweet>(INIT_SELECTED_TWEET);
   const [modalTitle, setModalTitle] = useState('');
+
+  const { ids, graphKey } = recursive;
 
   useEffect(() => {
     const fetchMostInteraction = async () => {
@@ -47,8 +52,16 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
       setLoading(false);
       setRefreshing(false);
     };
-    fetchMostInteraction();
+    if (ids.length === 0) fetchMostInteraction();
   }, [refreshCount, selectedTopCount]);
+
+  useEffect(() => {
+    if (ids.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - TODO: I NEED TO USE setData as COMMON METHOD; LONG WAY IS USING TYPESCRIPT TEMPLATES I DON'T HAVE TIME FOR THIS
+      fetchFloatingType({ date, ids, graphKey }, { setData: setInteractedTweets, setLoading });
+    }
+  }, [ids]);
 
   const handleChartRender = () => {
     setRefreshing(false);
@@ -99,12 +112,20 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
         );
       }
     },
+    { label: 'Explore', clickEvent: () => {
+        createDashboard(
+          [selectedTweet.id],
+          { 'word-cloud': true, 'tweet-time-map': true, 'sentiment': true },
+          { date, container: 'Top Interacted' },
+          { setGraphToRender, setTweetIds, setTitle }
+        );
+        setMenu(false);
+      } },
     {
       label: 'Close', clickEvent: handleClose
     },
   ];
 
-  // TODO: Give ability to select bars and show pop-up menu for export
   if (isLoading) return <div className="flex flex-col justify-center" style={{ height: '420px' }}><Spinner /></div>
   else {
     return (

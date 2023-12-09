@@ -63,6 +63,7 @@
     "franc-min": "^6.1.0",
     "json2csv": "^6.0.0-alpha.2",
     "lodash": "^4.17.21",
+    "nanoid": "^5.0.4",
     "natural": "^6.9.2",
     "next": "^13.3.0",
     "next-compose-plugins": "^2.2.1",

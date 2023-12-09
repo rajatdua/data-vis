@@ -7,10 +7,12 @@ import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
 import WordCloud from "../../components/WordCloud/WordCloud";
 import WordCloudV2 from "../../components/WordCloud/WordCloudV2";
+import {useAppStore} from "../../store/app";
 import {ICommonChartProps, ID3Object, IExportReq, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
-import {createDateQuery} from "../../utils/client";
+import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
-const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing }) => {
+const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing, recursive = { ids: [], graphKey: '' } }) => {
+    const { setGraphToRender, setTweetIds, setTitle } = useAppStore();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const [isLoading, setLoading] = useState(true);
     const [isExporting, setExportLoader] = useState(false);
@@ -36,7 +38,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
         };
     }, []);
 
-
+  const { ids, graphKey } = recursive;
 
     useEffect(() => {
         const fetchWordCloud = async () => {
@@ -48,13 +50,22 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
             setRefreshing(false);
             setLoading(false);
         };
-        fetchWordCloud();
+      if (ids.length === 0) fetchWordCloud();
     }, [refreshCount]);
 
+
+  useEffect(() => {
+    if (ids.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - TODO: I NEED TO USE setData as COMMON METHOD; LONG WAY IS USING TYPESCRIPT TEMPLATES I DON'T HAVE TIME FOR THIS
+      fetchFloatingType({ date, ids, graphKey }, { setData: setWordCloud, setLoading });
+    }
+  }, [ids]);
+
     const handleWordClick = (d3Object: ID3Object) => {
-        const selectedWord = wordCloudData.filter(word => word.text === d3Object.text);
+        const currSelectedWord = wordCloudData.filter(word => word.text === d3Object.text);
         setMenu(true);
-        setWord(selectedWord[0]);
+        setWord(currSelectedWord[0]);
     };
 
     const handleWordClickV2 = (event: React.MouseEvent) => {
@@ -95,6 +106,16 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
                 }
                 setExportLoader(false);
                 setWord(null);
+            } },
+        { label: 'Explore', clickEvent: () => {
+                const allIds = selectedWord?.textMeta.ids ?? [];
+                createDashboard(
+                  allIds,
+                  { 'tweet-time-map': true, 'top-interacted': true, 'sentiment': true },
+                  { date, container: 'Word Cloud' },
+                  { setGraphToRender, setTweetIds, setTitle }
+                );
+                setMenu(false);
             } },
         { label: 'Close', clickEvent: () => {
                 setWord(null);

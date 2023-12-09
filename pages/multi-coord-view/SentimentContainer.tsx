@@ -8,6 +8,7 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
 import {INIT_SENTIMENT} from "../../constants";
+import {useAppStore} from "../../store/app";
 import {
   ICommonChartProps, IExportReq,
   IFetchSentimentData,
@@ -16,7 +17,7 @@ import {
   IFetchTweetReq,
   SentimentItem
 } from "../../types";
-import {createDateQuery} from "../../utils/client";
+import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
 export function convertToSentimentArray(sentimentCounts: IFetchSentimentData, selectedScale: string): SentimentItem[] {
   const sentimentArray: SentimentItem[] = Object.entries(sentimentCounts).map(([group, value]) => ({
@@ -38,7 +39,9 @@ export function convertToSentimentArray(sentimentCounts: IFetchSentimentData, se
 
 const scaleOptions = [{value: 'name', label: 'Sort by Name'}, {value: 'value', label: 'Sort by Value'}];
 
-const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets }) => {
+const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets, recursive = { ids: [], graphKey: '' } }) => {
+  const { setGraphToRender, setTweetIds, setTitle } = useAppStore();
+
   const [sentimentData, setSentimentData] = useState<IFetchSentimentData>(INIT_SENTIMENT);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
   const [isLoading, setLoading] = useState(true);
@@ -49,6 +52,8 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
   const [selectedType, setType] = useState('');
   const [isSidebar, setSidebar] = useState(false);
   const [isExporting, setExportLoader] = useState(false);
+
+  const { ids, graphKey } = recursive;
 
   useEffect(() => {
     const fetchPollData = async () => {
@@ -62,8 +67,16 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
       setTotalTweets && setTotalTweets(totalSum);
       setLoading(false);
     };
-    fetchPollData();
+    if (ids.length === 0) fetchPollData();
   }, [refreshCount]);
+
+  useEffect(() => {
+    if (ids.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - TODO: I NEED TO USE setData as COMMON METHOD; LONG WAY IS USING TYPESCRIPT TEMPLATES I DON'T HAVE TIME FOR THIS
+      fetchFloatingType({ date, ids, graphKey }, { setData: setSentimentData, setLoading });
+    }
+  }, [ids]);
 
   const handleChartRender = () => {
     setRefreshing(false);
@@ -113,6 +126,15 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
         setExportLoader(false);
         setType('');
         setTweets([]);
+      } },
+    { label: 'Explore', clickEvent: () => {
+        createDashboard(
+          tweetsToView,
+          { 'word-cloud': true, 'tweet-time-map': true, 'top-interacted': true },
+          { date, container: 'Sentiment' },
+          { setGraphToRender, setTweetIds, setTitle }
+        );
+        setMenu(false);
       } },
     {
       label: 'Close', clickEvent: () => {
