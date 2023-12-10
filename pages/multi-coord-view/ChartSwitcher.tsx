@@ -1,16 +1,21 @@
+import {nanoid} from "nanoid";
 import Image from "next/image";
 import React, {useState} from "react";
 import {DateValueType} from "react-tailwindcss-datepicker";
+import {IDashboardType} from "../../store/app";
 import SentimentContainer from "./SentimentContainer";
 import TopInteractedContainer from "./TopInteractedContainer";
 import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
 import Popup from "../../components/Popup/Popup";
+import {useDashState} from "../../store/dash";
+import {usePinnedState} from "../../store/pinned";
 
 interface IChartSwitcher {
   chartType: string,
   chartData: string[]
-  date: DateValueType
+  date: DateValueType,
+  selectedDash: IDashboardType
 }
 
 const noop = () => { /**/ };
@@ -31,18 +36,22 @@ const getChartTitle = (chartType: string) => {
   }
 };
 
-const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData }) => {
+const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData, selectedDash }) => {
+  const { setPinned } = usePinnedState();
+  const { setDashFlag } = useDashState();
 
   const [isMenuOpen, setMenu] = useState(false);
 
   const chartOptions = [
     {
-      label: 'Pin', clickEvent: async () => {
+      label: 'Pin', icon: '/pin-icon.svg', clickEvent: async () => {
+        setPinned({ id: nanoid() , node: renderCharts(), dashboard: selectedDash });
+        setDashFlag(false);
         setMenu(false);
       }
     },
     {
-      label: 'Close', clickEvent: async () => {
+      label: 'Close', icon: '/close-b-icon.svg', clickEvent: async () => {
         setMenu(false);
       }
     },

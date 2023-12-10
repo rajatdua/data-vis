@@ -1,10 +1,10 @@
 import Image from "next/image";
 import React, {useState} from "react";
-import {useModalState} from "../../store/modal";
 import ChartSwitcher from "./ChartSwitcher";
 import Popup from "../../components/Popup/Popup";
 import {INIT_DASHBOARD} from "../../constants";
 import {IDashboard, useAppStore} from "../../store/app";
+import {useModalState} from "../../store/modal";
 import {ICommonChartProps} from "../../types";
 
 interface IFloatingChartProps extends ICommonChartProps, IDashboard {
@@ -104,6 +104,7 @@ const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({date, dashboard
               chartType={graphKey}
               date={date}
               chartData={selectedDash.tweetIds}
+              selectedDash={selectedDash}
             />
           );
         })}

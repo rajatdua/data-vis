@@ -1,7 +1,10 @@
 import {isEqual} from "lodash";
 import Head from "next/head";
+import Image from "next/image";
 import React, {useEffect, useState} from "react";
+import Draggable from 'react-draggable';
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
+import Popup from "../../components/Popup/Popup";
 import FloatingChartsContainer from "./FloatingChartsContainer";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import SentimentContainer from "./SentimentContainer";
@@ -18,18 +21,21 @@ import Spinner from "../../components/Spinner/Spinner";
 import {END_DATE, END_DATE_ALL, START_DATE, START_DATE_ALL} from "../../constants";
 import { env } from "../../env.mjs"
 import { useAppStore } from '../../store/app';
+import {useDashState} from "../../store/dash";
 import {useModalState} from "../../store/modal";
+import {usePinnedState} from "../../store/pinned";
 import {debounce} from "../../utils/client";
 export default function MultiVariateData() {
     const { dashboardIds, dashboards, selectedDash } = useAppStore();
     const { setModal, isModalOpen, setModalVisibility, modalDetails } = useModalState();
+    const { isPinned, pinnedDetails, isPinnedCollapsed, setPinnedCollapse, isPinnedOptions, setPinnedOptions, deletePinned } = usePinnedState();
     const [isInitialising, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [shouldHide, setHide] = useState(false);
     const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
     const [totalTweets, setTotalTweets] = useState(0);
-    const [isDashOpen, setDashVisibility] = useState(false);
+    const { isDashOpen, setDashVisibility, setDashFlag } = useDashState();
 
     const handleSecClick = () => {
         setSecBtnState((prev) => ({...prev, isCollapsed: !prev.isCollapsed}))
@@ -56,11 +62,11 @@ export default function MultiVariateData() {
     }, [shouldHide]);
 
     useEffect(() => {
-        if (!isDashOpen && dashboardIds.length > 0) setDashVisibility(true);
+        if (!isDashOpen && dashboardIds.length > 0) setDashFlag(true);
     }, [dashboardIds.length]);
 
     useEffect(() => {
-        if (isDashOpen && dashboardIds.length === 0) setDashVisibility(false);
+        if (isDashOpen && dashboardIds.length === 0) setDashFlag(false);
     }, [dashboardIds.length])
 
     useEffect(() => {
@@ -205,6 +211,17 @@ export default function MultiVariateData() {
         );
     };
 
+    const pinnedOptions = [
+      { label: 'Unpin', icon: '/unpin-icon.svg', clickEvent: () => { deletePinned() }},
+      {
+          label: 'Details', icon: '/info-icon.svg', clickEvent: () => {
+              setModal(pinnedDetails.dashboard.title, pinnedDetails.dashboard.description, []);
+              setModalVisibility(true);
+          }
+      },
+      { label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => { setPinnedOptions(false) }}
+    ];
+
     return (
         <>
             <Head>
@@ -223,6 +240,25 @@ export default function MultiVariateData() {
                     <Nav btnTitle="Back" btnHref="/" secBtnIcon={secBtnState.isCollapsed ? '/expand-icon.svg' : '/collapse-icon.svg'} secBtnClick={handleSecClick} secBtnState={secBtnState} />
                 </div>
             </section>
+            {(isPinned && !isPinnedCollapsed) && (<Draggable><div className='bg-white absolute z-50 border-2 border-black rounded' style={{ width: '42rem' }} key={pinnedDetails.id}>
+                <div className='relative p-4'>
+                    {pinnedDetails.node}
+                    <div className='absolute -top-4 -right-4 bg-white border-2 border-black p-2 rounded' onClick={() => setPinnedCollapse(true)}>
+                        <Image src='/collapse-b-icon.svg' alt='collapse' width={24} height={24}/>
+                    </div>
+                    <div className='absolute -top-4 -right-16 bg-white border-2 border-black p-2 rounded' onClick={() => setPinnedOptions(true)}>
+                        <Image src='/menu-icon.svg' alt='collapse' width={24} height={24}/>
+                    </div>
+                    {isPinnedOptions && <div className='absolute top-10 -right-16'>
+                        <Popup options={pinnedOptions}/>
+                    </div>}
+                </div>
+            </div></Draggable>)}
+            <div className={`transition-all ${isPinnedCollapsed ? 'opacity-100' : 'opacity-0'} fixed bottom-20 left-1 z-50`}>
+                <div className='bg-indigo-500 border-2 border-black p-2 rounded' onClick={() => setPinnedCollapse(false)}>
+                    <Image src='/expand-icon.svg' alt='collapse' width={24} height={24}/>
+                </div>
+            </div>
 
             <div className="flex flex-row">
                 {/* Sidebar */}
@@ -273,7 +309,7 @@ export default function MultiVariateData() {
                 <div className='relative h-full w-full'>
                     <p
                       className='-rotate-90 absolute top-44 bg-indigo-600 text-white text-sm font-medium px-5 py-3 text-center rounded-t-md z-40 cursor-pointer flex '
-                      onClick={() => setDashVisibility((prevState) => !prevState)}
+                      onClick={() => setDashVisibility()}
                       style={{
                           right: dashboardIds.length > 0 ? '37rem' : '37.5rem'
                       }}
