@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid'
 import {DateValueType} from "react-tailwindcss-datepicker";
-import {END_DATE, START_DATE} from "../constants";
+import {END_DATE, INIT_DASHBOARD, START_DATE} from "../constants";
 import {ISetters} from "../store/app";
 import {
   IFetchSentimentData,
@@ -87,13 +87,14 @@ export interface IDashboardMeta {
 
 export const createDashboard = (tweetIds: string[], graphs: IDashboardGraphs, meta: IDashboardMeta, setters: ISetters) => {
   const { date, container } = meta;
-  const { setTitle, setGraphToRender, setTweetIds } = setters;
+  const { setTitle, setGraphToRender, setTweetIds, setDashboard } = setters;
   const dashboardId = nanoid();
-  const title = `Dashboard: ${dashboardId} - ${container} (${date?.startDate} - ${date?.endDate})`;
+  const title = `${dashboardId.slice(0, 5)}: ${container} (${date?.startDate} - ${date?.endDate})`;
   setTitle(dashboardId, title);
   Object.entries(graphs).forEach(([type, value]) => {
     setGraphToRender(dashboardId, { type, value });
   })
+  setDashboard(INIT_DASHBOARD)
   setTweetIds(dashboardId, tweetIds);
 };
 

@@ -29,7 +29,7 @@ const sortOptions = [{value: 'asc', label: 'Ascending'}, {value: 'desc', label: 
 const countOptions = [{value: 3, label: 'Top 3'}, {value: 4, label: 'Top 4'}, {value: 5, label: 'Top 5'}];
 
 const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '' } }) => {
-  const { setGraphToRender, setTweetIds, setTitle } = useAppStore();
+  const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
 
   const [mostInteractedTweets, setInteractedTweets] = useState<MostInteractedTweet[]>([]);
   const [isLoading, setLoading] = useState(true);
@@ -117,7 +117,7 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
           [selectedTweet.id],
           { 'word-cloud': true, 'tweet-time-map': true, 'sentiment': true },
           { date, container: 'Top Interacted' },
-          { setGraphToRender, setTweetIds, setTitle }
+          { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);
       } },

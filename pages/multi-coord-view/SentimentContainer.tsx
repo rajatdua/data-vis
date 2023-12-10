@@ -40,7 +40,7 @@ export function convertToSentimentArray(sentimentCounts: IFetchSentimentData, se
 const scaleOptions = [{value: 'name', label: 'Sort by Name'}, {value: 'value', label: 'Sort by Value'}];
 
 const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets, recursive = { ids: [], graphKey: '' } }) => {
-  const { setGraphToRender, setTweetIds, setTitle } = useAppStore();
+  const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
 
   const [sentimentData, setSentimentData] = useState<IFetchSentimentData>(INIT_SENTIMENT);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
@@ -132,7 +132,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
           tweetsToView,
           { 'word-cloud': true, 'tweet-time-map': true, 'top-interacted': true },
           { date, container: 'Sentiment' },
-          { setGraphToRender, setTweetIds, setTitle }
+          { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);
       } },

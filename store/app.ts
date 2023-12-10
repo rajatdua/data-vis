@@ -1,6 +1,8 @@
 import { create } from 'zustand';
+import {INIT_DASHBOARD} from "../constants";
 
-interface IDashboardType {
+export interface IDashboardType {
+  id: string,
   title: string,
   tweetIds: string[];
   graphsToRender: { [key: string]: boolean }
@@ -12,6 +14,7 @@ export interface ISetters {
   setGraphToRender: (dashboardId: string, value: IGraphType) => void;
   setTweetIds: (dashboardId: string, ids: string[]) => void;
   setTitle: (dashboardId: string, title: string) => void;
+  setDashboard: (opts: IDashboardType) => void,
 }
 
 export interface IDashboard {
@@ -19,11 +22,17 @@ export interface IDashboard {
   dashboardIds: string[],
 }
 
-export interface AppState extends ISetters, IDashboard {}
+export interface AppState extends ISetters, IDashboard {
+  selectedDash: IDashboardType,
+}
 
 export const useAppStore = create<AppState>((set) => ({
   dashboards: {},
   dashboardIds: [],
+  selectedDash: INIT_DASHBOARD,
+  setDashboard: (dashboardOpts) => set(() => ({
+    selectedDash: dashboardOpts
+  })),
   setGraphToRender: (dashboardId, updater) => set((state) => {
     const selectedDashboard = state.dashboards[dashboardId];
     return ({
@@ -58,7 +67,8 @@ export const useAppStore = create<AppState>((set) => ({
         ...state.dashboards,
         [dashboardId]: {
           ...selectedDashboard,
-          title
+          title,
+          id: dashboardId,
         }
       }
     });

@@ -12,7 +12,7 @@ import {ICommonChartProps, ID3Object, IExportReq, IFetchWordData, IFetchWordReq,
 import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
 const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing, recursive = { ids: [], graphKey: '' } }) => {
-    const { setGraphToRender, setTweetIds, setTitle } = useAppStore();
+    const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const [isLoading, setLoading] = useState(true);
     const [isExporting, setExportLoader] = useState(false);
@@ -113,7 +113,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
                   allIds,
                   { 'tweet-time-map': true, 'top-interacted': true, 'sentiment': true },
                   { date, container: 'Word Cloud' },
-                  { setGraphToRender, setTweetIds, setTitle }
+                  { setGraphToRender, setTweetIds, setTitle, setDashboard }
                 );
                 setMenu(false);
             } },
@@ -150,7 +150,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
           {isSidebar && (
             <Sidebar isSidebar={isSidebar} sidebarRef={sidebarRef} onClose={() => {
                 setSidebar(false); setWord(null);
-            }} title={`Some Tweets for "${selectedWord?.text.substring(0,20)}..."`}>
+            }} title={`Some Tweets for "${(selectedWord?.text?.length ?? 0) > 20 ? `${selectedWord?.text.substring(0,20)}...` : selectedWord?.text}"`}>
                 {sidebarChildren()}
             </Sidebar>
           )}

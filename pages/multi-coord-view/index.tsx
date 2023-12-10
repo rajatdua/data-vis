@@ -20,7 +20,7 @@ import { env } from "../../env.mjs"
 import { useAppStore } from '../../store/app';
 import {debounce} from "../../utils/client";
 export default function MultiVariateData() {
-    const { dashboardIds, dashboards } = useAppStore();
+    const { dashboardIds, dashboards, selectedDash } = useAppStore();
     const [isInitialising, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -30,6 +30,7 @@ export default function MultiVariateData() {
     const [isModalOpen, setModal] = useState(false);
     const [modalTitle, setModalTitle] = useState('');
     const [modalChildren, setModalChildren] = useState('');
+    const [isDashOpen, setDashVisibility] = useState(false);
 
     const handleSecClick = () => {
         setSecBtnState((prev) => ({...prev, isCollapsed: !prev.isCollapsed}))
@@ -54,6 +55,16 @@ export default function MultiVariateData() {
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     }, [shouldHide]);
+
+    useEffect(() => {
+        if (!isDashOpen && dashboardIds.length > 0) setDashVisibility(true);
+    }, [dashboardIds.length]);
+
+    useEffect(() => {
+        if (isDashOpen) document.body.style.overflow = "hidden";
+        else document.body.style.overflow = "auto"
+        return () => { document.body.style.overflow = "auto" }
+    }, [isDashOpen]);
 
 
     const [refreshCount, setRefreshCount] = useState(0);
@@ -256,16 +267,34 @@ export default function MultiVariateData() {
                   {modalChildren}
               </Modal>
             )}
-            {dashboardIds.length > 0 && (
-              <FloatingChartsContainer
-                dashboardIds={dashboardIds}
-                dashboards={dashboards}
-                date={value}
-                refreshCount={refreshCount}
-                updateDateRange={handleValueChange}
-                setRefreshing={setRefreshing}
-              />
-            )}
+            <div className={`fixed z-30 transition-all h-full bg-white drop-shadow-md`} style={{ width: '40rem', right: isDashOpen ? 0 : '-40rem', top: 0 }}>
+                <div className='relative h-full w-full'>
+                    <p
+                      className='-rotate-90 absolute top-44 bg-indigo-600 text-white text-sm font-medium px-3 text-center rounded-t-md z-40 cursor-pointer flex '
+                      onClick={() => setDashVisibility((prevState) => !prevState)}
+                      style={{
+                          right: dashboardIds.length > 0 ? '36.8rem' : '37.3rem'
+                      }}
+                    >
+                        Dashboards {dashboardIds.length > 0 ? <span>{`(${dashboardIds.length})`}</span> : ''}
+                    </p>
+                    <div className='h-full w-full overflow-x-hidden overflow-y-scroll'>
+                        <h3 className='text-2xl py-2 px-5'>Dashboards</h3>
+                        <div className={`grid ${dashboardIds.length > 0 ? selectedDash.id === '' ? 'grid-cols-2' : 'grid-cols-1' : 'grid-cols-1'} gap-1 place-items-center items-start`}>
+                            {dashboardIds.length > 0 ? (
+                              <FloatingChartsContainer
+                                dashboardIds={dashboardIds}
+                                dashboards={dashboards}
+                                date={value}
+                                refreshCount={refreshCount}
+                                updateDateRange={handleValueChange}
+                                setRefreshing={setRefreshing}
+                              />
+                            ): <div className='text-lg font-light'>No Dashboards</div>}
+                        </div>
+                    </div>
+                </div>
+            </div>
             <Footer />
         </>
     );

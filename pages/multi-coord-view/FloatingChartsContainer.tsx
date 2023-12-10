@@ -1,27 +1,101 @@
-import React from "react";
+import Image from "next/image";
+import React, {useState} from "react";
 import ChartSwitcher from "./ChartSwitcher";
-import {IDashboard} from "../../store/app";
+import Popup from "../../components/Popup/Popup";
+import {INIT_DASHBOARD} from "../../constants";
+import {IDashboard, useAppStore} from "../../store/app";
 import {ICommonChartProps} from "../../types";
 
-interface IFloatingChartProps extends ICommonChartProps, IDashboard {}
+interface IFloatingChartProps extends ICommonChartProps, IDashboard {
+}
 
-const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({ date, dashboards, dashboardIds = [] }) => {
+const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({date, dashboards, dashboardIds = []}) => {
+  const { selectedDash, setDashboard } = useAppStore();
+  const [isMenuOpen, setMenu] = useState(false);
+  const [isMenuOpenInternal, setMenuInternal] = useState(false);
+  const renderHeader = () => {
+    const internalDashOptions = [
+      {
+        label: 'Details', clickEvent: async () => {
+          setMenuInternal(false);
+        }
+      },
+      {
+        label: 'Close', clickEvent: async () => {
+          setMenuInternal(false);
+        }
+      },
+      {
+        label: 'Delete', clickEvent: async () => {
+          setMenuInternal(false);
+        }
+      }
+    ];
+    return (
+      <div className='flex flex-row justify-between w-full'>
+        <div className='flex flex-row items-center'>
+          <Image src='/back-icon.svg' alt='back' width={32} height={32} className='mx-2' onClick={() => setDashboard(INIT_DASHBOARD)}/>
+          <h3>{selectedDash.title}</h3>
+        </div>
+        <Image src='/menu-icon.svg' alt='menu' width={32} height={32} className='pr-2' onClick={() => setMenuInternal(prevState => !prevState)}/>
+        {isMenuOpenInternal && <Popup options={internalDashOptions}/>}
+      </div>
+    );
+  };
   return (
-    <div>
-      {dashboardIds.map(dashboardId => {
-        const selectedDashboard = dashboards[dashboardId]
+    <>
+      {selectedDash.id === '' ? dashboardIds.map(dashboardId => {
+        const selectedDashboard = dashboards[dashboardId];
+        const mainDashOptions = [
+          {
+            label: 'View', clickEvent: async () => {
+              setMenu(false);
+              setDashboard(selectedDashboard);
+            }
+          },
+          {
+            label: 'Details', clickEvent: async () => {
+              setMenu(false);
+            }
+          },
+          {
+            label: 'Close', clickEvent: async () => {
+              setMenu(false);
+            }
+          },
+          {
+            label: 'Delete', clickEvent: async () => {
+              setMenu(false);
+            }
+          }
+        ];
         return (
-          <div key={dashboardId}>
-            {selectedDashboard.title}
-            {Object.keys(selectedDashboard.graphsToRender ?? {}).map(graphKey => {
-              return (
-                <ChartSwitcher key={`${dashboardId}-${graphKey}`} chartType={graphKey} date={date} chartData={selectedDashboard.tweetIds} />
-              );
-            })}
+          <div key={dashboardId} className="max-w-sm rounded overflow-hidden shadow-lg ml-2 [&:nth-child(even)]:mr-4 pt-2">
+
+            {/*<Image className="w-full" src="/pattern.png" alt="pattern"  width={200} height={100} />*/}
+            <div className='bg-gray-400 w-full h-20 flex justify-end border-gray-500 border-2 relative'>
+              <Image src='/menu-icon.svg' alt='menu' width={30} height={30} onClick={() => setMenu(prevState => !prevState)} />
+              {isMenuOpen && <Popup options={mainDashOptions}/>}
+            </div>
+              <div className="px-6 py-4">
+                <div className="font-bold text-lg mb-2">{selectedDashboard.title}</div>
+              </div>
           </div>
         );
-      })}
-    </div>
+      }): renderHeader()}
+      {selectedDash.id !== '' && <div className='grid grid-cols-1'>
+        {Object.keys(selectedDash.graphsToRender ?? {}).map(graphKey => {
+          return (
+            <ChartSwitcher
+              key={`${selectedDash.id}-${graphKey}`}
+              chartType={graphKey}
+              date={date}
+              chartData={selectedDash.tweetIds}
+            />
+          );
+        })}
+      </div>}
+    </>
   );
 };
 

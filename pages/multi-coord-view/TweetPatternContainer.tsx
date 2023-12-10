@@ -20,7 +20,7 @@ import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/c
 const scaleOptions = [{value: 'log', label: 'Log Scale'}, {value: 'linear', label: 'Linear Scale'}];
 
 const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '' }}) => {
-  const { setGraphToRender, setTweetIds, setTitle } = useAppStore();
+  const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
   const [isLoading, setLoading] = useState(true);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
   const [fetchedTweets, setFetchedTweets] = useState<IFetchTweetData[]>([])
@@ -102,7 +102,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
           allIds,
           { 'word-cloud': true, 'top-interacted': true, 'sentiment': true },
           { date, container: 'Tweet Time Map' },
-          { setGraphToRender, setTweetIds, setTitle }
+          { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);
       } },

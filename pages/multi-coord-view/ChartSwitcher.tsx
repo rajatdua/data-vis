@@ -1,10 +1,11 @@
-import React from "react";
+import Image from "next/image";
+import React, {useState} from "react";
 import {DateValueType} from "react-tailwindcss-datepicker";
 import SentimentContainer from "./SentimentContainer";
 import TopInteractedContainer from "./TopInteractedContainer";
 import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
-import {useAppStore} from "../../store/app";
+import Popup from "../../components/Popup/Popup";
 
 interface IChartSwitcher {
   chartType: string,
@@ -13,6 +14,22 @@ interface IChartSwitcher {
 }
 
 const noop = () => { /**/ };
+
+const getChartTitle = (chartType: string) => {
+
+  switch (chartType) {
+    case 'sentiment':
+      return 'Trump\'s Tweets Sentiment';
+    case 'word-cloud':
+      return 'Word Frequency for Trump\'s Tweet';
+    case 'top-interacted':
+      return 'Trump\'s Most Interacted Tweets';
+    case 'tweet-time-map':
+      return 'Trump\'s Tweeting Pattern';
+    default:
+      return '';
+  }
+};
 
 // const ChartSwitcher: React.FC<IChartSwitcher> = ({ chartData, chartType }) => {
 //   switch (chartType) {
@@ -41,27 +58,57 @@ const noop = () => { /**/ };
 
 const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData }) => {
 
-  const commonProps = {
-    key: 'recursive',
-    date,
-    updateDateRange: noop,
-    setRefreshing: noop,
-    refreshCount: 0,
-    recursive: { ids: chartData, graphKey: chartType }
-}
+  const [isMenuOpen, setMenu] = useState(false);
 
-  switch (chartType) {
-    case 'sentiment':
-      return <SentimentContainer {...commonProps} />
-    case 'word-cloud':
-      return <WordCloudContainer {...commonProps} version2={true} />
-    case 'top-interacted':
-      return <TopInteractedContainer {...commonProps} />
-    case 'tweet-time-map':
-      return <TweetPatternContainer {...commonProps} />
-    default:
-      return <div>Not Available: {chartType}</div>
-  }
+  const chartOptions = [
+    {
+      label: 'Pin', clickEvent: async () => {
+        setMenu(false);
+      }
+    },
+    {
+      label: 'Close', clickEvent: async () => {
+        setMenu(false);
+      }
+    },
+  ];
+
+  const renderCharts = () => {
+   const commonProps = {
+     key: 'recursive',
+     date,
+     updateDateRange: noop,
+     setRefreshing: noop,
+     refreshCount: 0,
+     recursive: { ids: chartData, graphKey: chartType }
+   }
+
+   switch (chartType) {
+     case 'sentiment':
+       return <SentimentContainer {...commonProps} />
+     case 'word-cloud':
+       return <WordCloudContainer {...commonProps} version2={true} />
+     case 'top-interacted':
+       return <TopInteractedContainer {...commonProps} />
+     case 'tweet-time-map':
+       return <TweetPatternContainer {...commonProps} />
+     default:
+       return <div>Not Available: {chartType}</div>
+   }
+ };
+
+  return (
+    <div className='flex flex-col mt-8'>
+      <div className='flex flex-row justify-between px-2 py-4 items-center'>
+        <span className='font-bold'>{getChartTitle(chartType)}</span>
+        <span className='relative'>
+          <Image src='/menu-icon.svg' alt='menu' width={24} height={24} onClick={() => setMenu(prevState => !prevState)}/>
+          {isMenuOpen && <Popup options={chartOptions} />}
+        </span>
+      </div>
+      {renderCharts()}
+    </div>
+  );
 };
 
 export default ChartSwitcher;
