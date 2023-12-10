@@ -212,11 +212,12 @@ export default function MultiVariateData() {
     };
 
     const pinnedOptions = [
-      { label: 'Unpin', icon: '/unpin-icon.svg', clickEvent: () => { deletePinned() }},
+      { label: 'Unpin', icon: '/unpin-icon.svg', clickEvent: () => { deletePinned(); }},
       {
           label: 'Details', icon: '/info-icon.svg', clickEvent: () => {
               setModal(pinnedDetails.dashboard.title, pinnedDetails.dashboard.description, []);
               setModalVisibility(true);
+              setPinnedOptions(false);
           }
       },
       { label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => { setPinnedOptions(false) }}
@@ -243,6 +244,9 @@ export default function MultiVariateData() {
             {(isPinned && !isPinnedCollapsed) && (<Draggable><div className='bg-white absolute z-50 border-2 border-black rounded' style={{ width: '42rem' }} key={pinnedDetails.id}>
                 <div className='relative p-4'>
                     {pinnedDetails.node}
+                    <div className='absolute -top-10 -inset-x-1 bg-black h-10 rounded border-2 border-black flex justify-center items-center'>
+                        <p className='text-white text-lg pl-2 select-none'>Drag from here</p>
+                    </div>
                     <div className='absolute -top-4 -right-4 bg-white border-2 border-black p-2 rounded' onClick={() => setPinnedCollapse(true)}>
                         <Image src='/collapse-b-icon.svg' alt='collapse' width={24} height={24}/>
                     </div>
