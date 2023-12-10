@@ -6,6 +6,7 @@ import Select from "../../components/Select/Select";
 import Sidebar from "../../components/Sidebar/Sidebar";
 import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
+import {useAppStore} from "../../store/app";
 import {
   ICommonChartProps,
   IExportReq,
@@ -14,11 +15,12 @@ import {
   IFetchTweetMapReq,
   IFetchTweetReq
 } from "../../types";
-import {createDateQuery} from "../../utils/client";
+import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
 const scaleOptions = [{value: 'log', label: 'Log Scale'}, {value: 'linear', label: 'Linear Scale'}];
 
-const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing}) => {
+const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '' }}) => {
+  const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
   const [isLoading, setLoading] = useState(true);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
   const [fetchedTweets, setFetchedTweets] = useState<IFetchTweetData[]>([])
@@ -29,6 +31,8 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
   const [selectedScale, setScale] = useState<'log' | 'linear'>('log');
   const [isExporting, setExportLoader] = useState(false);
 
+  const { ids, graphKey } = recursive;
+
   useEffect(() => {
     const fetchTweetTimeMap = async () => {
       setRefreshing(true);
@@ -37,32 +41,28 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
       setTweetMapData(fetchedData?.data ?? []);
       setLoading(false);
     };
-    fetchTweetTimeMap();
+    if (ids.length === 0) fetchTweetTimeMap();
   }, [refreshCount]);
+
+
+  useEffect(() => {
+    if (ids.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - TODO: I NEED TO USE setData as COMMON METHOD; LONG WAY IS USING TYPESCRIPT TEMPLATES I DON'T HAVE TIME FOR THIS
+      fetchFloatingType({ date, ids, graphKey }, { setData: setTweetMapData, setLoading });
+    }
+  }, [ids]);
 
   if (isLoading) return <div className="flex justify-center" style={{height: '600px'}}><Spinner/></div>
 
-  const handleChange = (selectedScale: string) => {
+  const handleChange = (selectedScale: string)  => {
     if (selectedScale === 'log' || selectedScale === 'linear')
       setScale(selectedScale)
     else throw Error(`Wrong scale selected: ${selectedScale}`)
   };
 
   const options = [
-    {
-      label: 'View Tweets', clickEvent: async () => {
-        setMenu(false);
-        setSidebar(true);
-        const allIds = selectedDataPoints.map(point => point.id);
-        const fetchedData = await (await fetch('/api/tweets', {
-          method: 'POST',
-          body: JSON.stringify({ids: allIds})
-        })).json() as IFetchTweetReq;
-        setFetchedTweets(fetchedData.data ?? []);
-        setLoadingTweets(false);
-      }
-    },
-    { label: 'Export Tweets', clickEvent: async () => {
+    { label: 'Export Tweets', icon: '/export-icon.svg', clickEvent: async () => {
         setMenu(false);
         setExportLoader(true);
         try {
@@ -84,7 +84,30 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
         setExportLoader(false);
       } },
     {
-      label: 'Close', clickEvent: () => {
+      label: 'View Tweets', icon: '/view-b-icon.svg', clickEvent: async () => {
+        setMenu(false);
+        setSidebar(true);
+        const allIds = selectedDataPoints.map(point => point.id);
+        const fetchedData = await (await fetch('/api/tweets', {
+          method: 'POST',
+          body: JSON.stringify({ids: allIds})
+        })).json() as IFetchTweetReq;
+        setFetchedTweets(fetchedData.data ?? []);
+        setLoadingTweets(false);
+      }
+    },
+    { label: 'Explore', icon: '/explore-icon.svg', clickEvent: () => {
+        const allIds = selectedDataPoints.map(point => point.id);
+        createDashboard(
+          allIds,
+          { 'word-cloud': true, 'top-interacted': true, 'sentiment': true },
+          { date, container: 'Tweet Time Map', description: `Tweet Count: ${allIds.length}` },
+          { setGraphToRender, setTweetIds, setTitle, setDashboard }
+        );
+        setMenu(false);
+      } },
+    {
+      label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => {
         setMenu(false);
       }
     },

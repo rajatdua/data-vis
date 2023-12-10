@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from "next"
 
 import fs from 'fs';
 import path from "path";
 import {env} from "../../env.mjs";
+import prisma from "../../utils/prisma";
 
 interface ITweetJSON {
   id: string
@@ -20,7 +20,6 @@ interface ITweetJSON {
 }
 
 async function insertDataFromJSON(req: NextApiRequest, res: NextApiResponse) {
-  const prisma = new PrismaClient();
   const filePath = path.resolve(process.cwd(), 'pages/api/tweets.json');
 
   try {
@@ -55,7 +54,6 @@ async function insertDataFromJSON(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function fetchResults(req: NextApiRequest, res: NextApiResponse) {
-  const prisma = new PrismaClient();
   try {
     const tweetCount = await prisma.tweet.count();
     res.status(200).json({ success: true, message: `Total number of rows in the Tweet table: ${tweetCount}`, data: tweetCount })

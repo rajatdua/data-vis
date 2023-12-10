@@ -7,10 +7,12 @@ import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
 import WordCloud from "../../components/WordCloud/WordCloud";
 import WordCloudV2 from "../../components/WordCloud/WordCloudV2";
+import {useAppStore} from "../../store/app";
 import {ICommonChartProps, ID3Object, IExportReq, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
-import {createDateQuery} from "../../utils/client";
+import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
-const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing }) => {
+const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing, recursive = { ids: [], graphKey: '' } }) => {
+    const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const [isLoading, setLoading] = useState(true);
     const [isExporting, setExportLoader] = useState(false);
@@ -36,7 +38,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
         };
     }, []);
 
-
+  const { ids, graphKey } = recursive;
 
     useEffect(() => {
         const fetchWordCloud = async () => {
@@ -48,13 +50,22 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
             setRefreshing(false);
             setLoading(false);
         };
-        fetchWordCloud();
+      if (ids.length === 0) fetchWordCloud();
     }, [refreshCount]);
 
+
+  useEffect(() => {
+    if (ids.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - TODO: I NEED TO USE setData as COMMON METHOD; LONG WAY IS USING TYPESCRIPT TEMPLATES I DON'T HAVE TIME FOR THIS
+      fetchFloatingType({ date, ids, graphKey }, { setData: setWordCloud, setLoading });
+    }
+  }, [ids]);
+
     const handleWordClick = (d3Object: ID3Object) => {
-        const selectedWord = wordCloudData.filter(word => word.text === d3Object.text);
+        const currSelectedWord = wordCloudData.filter(word => word.text === d3Object.text);
         setMenu(true);
-        setWord(selectedWord[0]);
+        setWord(currSelectedWord[0]);
     };
 
     const handleWordClickV2 = (event: React.MouseEvent) => {
@@ -72,31 +83,41 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
         value: item.textMeta.count
     }));
     const options = [
-        { label: 'Select', clickEvent: () => setMenu(false) },
-        { label: 'View Tweets', clickEvent: () => {
+        { label: 'Select', icon: '/select-icon.svg', clickEvent: () => setMenu(false) },
+        { label: 'Export Tweets', icon: '/export-icon.svg', clickEvent: async () => {
+            setMenu(false);
+            setExportLoader(true);
+            try {
+              const res = await (await fetch('/api/export?type=word-cloud', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: selectedWord?.textMeta.ids, meta: { word: selectedWord?.text, count: selectedWord?.textMeta.count } })
+              })).json() as IExportReq;
+              const blob = new Blob([res.data], { type: 'text/csv' });
+              saveAs(blob, res.fileName);
+            } catch (err) {
+              console.error(err);
+            }
+            setExportLoader(false);
+            setWord(null);
+          } },
+        { label: 'View Tweets', icon: '/view-b-icon.svg', clickEvent: () => {
                 setMenu(false);
                 setSidebar(true);
             } },
-        { label: 'Export Tweets', clickEvent: async () => {
+        { label: 'Explore', icon: '/explore-icon.svg', clickEvent: () => {
+                const allIds = selectedWord?.textMeta.ids ?? [];
+                createDashboard(
+                  allIds,
+                  { 'tweet-time-map': true, 'top-interacted': true, 'sentiment': true },
+                  { date, container: 'Word Cloud', description: `Subset: ${selectedWord?.text} \n Tweet Count: ${allIds.length}` },
+                  { setGraphToRender, setTweetIds, setTitle, setDashboard }
+                );
                 setMenu(false);
-                setExportLoader(true);
-                try {
-                    const res = await (await fetch('/api/export?type=word-cloud', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ content: selectedWord?.textMeta.ids, meta: { word: selectedWord?.text, count: selectedWord?.textMeta.count } })
-                    })).json() as IExportReq;
-                    const blob = new Blob([res.data], { type: 'text/csv' });
-                    saveAs(blob, res.fileName);
-                } catch (err) {
-                    console.error(err);
-                }
-                setExportLoader(false);
-                setWord(null);
             } },
-        { label: 'Close', clickEvent: () => {
+        { label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => {
                 setWord(null);
                 setMenu(false);
             }
@@ -129,7 +150,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
           {isSidebar && (
             <Sidebar isSidebar={isSidebar} sidebarRef={sidebarRef} onClose={() => {
                 setSidebar(false); setWord(null);
-            }} title={`Some Tweets for "${selectedWord?.text.substring(0,20)}..."`}>
+            }} title={`Some Tweets for "${(selectedWord?.text?.length ?? 0) > 20 ? `${selectedWord?.text.substring(0,20)}...` : selectedWord?.text}"`}>
                 {sidebarChildren()}
             </Sidebar>
           )}

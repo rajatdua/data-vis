@@ -36,33 +36,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 2: {
       // const prisma = new PrismaClient();
       try {
-        // const topTweets =  await prisma.$queryRaw`
-        // SELECT id, link, content, retweets + favorites AS totalInteractions
-        // FROM Tweet
-        // WHERE date >= ${processedStart}
-        //     AND date <= ${processedEnd}
-        // ORDER BY totalInteractions DESC
-        // LIMIT ${topLimit}`;
-        const topTweets = await prisma.tweet.findMany({
-          where: {
-            date: {
-              gte: processedStart,
-              lte: processedEnd
-            }
-          },
-          orderBy: [
-            {retweets: 'desc'},
-            {favorites: 'desc'}
-          ],
-          take: topLimit,
-          select: {
-            id: true,
-            link: true,
-            content: true,
-            retweets: true,
-            favorites: true
-          }
-        })
+        const topTweets: {
+          id: string, link: string, content: string, retweets: number, favorites: number
+        }[] =  await prisma.$queryRaw`
+        SELECT id, link, content, retweets, favorites
+        FROM Tweet
+        WHERE date >= ${processedStart}
+            AND date <= ${processedEnd}
+        ORDER BY retweets + favorites DESC
+        LIMIT ${topLimit}`;
+        // doesn't work properly since orderBy messes up
+        // const topTweets = await prisma.tweet.findMany({
+        //   where: {
+        //     date: {
+        //       gte: processedStart,
+        //       lte: processedEnd
+        //     }
+        //   },
+        //   orderBy: [
+        //     {retweets: 'desc'},
+        //     {favorites: 'desc'}
+        //   ],
+        //   take: topLimit,
+        //   select: {
+        //     id: true,
+        //     link: true,
+        //     content: true,
+        //     retweets: true,
+        //     favorites: true
+        //   }
+        // })
 
         // Calculate total interactions
         const updatedTopTweets: TweetWithInteractions[] = topTweets.map((tweet) => {

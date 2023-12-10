@@ -78,6 +78,13 @@ function processText(input: string[]) {
 const convertToWordCloudArray = (wordFrequency:  IFrequencyObj) => Object.entries(wordFrequency).map(([text, textMeta]) => ({ text, textMeta }))
 const sortBySize = (data: {text: string; textMeta: tweetMetaType }[]) => data.sort((a, b) => b.textMeta.count - a.textMeta.count);
 
+export const generateWordCloud = (tweetsInRange: FlatArray<{ [p: string]: SqlValue }[][], 1>[], selectedVersion: string) => {
+    const frequency = calculateFrequency(tweetsInRange, parseInt(selectedVersion));
+    const freqArray = convertToWordCloudArray(frequency);
+    const sortedArray = sortBySize(freqArray);
+    return sortedArray.slice(0, 100);
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     res.setHeader('Content-Type', 'application/json');
     const {processedStart, processedEnd} = areDateParamsPresent(req, res);
@@ -90,10 +97,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const wordCloudQuery = `SELECT * FROM tweets WHERE date >= ${processedStart} AND date <= ${processedEnd};`;
                 const result = db.exec(wordCloudQuery);
                 const tweets = convertToObjects(result);
-                const frequency = calculateFrequency(tweets, parseInt(selectedVersion));
-                const freqArray = convertToWordCloudArray(frequency);
-                const sortedArray = sortBySize(freqArray);
-                res.status(200).json({ data: sortedArray.slice(0, 100), success: true })
+                res.status(200).json({ data: generateWordCloud(tweets, selectedVersion), success: true })
             }
             catch (e) {
                 const errorMessage = getErrorMessage(e);
@@ -115,10 +119,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         content: true,
                     },
                 });
-                const frequency = calculateFrequency(tweetsInRange, parseInt(selectedVersion));
-                const freqArray = convertToWordCloudArray(frequency);
-                const sortedArray = sortBySize(freqArray);
-                res.status(200).json({ success: true, data: sortedArray.slice(0, 100) })
+                res.status(200).json({ data: generateWordCloud(tweetsInRange, selectedVersion), success: true })
             } catch (error) {
                 const errorMessage = getErrorMessage(error);
                 res.status(500).json({ error: errorMessage, success: false, message: 'error whilst calling /word-cloud' });

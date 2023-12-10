@@ -62,6 +62,16 @@ export interface IFetchMostInteractedReq {
     data?: MostInteractedTweet[]
 }
 
+export interface IRecursiveType {
+    ids: string[]
+    graphKey: string
+}
+
+export interface IGraphReq {
+    data: {
+        [key: string]: IChartData
+    }
+}
 
 export interface ICommonChartProps {
     date: DateValueType;
@@ -71,6 +81,7 @@ export interface ICommonChartProps {
     setRefreshing: (flag: boolean) => void
     version2?: boolean;
     setTotalTweets?: (count: number) => void
+    recursive?: IRecursiveType
 }
 
 export type tweetMetaType = { count: number, tweets: string[], ids: string[] }
@@ -129,4 +140,8 @@ export interface ID3Object {
     x0: number
     y0: number
     hasText: boolean
+}
+
+export interface IChartData {
+    content: unknown[] | unknown,
 }

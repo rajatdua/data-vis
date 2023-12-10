@@ -72,6 +72,9 @@ export function convertToObjects(queryResult: QueryExecResult[], config: ISQLCon
 export const preProcessContent = (content: string) => {
     // 1. Remove formatting: HTML tags
     content = content.replace(/<[^>]*>/g, "");
+    // content = content.replace(/^(twitter\.com\/[a-zA-Z0-9_]+)$/i, 'https://$1');
+    content = content.replace(/^(?:(twitter\.com\/|pic\.twitter\.com\/))[a-zA-Z0-9_]+$/i, 'https://$1');
+
     content = content.replace(/(https?:\/\/)/, ' https://');
 
     // 2. Remove Noise

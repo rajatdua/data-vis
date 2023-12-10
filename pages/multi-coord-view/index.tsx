@@ -1,7 +1,11 @@
 import {isEqual} from "lodash";
 import Head from "next/head";
+import Image from "next/image";
 import React, {useEffect, useState} from "react";
+import Draggable from 'react-draggable';
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
+import Popup from "../../components/Popup/Popup";
+import FloatingChartsContainer from "./FloatingChartsContainer";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import SentimentContainer from "./SentimentContainer";
 import TopInteractedContainer from "./TopInteractedContainer";
@@ -16,18 +20,22 @@ import Nav from "../../components/Nav/Nav";
 import Spinner from "../../components/Spinner/Spinner";
 import {END_DATE, END_DATE_ALL, START_DATE, START_DATE_ALL} from "../../constants";
 import { env } from "../../env.mjs"
+import { useAppStore } from '../../store/app';
+import {useDashState} from "../../store/dash";
+import {useModalState} from "../../store/modal";
+import {usePinnedState} from "../../store/pinned";
 import {debounce} from "../../utils/client";
-
 export default function MultiVariateData() {
+    const { dashboardIds, dashboards, selectedDash } = useAppStore();
+    const { setModal, isModalOpen, setModalVisibility, modalDetails } = useModalState();
+    const { isPinned, pinnedDetails, isPinnedCollapsed, setPinnedCollapse, isPinnedOptions, setPinnedOptions, deletePinned } = usePinnedState();
     const [isInitialising, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [shouldHide, setHide] = useState(false);
     const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
     const [totalTweets, setTotalTweets] = useState(0);
-    const [isModalOpen, setModal] = useState(false);
-    const [modalTitle, setModalTitle] = useState('');
-    const [modalChildren, setModalChildren] = useState('');
+    const { isDashOpen, setDashVisibility, setDashFlag } = useDashState();
 
     const handleSecClick = () => {
         setSecBtnState((prev) => ({...prev, isCollapsed: !prev.isCollapsed}))
@@ -52,6 +60,20 @@ export default function MultiVariateData() {
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     }, [shouldHide]);
+
+    useEffect(() => {
+        if (!isDashOpen && dashboardIds.length > 0) setDashFlag(true);
+    }, [dashboardIds.length]);
+
+    useEffect(() => {
+        if (isDashOpen && dashboardIds.length === 0) setDashFlag(false);
+    }, [dashboardIds.length])
+
+    useEffect(() => {
+        if (isDashOpen) document.body.style.overflow = "hidden";
+        else document.body.style.overflow = "auto"
+        return () => { document.body.style.overflow = "auto" }
+    }, [isDashOpen]);
 
 
     const [refreshCount, setRefreshCount] = useState(0);
@@ -78,8 +100,8 @@ export default function MultiVariateData() {
     };
 
     const handleClose = () => {
-        setModal(false);
-        setModalTitle('')
+        setModal('', '', []);
+        setModalVisibility(false);
     };
 
     const handleInfoClick = (chartType: string) => {
@@ -117,14 +139,14 @@ export default function MultiVariateData() {
 
                 break;
         }
-        setModalTitle(modalTitle);
-        setModalChildren(modalChildren);
-        setModal(true);
+        setModal(modalTitle, modalChildren, []);
+        setModalVisibility(true);
     };
 
     const renderCharts = () => {
         if (isInitialising && env.NEXT_PUBLIC_DATABASE_VERSION_CLIENT === 1) return <div className="flex justify-center" style={{ width: '100%', height: '77vh' }}><Spinner /></div>
         if (isError) return <div>An error occurred...</div>
+
         return (
             <div className="mx-auto place-self-center">
                 <h2 className='font-bold flex justify-center'>General Election 2016 Poll Average (Trump vs Clinton) <InfoButton handleClick={() => handleInfoClick('poll-average')} /></h2>
@@ -189,6 +211,18 @@ export default function MultiVariateData() {
         );
     };
 
+    const pinnedOptions = [
+      { label: 'Unpin', icon: '/unpin-icon.svg', clickEvent: () => { deletePinned(); }},
+      {
+          label: 'Details', icon: '/info-icon.svg', clickEvent: () => {
+              setModal(pinnedDetails.dashboard.title, pinnedDetails.dashboard.description, []);
+              setModalVisibility(true);
+              setPinnedOptions(false);
+          }
+      },
+      { label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => { setPinnedOptions(false) }}
+    ];
+
     return (
         <>
             <Head>
@@ -207,6 +241,28 @@ export default function MultiVariateData() {
                     <Nav btnTitle="Back" btnHref="/" secBtnIcon={secBtnState.isCollapsed ? '/expand-icon.svg' : '/collapse-icon.svg'} secBtnClick={handleSecClick} secBtnState={secBtnState} />
                 </div>
             </section>
+            {(isPinned && !isPinnedCollapsed) && (<Draggable><div className='bg-white absolute z-50 border-2 border-black rounded' style={{ width: '42rem' }} key={pinnedDetails.id}>
+                <div className='relative p-4'>
+                    {pinnedDetails.node}
+                    <div className='absolute -top-10 -inset-x-1 bg-black h-10 rounded border-2 border-black flex justify-center items-center'>
+                        <p className='text-white text-lg pl-2 select-none'>Drag from here</p>
+                    </div>
+                    <div className='absolute -top-4 -right-4 bg-white border-2 border-black p-2 rounded' onClick={() => setPinnedCollapse(true)}>
+                        <Image src='/collapse-b-icon.svg' alt='collapse' width={24} height={24}/>
+                    </div>
+                    <div className='absolute -top-4 -right-16 bg-white border-2 border-black p-2 rounded' onClick={() => setPinnedOptions(true)}>
+                        <Image src='/menu-icon.svg' alt='collapse' width={24} height={24}/>
+                    </div>
+                    {isPinnedOptions && <div className='absolute top-10 -right-16'>
+                        <Popup options={pinnedOptions}/>
+                    </div>}
+                </div>
+            </div></Draggable>)}
+            <div className={`transition-all ${isPinnedCollapsed ? 'opacity-100' : 'opacity-0'} fixed bottom-20 left-1 z-50`}>
+                <div className='bg-indigo-500 border-2 border-black p-2 rounded' onClick={() => setPinnedCollapse(false)}>
+                    <Image src='/expand-icon.svg' alt='collapse' width={24} height={24}/>
+                </div>
+            </div>
 
             <div className="flex flex-row">
                 {/* Sidebar */}
@@ -249,11 +305,38 @@ export default function MultiVariateData() {
 
             </div>
             {isModalOpen && (
-              <Modal onClose={handleClose} modalTitle={modalTitle}>
-                  {modalChildren}
+              <Modal onClose={handleClose} modalTitle={modalDetails.title}>
+                  {modalDetails.description}
               </Modal>
             )}
-
+            <div className={`fixed z-30 transition-all h-full bg-white drop-shadow-md`} style={{ width: '40rem', right: isDashOpen ? 0 : '-40rem', top: 0 }}>
+                <div className='relative h-full w-full'>
+                    <p
+                      className='-rotate-90 absolute top-44 bg-indigo-600 text-white text-sm font-medium px-5 py-3 text-center rounded-t-md z-40 cursor-pointer flex '
+                      onClick={() => setDashVisibility()}
+                      style={{
+                          right: dashboardIds.length > 0 ? '37rem' : '37.5rem'
+                      }}
+                    >
+                        Dashboards {dashboardIds.length > 0 ? <span>&nbsp;{`(${dashboardIds.length})`}</span> : ''}
+                    </p>
+                    <div className='h-full w-full overflow-x-hidden overflow-y-scroll'>
+                        <h3 className='text-2xl py-2 px-5'>Dashboards</h3>
+                        <div className={`grid ${dashboardIds.length > 0 ? selectedDash.id === '' ? 'grid-cols-2' : 'grid-cols-1' : 'grid-cols-1'} gap-1 place-items-center items-start`}>
+                            {dashboardIds.length > 0 ? (
+                              <FloatingChartsContainer
+                                dashboardIds={dashboardIds}
+                                dashboards={dashboards}
+                                date={value}
+                                refreshCount={refreshCount}
+                                updateDateRange={handleValueChange}
+                                setRefreshing={setRefreshing}
+                              />
+                            ): <div className='text-lg font-light'>No Dashboards</div>}
+                        </div>
+                    </div>
+                </div>
+            </div>
             <Footer />
         </>
     );

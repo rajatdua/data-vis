@@ -8,6 +8,7 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import Spinner from "../../components/Spinner/Spinner";
 import Tweet from "../../components/Tweet/Tweet";
 import {INIT_SENTIMENT} from "../../constants";
+import {useAppStore} from "../../store/app";
 import {
   ICommonChartProps, IExportReq,
   IFetchSentimentData,
@@ -16,9 +17,9 @@ import {
   IFetchTweetReq,
   SentimentItem
 } from "../../types";
-import {createDateQuery} from "../../utils/client";
+import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
-function convertToSentimentArray(sentimentCounts: IFetchSentimentData, selectedScale: string): SentimentItem[] {
+export function convertToSentimentArray(sentimentCounts: IFetchSentimentData, selectedScale: string): SentimentItem[] {
   const sentimentArray: SentimentItem[] = Object.entries(sentimentCounts).map(([group, value]) => ({
     group,
     value,
@@ -38,7 +39,9 @@ function convertToSentimentArray(sentimentCounts: IFetchSentimentData, selectedS
 
 const scaleOptions = [{value: 'name', label: 'Sort by Name'}, {value: 'value', label: 'Sort by Value'}];
 
-const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets }) => {
+const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets, recursive = { ids: [], graphKey: '' } }) => {
+  const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
+
   const [sentimentData, setSentimentData] = useState<IFetchSentimentData>(INIT_SENTIMENT);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
   const [isLoading, setLoading] = useState(true);
@@ -49,6 +52,8 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
   const [selectedType, setType] = useState('');
   const [isSidebar, setSidebar] = useState(false);
   const [isExporting, setExportLoader] = useState(false);
+
+  const { ids, graphKey } = recursive;
 
   useEffect(() => {
     const fetchPollData = async () => {
@@ -62,8 +67,16 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
       setTotalTweets && setTotalTweets(totalSum);
       setLoading(false);
     };
-    fetchPollData();
+    if (ids.length === 0) fetchPollData();
   }, [refreshCount]);
+
+  useEffect(() => {
+    if (ids.length > 0) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - TODO: I NEED TO USE setData as COMMON METHOD; LONG WAY IS USING TYPESCRIPT TEMPLATES I DON'T HAVE TIME FOR THIS
+      fetchFloatingType({ date, ids, graphKey }, { setData: setSentimentData, setLoading });
+    }
+  }, [ids]);
 
   const handleChartRender = () => {
     setRefreshing(false);
@@ -82,19 +95,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
   };
 
   const options = [
-    {
-      label: 'View Tweets', clickEvent: async () => {
-        setMenu(false);
-        setSidebar(true);
-        const fetchedData = await (await fetch('/api/tweets', {
-          method: 'POST',
-          body: JSON.stringify({ids: tweetsToView})
-        })).json() as IFetchTweetReq;
-        setFetchedTweets(fetchedData.data ?? []);
-        setLoadingTweets(false);
-      }
-    },
-    { label: 'Export Tweets', clickEvent: async () => {
+    { label: 'Export Tweets', icon: '/export-icon.svg', clickEvent: async () => {
         setMenu(false);
         setExportLoader(true);
         try {
@@ -115,7 +116,28 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
         setTweets([]);
       } },
     {
-      label: 'Close', clickEvent: () => {
+      label: 'View Tweets', icon: '/view-b-icon.svg', clickEvent: async () => {
+        setMenu(false);
+        setSidebar(true);
+        const fetchedData = await (await fetch('/api/tweets', {
+          method: 'POST',
+          body: JSON.stringify({ids: tweetsToView})
+        })).json() as IFetchTweetReq;
+        setFetchedTweets(fetchedData.data ?? []);
+        setLoadingTweets(false);
+      }
+    },
+    { label: 'Explore', icon: '/explore-icon.svg', clickEvent: () => {
+        createDashboard(
+          tweetsToView,
+          { 'word-cloud': true, 'tweet-time-map': true, 'top-interacted': true },
+          { date, container: 'Sentiment', description: `Subset: ${selectedType} \n Tweet Count: ${tweetsToView.length}` },
+          { setGraphToRender, setTweetIds, setTitle, setDashboard }
+        );
+        setMenu(false);
+      } },
+    {
+      label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => {
         setMenu(false);
       }
     },
