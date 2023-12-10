@@ -83,14 +83,15 @@ export interface IDashboardGraphs {
 export interface IDashboardMeta {
   date: DateValueType,
   container: string,
+  description: string,
 }
 
 export const createDashboard = (tweetIds: string[], graphs: IDashboardGraphs, meta: IDashboardMeta, setters: ISetters) => {
-  const { date, container } = meta;
+  const { date, container, description } = meta;
   const { setTitle, setGraphToRender, setTweetIds, setDashboard } = setters;
   const dashboardId = nanoid();
   const title = `${dashboardId.slice(0, 5)}: ${container} (${date?.startDate} - ${date?.endDate})`;
-  setTitle(dashboardId, title);
+  setTitle(dashboardId, title, description);
   Object.entries(graphs).forEach(([type, value]) => {
     setGraphToRender(dashboardId, { type, value });
   })

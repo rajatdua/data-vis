@@ -31,31 +31,6 @@ const getChartTitle = (chartType: string) => {
   }
 };
 
-// const ChartSwitcher: React.FC<IChartSwitcher> = ({ chartData, chartType }) => {
-//   switch (chartType) {
-//     case 'sentiment':
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       // @ts-ignore - because chartData.content is unknown
-//       return <ParentSize>{({ width }: { width: number }) => <ColumnChart handleColumnClick={noop} width={width} data={convertToSentimentArray(chartData.content, 'value')} onChartRender={noop} />}</ParentSize>
-//     case 'word-cloud':
-//       const updated: IInterimWordData[] = (toArray(chartData.content) ?? []).map((item: IFetchWordData) => ({
-//         text: item?.text,
-//         value: item?.textMeta?.count
-//       }));
-//       return <ParentSize>{({ width }: { width: number }) => <WordCloudV2 words={updated} width={width} handleWordClick={noop} />}</ParentSize>;
-//     case 'top-interacted':
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       // @ts-ignore - because chartData.content is unknown
-//       return <ParentSize>{({ width }: { width: number }) => <BarChart selectedSorting='desc' handleBarClick={noop} width={width} data={sortMostInteractedTweetData(chartData.content, 'desc')} onChartRender={noop} />}</ParentSize>
-//     case 'tweet-time-map':
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       // @ts-ignore - because chartData.content is unknown
-//       return <ScatterPlot data={chartData.content} scale={'log'} onBrush={noop} onChartRender={noop}/>
-//     default:
-//       return <div>Not Available: {chartType}</div>
-//   }
-// };
-
 const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData }) => {
 
   const [isMenuOpen, setMenu] = useState(false);
@@ -102,7 +77,7 @@ const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData })
       <div className='flex flex-row justify-between px-2 py-4 items-center'>
         <span className='font-bold'>{getChartTitle(chartType)}</span>
         <span className='relative'>
-          <Image src='/menu-icon.svg' alt='menu' width={24} height={24} onClick={() => setMenu(prevState => !prevState)}/>
+          <Image src='/menu-icon.svg' alt='menu' width={24} height={24} onClick={() => setMenu(prevState => !prevState)} />
           {isMenuOpen && <Popup options={chartOptions} />}
         </span>
       </div>

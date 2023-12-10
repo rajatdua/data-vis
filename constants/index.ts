@@ -8,6 +8,7 @@ export const INIT_SENTIMENT = { positive: { count: 0, tweets: [] }, negative: { 
 export const INIT_DASHBOARD = {
     id: '',
     title: '',
+    description: '',
     tweetIds: [],
     graphsToRender: {}
 };

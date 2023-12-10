@@ -62,20 +62,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
   };
 
   const options = [
-    {
-      label: 'View Tweets', clickEvent: async () => {
-        setMenu(false);
-        setSidebar(true);
-        const allIds = selectedDataPoints.map(point => point.id);
-        const fetchedData = await (await fetch('/api/tweets', {
-          method: 'POST',
-          body: JSON.stringify({ids: allIds})
-        })).json() as IFetchTweetReq;
-        setFetchedTweets(fetchedData.data ?? []);
-        setLoadingTweets(false);
-      }
-    },
-    { label: 'Export Tweets', clickEvent: async () => {
+    { label: 'Export Tweets', icon: '/export-icon.svg', clickEvent: async () => {
         setMenu(false);
         setExportLoader(true);
         try {
@@ -96,18 +83,31 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
         setFetchedTweets([]);
         setExportLoader(false);
       } },
-    { label: 'Explore', clickEvent: () => {
+    {
+      label: 'View Tweets', icon: '/view-b-icon.svg', clickEvent: async () => {
+        setMenu(false);
+        setSidebar(true);
+        const allIds = selectedDataPoints.map(point => point.id);
+        const fetchedData = await (await fetch('/api/tweets', {
+          method: 'POST',
+          body: JSON.stringify({ids: allIds})
+        })).json() as IFetchTweetReq;
+        setFetchedTweets(fetchedData.data ?? []);
+        setLoadingTweets(false);
+      }
+    },
+    { label: 'Explore', icon: '/explore-icon.svg', clickEvent: () => {
         const allIds = selectedDataPoints.map(point => point.id);
         createDashboard(
           allIds,
           { 'word-cloud': true, 'top-interacted': true, 'sentiment': true },
-          { date, container: 'Tweet Time Map' },
+          { date, container: 'Tweet Time Map', description: `Tweet Count: ${allIds.length}` },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);
       } },
     {
-      label: 'Close', clickEvent: () => {
+      label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => {
         setMenu(false);
       }
     },

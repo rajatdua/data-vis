@@ -92,19 +92,22 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
     setModalTitle('')
   };
 
+  const getTitle = () => {
+    const sortedTweets = sortMostInteractedTweetData(mostInteractedTweets, selectedSorting)
+    const index = sortedTweets.findIndex((currTweet) => currTweet.id === selectedTweet.id);
+    return getIndex(index, sortedTweets.length, selectedSorting);
+  };
+
   const options = [
     {
-      label: 'View Tweet', clickEvent: () => {
+      label: 'View Tweet', icon: '/view-b-icon.svg', clickEvent: () => {
         setMenu(false);
-        const sortedTweets = sortMostInteractedTweetData(mostInteractedTweets, selectedSorting)
-        const index = sortedTweets.findIndex((currTweet) => currTweet.id === selectedTweet.id);
-        const indexBySort = getIndex(index, sortedTweets.length, selectedSorting);
-        setModalTitle(`#${indexBySort + 1} Tweet`)
+        setModalTitle(`#${getTitle() + 1} Tweet`)
         setModal(true);
       }
     },
     {
-      label: `Go to Tweet ${String.fromCharCode(0x2192)}`, clickEvent: () => {
+      label: 'Open Tweet', icon: '/open-link-icon.svg', clickEvent: () => {
         setMenu(false);
         window.open(
           selectedTweet.link,
@@ -112,17 +115,17 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
         );
       }
     },
-    { label: 'Explore', clickEvent: () => {
+    { label: 'Explore', icon: '/explore-icon.svg', clickEvent: () => {
         createDashboard(
           [selectedTweet.id],
           { 'word-cloud': true, 'tweet-time-map': true, 'sentiment': true },
-          { date, container: 'Top Interacted' },
+          { date, container: 'Top Interacted', description: `Subset: #${getTitle() + 1} Tweet` },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);
       } },
     {
-      label: 'Close', clickEvent: handleClose
+      label: 'Close', icon: '/close-b-icon.svg', clickEvent: handleClose
     },
   ];
 

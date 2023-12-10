@@ -95,19 +95,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
   };
 
   const options = [
-    {
-      label: 'View Tweets', clickEvent: async () => {
-        setMenu(false);
-        setSidebar(true);
-        const fetchedData = await (await fetch('/api/tweets', {
-          method: 'POST',
-          body: JSON.stringify({ids: tweetsToView})
-        })).json() as IFetchTweetReq;
-        setFetchedTweets(fetchedData.data ?? []);
-        setLoadingTweets(false);
-      }
-    },
-    { label: 'Export Tweets', clickEvent: async () => {
+    { label: 'Export Tweets', icon: '/export-icon.svg', clickEvent: async () => {
         setMenu(false);
         setExportLoader(true);
         try {
@@ -127,17 +115,29 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
         setType('');
         setTweets([]);
       } },
-    { label: 'Explore', clickEvent: () => {
+    {
+      label: 'View Tweets', icon: '/view-b-icon.svg', clickEvent: async () => {
+        setMenu(false);
+        setSidebar(true);
+        const fetchedData = await (await fetch('/api/tweets', {
+          method: 'POST',
+          body: JSON.stringify({ids: tweetsToView})
+        })).json() as IFetchTweetReq;
+        setFetchedTweets(fetchedData.data ?? []);
+        setLoadingTweets(false);
+      }
+    },
+    { label: 'Explore', icon: '/explore-icon.svg', clickEvent: () => {
         createDashboard(
           tweetsToView,
           { 'word-cloud': true, 'tweet-time-map': true, 'top-interacted': true },
-          { date, container: 'Sentiment' },
+          { date, container: 'Sentiment', description: `Subset: ${selectedType} \n Tweet Count: ${tweetsToView.length}` },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);
       } },
     {
-      label: 'Close', clickEvent: () => {
+      label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => {
         setMenu(false);
       }
     },

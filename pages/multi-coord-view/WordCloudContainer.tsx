@@ -83,41 +83,41 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
         value: item.textMeta.count
     }));
     const options = [
-        { label: 'Select', clickEvent: () => setMenu(false) },
-        { label: 'View Tweets', clickEvent: () => {
+        { label: 'Select', icon: '/select-icon.svg', clickEvent: () => setMenu(false) },
+        { label: 'Export Tweets', icon: '/export-icon.svg', clickEvent: async () => {
+            setMenu(false);
+            setExportLoader(true);
+            try {
+              const res = await (await fetch('/api/export?type=word-cloud', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content: selectedWord?.textMeta.ids, meta: { word: selectedWord?.text, count: selectedWord?.textMeta.count } })
+              })).json() as IExportReq;
+              const blob = new Blob([res.data], { type: 'text/csv' });
+              saveAs(blob, res.fileName);
+            } catch (err) {
+              console.error(err);
+            }
+            setExportLoader(false);
+            setWord(null);
+          } },
+        { label: 'View Tweets', icon: '/view-b-icon.svg', clickEvent: () => {
                 setMenu(false);
                 setSidebar(true);
             } },
-        { label: 'Export Tweets', clickEvent: async () => {
-                setMenu(false);
-                setExportLoader(true);
-                try {
-                    const res = await (await fetch('/api/export?type=word-cloud', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ content: selectedWord?.textMeta.ids, meta: { word: selectedWord?.text, count: selectedWord?.textMeta.count } })
-                    })).json() as IExportReq;
-                    const blob = new Blob([res.data], { type: 'text/csv' });
-                    saveAs(blob, res.fileName);
-                } catch (err) {
-                    console.error(err);
-                }
-                setExportLoader(false);
-                setWord(null);
-            } },
-        { label: 'Explore', clickEvent: () => {
+        { label: 'Explore', icon: '/explore-icon.svg', clickEvent: () => {
                 const allIds = selectedWord?.textMeta.ids ?? [];
                 createDashboard(
                   allIds,
                   { 'tweet-time-map': true, 'top-interacted': true, 'sentiment': true },
-                  { date, container: 'Word Cloud' },
+                  { date, container: 'Word Cloud', description: `Subset: ${selectedWord?.text} \n Tweet Count: ${allIds.length}` },
                   { setGraphToRender, setTweetIds, setTitle, setDashboard }
                 );
                 setMenu(false);
             } },
-        { label: 'Close', clickEvent: () => {
+        { label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => {
                 setWord(null);
                 setMenu(false);
             }

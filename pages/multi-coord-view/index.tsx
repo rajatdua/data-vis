@@ -18,18 +18,17 @@ import Spinner from "../../components/Spinner/Spinner";
 import {END_DATE, END_DATE_ALL, START_DATE, START_DATE_ALL} from "../../constants";
 import { env } from "../../env.mjs"
 import { useAppStore } from '../../store/app';
+import {useModalState} from "../../store/modal";
 import {debounce} from "../../utils/client";
 export default function MultiVariateData() {
     const { dashboardIds, dashboards, selectedDash } = useAppStore();
+    const { setModal, isModalOpen, setModalVisibility, modalDetails } = useModalState();
     const [isInitialising, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [shouldHide, setHide] = useState(false);
     const [secBtnState, setSecBtnState] = useState({ isCollapsed: false })
     const [totalTweets, setTotalTweets] = useState(0);
-    const [isModalOpen, setModal] = useState(false);
-    const [modalTitle, setModalTitle] = useState('');
-    const [modalChildren, setModalChildren] = useState('');
     const [isDashOpen, setDashVisibility] = useState(false);
 
     const handleSecClick = () => {
@@ -59,6 +58,10 @@ export default function MultiVariateData() {
     useEffect(() => {
         if (!isDashOpen && dashboardIds.length > 0) setDashVisibility(true);
     }, [dashboardIds.length]);
+
+    useEffect(() => {
+        if (isDashOpen && dashboardIds.length === 0) setDashVisibility(false);
+    }, [dashboardIds.length])
 
     useEffect(() => {
         if (isDashOpen) document.body.style.overflow = "hidden";
@@ -91,8 +94,8 @@ export default function MultiVariateData() {
     };
 
     const handleClose = () => {
-        setModal(false);
-        setModalTitle('')
+        setModal('', '', []);
+        setModalVisibility(false);
     };
 
     const handleInfoClick = (chartType: string) => {
@@ -130,9 +133,8 @@ export default function MultiVariateData() {
 
                 break;
         }
-        setModalTitle(modalTitle);
-        setModalChildren(modalChildren);
-        setModal(true);
+        setModal(modalTitle, modalChildren, []);
+        setModalVisibility(true);
     };
 
     const renderCharts = () => {
@@ -263,20 +265,20 @@ export default function MultiVariateData() {
 
             </div>
             {isModalOpen && (
-              <Modal onClose={handleClose} modalTitle={modalTitle}>
-                  {modalChildren}
+              <Modal onClose={handleClose} modalTitle={modalDetails.title}>
+                  {modalDetails.description}
               </Modal>
             )}
             <div className={`fixed z-30 transition-all h-full bg-white drop-shadow-md`} style={{ width: '40rem', right: isDashOpen ? 0 : '-40rem', top: 0 }}>
                 <div className='relative h-full w-full'>
                     <p
-                      className='-rotate-90 absolute top-44 bg-indigo-600 text-white text-sm font-medium px-3 text-center rounded-t-md z-40 cursor-pointer flex '
+                      className='-rotate-90 absolute top-44 bg-indigo-600 text-white text-sm font-medium px-5 py-3 text-center rounded-t-md z-40 cursor-pointer flex '
                       onClick={() => setDashVisibility((prevState) => !prevState)}
                       style={{
-                          right: dashboardIds.length > 0 ? '36.8rem' : '37.3rem'
+                          right: dashboardIds.length > 0 ? '37rem' : '37.5rem'
                       }}
                     >
-                        Dashboards {dashboardIds.length > 0 ? <span>{`(${dashboardIds.length})`}</span> : ''}
+                        Dashboards {dashboardIds.length > 0 ? <span>&nbsp;{`(${dashboardIds.length})`}</span> : ''}
                     </p>
                     <div className='h-full w-full overflow-x-hidden overflow-y-scroll'>
                         <h3 className='text-2xl py-2 px-5'>Dashboards</h3>

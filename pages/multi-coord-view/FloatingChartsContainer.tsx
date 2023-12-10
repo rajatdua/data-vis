@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React, {useState} from "react";
+import {useModalState} from "../../store/modal";
 import ChartSwitcher from "./ChartSwitcher";
 import Popup from "../../components/Popup/Popup";
 import {INIT_DASHBOARD} from "../../constants";
@@ -9,24 +10,31 @@ import {ICommonChartProps} from "../../types";
 interface IFloatingChartProps extends ICommonChartProps, IDashboard {
 }
 
+interface IMainMenu { [key: string]: boolean }
+
 const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({date, dashboards, dashboardIds = []}) => {
-  const { selectedDash, setDashboard } = useAppStore();
-  const [isMenuOpen, setMenu] = useState(false);
+  const { selectedDash, setDashboard, deleteDash } = useAppStore();
+  const { setModal, setModalVisibility } = useModalState();
+  const [isMenuOpen, setMenu] = useState<IMainMenu>({});
   const [isMenuOpenInternal, setMenuInternal] = useState(false);
   const renderHeader = () => {
     const internalDashOptions = [
       {
-        label: 'Details', clickEvent: async () => {
+        label: 'Details', icon: '/info-icon.svg', clickEvent: async () => {
+          setMenuInternal(false);
+          setModal(selectedDash.title, selectedDash.description, []);
+          setModalVisibility(true);
+        }
+      },
+      {
+        label: 'Close', icon: '/close-b-icon.svg', clickEvent: async () => {
           setMenuInternal(false);
         }
       },
       {
-        label: 'Close', clickEvent: async () => {
-          setMenuInternal(false);
-        }
-      },
-      {
-        label: 'Delete', clickEvent: async () => {
+        label: 'Delete', icon: '/delete-icon.svg', clickEvent: async () => {
+          deleteDash(selectedDash.id);
+          setDashboard(INIT_DASHBOARD);
           setMenuInternal(false);
         }
       }
@@ -46,26 +54,31 @@ const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({date, dashboard
     <>
       {selectedDash.id === '' ? dashboardIds.map(dashboardId => {
         const selectedDashboard = dashboards[dashboardId];
+        const commonSetter = (prevState: IMainMenu) => ({ ...prevState, [dashboardId]: false })
         const mainDashOptions = [
           {
-            label: 'View', clickEvent: async () => {
-              setMenu(false);
+            label: 'View', icon: '/view-b-icon.svg', clickEvent: async () => {
+              setMenu(commonSetter);
               setDashboard(selectedDashboard);
             }
           },
           {
-            label: 'Details', clickEvent: async () => {
-              setMenu(false);
+            label: 'Details', icon: '/info-icon.svg', clickEvent: async () => {
+              setModal(selectedDashboard.title, selectedDashboard.description, []);
+              setModalVisibility(true);
+              setMenu(commonSetter);
             }
           },
           {
-            label: 'Close', clickEvent: async () => {
-              setMenu(false);
+            label: 'Close', icon: '/close-b-icon.svg', clickEvent: async () => {
+              setMenu(commonSetter);
             }
           },
           {
-            label: 'Delete', clickEvent: async () => {
-              setMenu(false);
+            label: 'Delete', icon: '/delete-icon.svg', clickEvent: async () => {
+              deleteDash(dashboardId);
+              setDashboard(INIT_DASHBOARD);
+              setMenu(commonSetter);
             }
           }
         ];
@@ -74,8 +87,8 @@ const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({date, dashboard
 
             {/*<Image className="w-full" src="/pattern.png" alt="pattern"  width={200} height={100} />*/}
             <div className='bg-gray-400 w-full h-20 flex justify-end border-gray-500 border-2 relative'>
-              <Image src='/menu-icon.svg' alt='menu' width={30} height={30} onClick={() => setMenu(prevState => !prevState)} />
-              {isMenuOpen && <Popup options={mainDashOptions}/>}
+              <Image src='/menu-icon.svg' alt='menu' width={30} height={30} onClick={() => setMenu((prevState) => ({ ...prevState, [dashboardId]: true }))} />
+              {!!isMenuOpen[dashboardId] && <Popup options={mainDashOptions}/>}
             </div>
               <div className="px-6 py-4">
                 <div className="font-bold text-lg mb-2">{selectedDashboard.title}</div>

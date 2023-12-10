@@ -33,11 +33,16 @@ const Footer: React.FC = () => {
                         </svg>
                     </a>
 
-                    <a href="https://vercel.com/rajatdua/data-vis-wqyg" className="text-gray-400 hover:text-gray-500">
-                        <span className="sr-only">Vercel</span>
-                        <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path fill="currentColor" d="M12 2L22 22H2L12 2z"/>
-                        </svg>
+                <a href="https://vercel.com/rajatdua/data-vis-wqyg" className="text-gray-400 hover:text-gray-500">
+                    <span className="sr-only">Vercel</span>
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M12 2L22 22H2L12 2z"/>
+                    </svg>
+                </a>
+
+              <a href="https://app.planetscale.com/rajatdua95/data_vis" className="text-gray-400 hover:text-gray-500">
+                        <span className="sr-only">PlanetScale</span>
+                        <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M-0.0981445 16C-0.0981438 7.16344 7.0653 -7.52254e-07 15.9019 0C22.399 5.67998e-07 27.9917 3.87258 30.4975 9.43544L9.3373 30.5956C8.42926 30.1866 7.56625 29.6953 6.75778 29.1313L19.8891 16H15.9019L4.58815 27.3137C1.69272 24.4183 -0.0981449 20.4183 -0.0981445 16Z" fill="currentColor"></path><path d="M31.9019 16.0055L15.9074 32C24.7396 31.997 31.8989 24.8377 31.9019 16.0055Z" fill="currentColor"></path></svg>
                     </a>
                 </span>
         </div>

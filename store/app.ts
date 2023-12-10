@@ -4,6 +4,7 @@ import {INIT_DASHBOARD} from "../constants";
 export interface IDashboardType {
   id: string,
   title: string,
+  description: string,
   tweetIds: string[];
   graphsToRender: { [key: string]: boolean }
 }
@@ -13,7 +14,7 @@ interface IGraphType { type: string, value: boolean }
 export interface ISetters {
   setGraphToRender: (dashboardId: string, value: IGraphType) => void;
   setTweetIds: (dashboardId: string, ids: string[]) => void;
-  setTitle: (dashboardId: string, title: string) => void;
+  setTitle: (dashboardId: string, title: string, description: string) => void;
   setDashboard: (opts: IDashboardType) => void,
 }
 
@@ -24,6 +25,7 @@ export interface IDashboard {
 
 export interface AppState extends ISetters, IDashboard {
   selectedDash: IDashboardType,
+  deleteDash: (dashboardId: string) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -33,6 +35,14 @@ export const useAppStore = create<AppState>((set) => ({
   setDashboard: (dashboardOpts) => set(() => ({
     selectedDash: dashboardOpts
   })),
+  deleteDash: (dashboardId) => set((state) => {
+    const currDashboards = state.dashboards;
+    delete currDashboards[dashboardId]
+    return ({
+      dashboardIds: state.dashboardIds.filter(ids => ids !== dashboardId),
+      dashboardId: currDashboards,
+    })
+  }),
   setGraphToRender: (dashboardId, updater) => set((state) => {
     const selectedDashboard = state.dashboards[dashboardId];
     return ({
@@ -57,10 +67,10 @@ export const useAppStore = create<AppState>((set) => ({
       }
     });
   }),
-  setTitle: (dashboardId, title) => set((state) => {
+  setTitle: (dashboardId, title, description) => set((state) => {
     const dashboardSet = new Set(state.dashboardIds);
     dashboardSet.add(dashboardId)
-    const selectedDashboard = state.dashboards[dashboardId] ?? { title: '', tweetIds: [], graphsToRender: {} };
+    const selectedDashboard = state.dashboards[dashboardId] ?? INIT_DASHBOARD;
     return ({
       dashboardIds: Array.from(dashboardSet),
       dashboards: {
@@ -68,6 +78,7 @@ export const useAppStore = create<AppState>((set) => ({
         [dashboardId]: {
           ...selectedDashboard,
           title,
+          description,
           id: dashboardId,
         }
       }
