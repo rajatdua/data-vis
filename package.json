@@ -50,6 +50,7 @@
     "@semantic-release/release-notes-generator": "^11.0.1",
     "@t3-oss/env-nextjs": "^0.6.0",
     "@vercel/otel": "^0.3.0",
+    "@vercel/speed-insights": "^1.0.1",
     "@visx/responsive": "^3.3.0",
     "@visx/scale": "^3.5.0",
     "@visx/text": "^3.3.0",
