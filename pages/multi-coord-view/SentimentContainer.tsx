@@ -39,7 +39,7 @@ export function convertToSentimentArray(sentimentCounts: IFetchSentimentData, se
 
 const scaleOptions = [{value: 'name', label: 'Sort by Name'}, {value: 'value', label: 'Sort by Value'}];
 
-const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets, recursive = { ids: [], graphKey: '' } }) => {
+const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 } }) => {
   const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
 
   const [sentimentData, setSentimentData] = useState<IFetchSentimentData>(INIT_SENTIMENT);
@@ -53,7 +53,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
   const [isSidebar, setSidebar] = useState(false);
   const [isExporting, setExportLoader] = useState(false);
 
-  const { ids, graphKey } = recursive;
+  const { ids, graphKey, prevDescription, depth } = recursive;
 
   useEffect(() => {
     const fetchPollData = async () => {
@@ -131,7 +131,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
         createDashboard(
           tweetsToView,
           { 'word-cloud': true, 'tweet-time-map': true, 'top-interacted': true },
-          { date, container: 'Sentiment', description: `Subset: ${selectedType} \n Tweet Count: ${tweetsToView.length}` },
+          { date, container: 'Sentiment', depth, description: `<p>Subset: ${selectedType} <br/> Tweet Count: ${tweetsToView.length}</p>${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);
@@ -157,7 +157,7 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
   if (isLoading) return <div className="flex flex-col justify-center" style={{ height: '420px' }}><Spinner /></div>
   else {
     return (
-      <div>
+      <div className='relative'>
       <div className="flex justify-end">
         <Select handleChange={handleChange} options={scaleOptions} preSelected={selectedScale}/>
       </div>

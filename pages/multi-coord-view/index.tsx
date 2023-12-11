@@ -1,11 +1,10 @@
 import {isEqual} from "lodash";
+import dynamic from "next/dynamic";
 import Head from "next/head";
-import Image from "next/image";
 import React, {useEffect, useState} from "react";
-import Draggable from 'react-draggable';
 import Datepicker, {DateValueType} from "react-tailwindcss-datepicker";
-import Popup from "../../components/Popup/Popup";
 import FloatingChartsContainer from "./FloatingChartsContainer";
+import Pinned from "./Pinned";
 import PollsDistributionContainer from "./PollsDistributionContainer";
 import SentimentContainer from "./SentimentContainer";
 import TopInteractedContainer from "./TopInteractedContainer";
@@ -23,12 +22,13 @@ import { env } from "../../env.mjs"
 import { useAppStore } from '../../store/app';
 import {useDashState} from "../../store/dash";
 import {useModalState} from "../../store/modal";
-import {usePinnedState} from "../../store/pinned";
 import {debounce} from "../../utils/client";
+
+const ActivePinned = dynamic(import("./ActivePinned"));
+
 export default function MultiVariateData() {
     const { dashboardIds, dashboards, selectedDash } = useAppStore();
     const { setModal, isModalOpen, setModalVisibility, modalDetails } = useModalState();
-    const { isPinned, pinnedDetails, isPinnedCollapsed, setPinnedCollapse, isPinnedOptions, setPinnedOptions, deletePinned } = usePinnedState();
     const [isInitialising, setInit] = useState(true);
     const [isError, setError] = useState(false);
     const [isSidebarOpen, setSidebarOpen] = useState(false);
@@ -211,17 +211,6 @@ export default function MultiVariateData() {
         );
     };
 
-    const pinnedOptions = [
-      { label: 'Unpin', icon: '/unpin-icon.svg', clickEvent: () => { deletePinned(); }},
-      {
-          label: 'Details', icon: '/info-icon.svg', clickEvent: () => {
-              setModal(pinnedDetails.dashboard.title, pinnedDetails.dashboard.description, []);
-              setModalVisibility(true);
-              setPinnedOptions(false);
-          }
-      },
-      { label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => { setPinnedOptions(false) }}
-    ];
 
     return (
         <>
@@ -241,28 +230,9 @@ export default function MultiVariateData() {
                     <Nav btnTitle="Back" btnHref="/" secBtnIcon={secBtnState.isCollapsed ? '/expand-icon.svg' : '/collapse-icon.svg'} secBtnClick={handleSecClick} secBtnState={secBtnState} />
                 </div>
             </section>
-            {(isPinned && !isPinnedCollapsed) && (<Draggable><div className='bg-white absolute z-50 border-2 border-black rounded' style={{ width: '42rem' }} key={pinnedDetails.id}>
-                <div className='relative p-4'>
-                    {pinnedDetails.node}
-                    <div className='absolute -top-10 -inset-x-1 bg-black h-10 rounded border-2 border-black flex justify-center items-center'>
-                        <p className='text-white text-lg pl-2 select-none'>Drag from here</p>
-                    </div>
-                    <div className='absolute -top-4 -right-4 bg-white border-2 border-black p-2 rounded' onClick={() => setPinnedCollapse(true)}>
-                        <Image src='/collapse-b-icon.svg' alt='collapse' width={24} height={24}/>
-                    </div>
-                    <div className='absolute -top-4 -right-16 bg-white border-2 border-black p-2 rounded' onClick={() => setPinnedOptions(true)}>
-                        <Image src='/menu-icon.svg' alt='collapse' width={24} height={24}/>
-                    </div>
-                    {isPinnedOptions && <div className='absolute top-10 -right-16'>
-                        <Popup options={pinnedOptions}/>
-                    </div>}
-                </div>
-            </div></Draggable>)}
-            <div className={`transition-all ${isPinnedCollapsed ? 'opacity-100' : 'opacity-0'} fixed bottom-20 left-1 z-50`}>
-                <div className='bg-indigo-500 border-2 border-black p-2 rounded' onClick={() => setPinnedCollapse(false)}>
-                    <Image src='/expand-icon.svg' alt='collapse' width={24} height={24}/>
-                </div>
-            </div>
+
+            <Pinned />
+            <ActivePinned />
 
             <div className="flex flex-row">
                 {/* Sidebar */}

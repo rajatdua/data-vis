@@ -5,8 +5,9 @@ export interface IDashboardType {
   id: string,
   title: string,
   description: string,
-  tweetIds: string[];
-  graphsToRender: { [key: string]: boolean }
+  tweetIds: string[],
+  graphsToRender: { [key: string]: boolean },
+  depth: number,
 }
 
 interface IGraphType { type: string, value: boolean }
@@ -14,7 +15,7 @@ interface IGraphType { type: string, value: boolean }
 export interface ISetters {
   setGraphToRender: (dashboardId: string, value: IGraphType) => void;
   setTweetIds: (dashboardId: string, ids: string[]) => void;
-  setTitle: (dashboardId: string, title: string, description: string) => void;
+  setTitle: (dashboardId: string, title: string, description: string, depth: number) => void;
   setDashboard: (opts: IDashboardType) => void,
 }
 
@@ -67,20 +68,22 @@ export const useAppStore = create<AppState>((set) => ({
       }
     });
   }),
-  setTitle: (dashboardId, title, description) => set((state) => {
+  setTitle: (dashboardId, title, description, depth) => set((state) => {
     const dashboardSet = new Set(state.dashboardIds);
     dashboardSet.add(dashboardId)
     const selectedDashboard = state.dashboards[dashboardId] ?? INIT_DASHBOARD;
+    const updatedDash = {
+      ...selectedDashboard,
+      title,
+      description,
+      depth: depth + 1,
+      id: dashboardId,
+    };
     return ({
       dashboardIds: Array.from(dashboardSet),
       dashboards: {
         ...state.dashboards,
-        [dashboardId]: {
-          ...selectedDashboard,
-          title,
-          description,
-          id: dashboardId,
-        }
+        [dashboardId]: updatedDash
       }
     });
   }),

@@ -35,7 +35,7 @@ export interface IComponentOpts {
 }
 
 export const fetchFloatingType = async (
-  floatingOpts: IFloatingOpts = {date: {startDate: START_DATE, endDate: END_DATE}, ids: [], graphKey: '' },
+  floatingOpts: IFloatingOpts = {date: {startDate: START_DATE, endDate: END_DATE}, ids: [], graphKey: '', prevDescription: '', depth: 0 },
   componentOpts: {
       setData: (value: (((prevState: unknown[]) => unknown[]) | unknown[])) => void;
       setLoading: (value: (((prevState: boolean) => boolean) | boolean)) => void
@@ -84,14 +84,15 @@ export interface IDashboardMeta {
   date: DateValueType,
   container: string,
   description: string,
+  depth: number,
 }
 
 export const createDashboard = (tweetIds: string[], graphs: IDashboardGraphs, meta: IDashboardMeta, setters: ISetters) => {
-  const { date, container, description } = meta;
+  const { date, container, description, depth = 0 } = meta;
   const { setTitle, setGraphToRender, setTweetIds, setDashboard } = setters;
   const dashboardId = nanoid();
   const title = `${dashboardId.slice(0, 5)}: ${container} (${date?.startDate} - ${date?.endDate})`;
-  setTitle(dashboardId, title, description);
+  setTitle(dashboardId, title, description, depth);
   Object.entries(graphs).forEach(([type, value]) => {
     setGraphToRender(dashboardId, { type, value });
   })

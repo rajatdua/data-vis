@@ -2,7 +2,7 @@ import Image from "next/image";
 import React, {useEffect} from "react";
 
 interface IModalProps {
-  children: React.ReactNode,
+  children: React.ReactNode | string,
   onClose: () => void
   modalTitle?: string;
 }
@@ -43,7 +43,7 @@ const Modal: React.FC<IModalProps> = ({ children, onClose, modalTitle }) => {
           </div>
 
           {/* Modal content */}
-          <div className="p-6">{children}</div>
+          {typeof children === 'string' ? <div className="p-6" dangerouslySetInnerHTML={{ __html: children}} /> : <div className="p-6">{children}</div>}
         </div>
       </div>
     </div>
