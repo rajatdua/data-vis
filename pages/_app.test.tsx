@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react"
 import { AppProps } from "next/app"
+import React from "react";
 import MyApp from "./_app"
 
 // Mock router object with required properties
@@ -9,6 +10,8 @@ const router = {
   query: {},
   asPath: "/",
 }
+
+jest.mock('@vercel/speed-insights/next', () => ({ SpeedInsights: () => { /**/ } }));
 
 describe("MyApp", () => {
   it("should render a component with page props", () => {
