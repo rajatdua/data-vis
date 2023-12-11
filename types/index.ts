@@ -65,6 +65,8 @@ export interface IFetchMostInteractedReq {
 export interface IRecursiveType {
     ids: string[]
     graphKey: string
+    prevDescription: string
+    depth: number
 }
 
 export interface IGraphReq {

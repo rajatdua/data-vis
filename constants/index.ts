@@ -1,8 +1,8 @@
 import React from "react";
 
 export const START_DATE_ALL = '2014-06-01';
-export const START_DATE = '2015-06-01';
-export const END_DATE = '2018-06-01';
+export const START_DATE = '2015-07-01';
+export const END_DATE = '2016-11-08';
 export const END_DATE_ALL = '2018-11-01';
 
 export const INIT_SENTIMENT = { positive: { count: 0, tweets: [] }, negative: { count: 0, tweets: [] }, neutral: { count: 0, tweets: [] } }
@@ -12,7 +12,8 @@ export const INIT_DASHBOARD = {
     title: '',
     description: '',
     tweetIds: [],
-    graphsToRender: {}
+    graphsToRender: {},
+    depth: 0,
 };
 
 export const INIT_SELECTED_TWEET = {
@@ -22,7 +23,7 @@ export const INIT_SELECTED_TWEET = {
     totalInteractions: 0
 };
 
-export const INIT_PINNED = { id: '', node: React.createElement('div', null), dashboard: INIT_DASHBOARD }
+export const INIT_PINNED = { id: '', node: React.createElement('div', null), dashboard: INIT_DASHBOARD, isPinned: false, isPinnedOptions: false, chartTitle: '' }
 
 const CONSTANTS = {
     START_DATE,

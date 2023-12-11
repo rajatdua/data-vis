@@ -19,7 +19,7 @@ import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/c
 
 const scaleOptions = [{value: 'log', label: 'Log Scale'}, {value: 'linear', label: 'Linear Scale'}];
 
-const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '' }}) => {
+const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 }}) => {
   const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
   const [isLoading, setLoading] = useState(true);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
@@ -31,7 +31,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
   const [selectedScale, setScale] = useState<'log' | 'linear'>('log');
   const [isExporting, setExportLoader] = useState(false);
 
-  const { ids, graphKey } = recursive;
+  const { ids, graphKey, prevDescription, depth } = recursive;
 
   useEffect(() => {
     const fetchTweetTimeMap = async () => {
@@ -101,7 +101,7 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
         createDashboard(
           allIds,
           { 'word-cloud': true, 'top-interacted': true, 'sentiment': true },
-          { date, container: 'Tweet Time Map', description: `Tweet Count: ${allIds.length}` },
+          { date, container: 'Tweet Time Map', depth, description: `Tweet Count: ${allIds.length}${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);

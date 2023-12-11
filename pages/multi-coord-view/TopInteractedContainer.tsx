@@ -28,7 +28,7 @@ export function sortMostInteractedTweetData(mostInteractedTweets: MostInteracted
 const sortOptions = [{value: 'asc', label: 'Ascending'}, {value: 'desc', label: 'Descending'}];
 const countOptions = [{value: 3, label: 'Top 3'}, {value: 4, label: 'Top 4'}, {value: 5, label: 'Top 5'}];
 
-const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '' } }) => {
+const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 } }) => {
   const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
 
   const [mostInteractedTweets, setInteractedTweets] = useState<MostInteractedTweet[]>([]);
@@ -40,7 +40,7 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
   const [selectedTweet, setSelectedTweet] = useState<MostInteractedTweet>(INIT_SELECTED_TWEET);
   const [modalTitle, setModalTitle] = useState('');
 
-  const { ids, graphKey } = recursive;
+  const { ids, graphKey, prevDescription, depth } = recursive;
 
   useEffect(() => {
     const fetchMostInteraction = async () => {
@@ -119,7 +119,7 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
         createDashboard(
           [selectedTweet.id],
           { 'word-cloud': true, 'tweet-time-map': true, 'sentiment': true },
-          { date, container: 'Top Interacted', description: `Subset: #${getTitle() + 1} Tweet` },
+          { date, container: 'Top Interacted', depth, description: `Subset: #${getTitle() + 1} Tweet${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);
@@ -132,7 +132,7 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
   if (isLoading) return <div className="flex flex-col justify-center" style={{ height: '420px' }}><Spinner /></div>
   else {
     return (
-      <div>
+      <div className='relative'>
       <div className="flex justify-end">
         <Select hideLabel={true} handleChange={handleChangeTop} options={countOptions} preSelected={selectedTopCount}/>
         <Select handleChange={handleChange} options={sortOptions} preSelected={selectedSorting}/>

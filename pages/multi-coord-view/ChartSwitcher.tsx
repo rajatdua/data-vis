@@ -1,13 +1,13 @@
 import {nanoid} from "nanoid";
 import Image from "next/image";
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {DateValueType} from "react-tailwindcss-datepicker";
-import {IDashboardType} from "../../store/app";
 import SentimentContainer from "./SentimentContainer";
 import TopInteractedContainer from "./TopInteractedContainer";
 import TweetPatternContainer from "./TweetPatternContainer";
 import WordCloudContainer from "./WordCloudContainer";
 import Popup from "../../components/Popup/Popup";
+import {IDashboardType} from "../../store/app";
 import {useDashState} from "../../store/dash";
 import {usePinnedState} from "../../store/pinned";
 
@@ -39,13 +39,12 @@ const getChartTitle = (chartType: string) => {
 const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData, selectedDash }) => {
   const { setPinned } = usePinnedState();
   const { setDashFlag } = useDashState();
-
-  const [isMenuOpen, setMenu] = useState(false);
+  const scratchRef = useRef(usePinnedState.getState().pinnedIds)
 
   const chartOptions = [
     {
       label: 'Pin', icon: '/pin-icon.svg', clickEvent: async () => {
-        setPinned({ id: nanoid() , node: renderCharts(), dashboard: selectedDash });
+        setPinned({ id: nanoid() , node: renderCharts(), dashboard: selectedDash, isPinnedOptions: false, isPinned: scratchRef.current.length <= 1, chartTitle: getChartTitle(chartType) });
         setDashFlag(false);
         setMenu(false);
       }
@@ -57,15 +56,23 @@ const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData, s
     },
   ];
 
+  const [isMenuOpen, setMenu] = useState(false);
+
+  useEffect(() => usePinnedState.subscribe(
+    state => (scratchRef.current = state.pinnedIds)
+  ), [])
+
+
   const renderCharts = () => {
-   const commonProps = {
-     key: 'recursive',
-     date,
-     updateDateRange: noop,
-     setRefreshing: noop,
-     refreshCount: 0,
-     recursive: { ids: chartData, graphKey: chartType }
-   }
+    const { depth, title, description } = selectedDash ?? {};
+     const commonProps = {
+       key: 'recursive',
+       date,
+       updateDateRange: noop,
+       setRefreshing: noop,
+       refreshCount: 0,
+       recursive: { ids: chartData, graphKey: chartType, prevDescription: `<p><b>Level ${depth}: </b>${title} <br/>${description}</p>`, depth }
+     }
 
    switch (chartType) {
      case 'sentiment':
@@ -85,10 +92,10 @@ const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData, s
     <div className='flex flex-col mt-8'>
       <div className='flex flex-row justify-between px-2 py-4 items-center'>
         <span className='font-bold'>{getChartTitle(chartType)}</span>
-        <span className='relative'>
+        <div className='relative'>
           <Image src='/menu-icon.svg' alt='menu' width={24} height={24} onClick={() => setMenu(prevState => !prevState)} />
           {isMenuOpen && <Popup options={chartOptions} />}
-        </span>
+        </div>
       </div>
       {renderCharts()}
     </div>

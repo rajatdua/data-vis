@@ -6,40 +6,61 @@ export interface IPinnedDetails {
   id: string,
   node: React.ReactNode,
   dashboard: IDashboardType,
+  isPinned: boolean,
+  isPinnedOptions: boolean,
+  chartTitle: string,
 }
 
 export interface PinnedState{
-  isPinned: boolean,
-  pinnedDetails: IPinnedDetails,
+  pinnedIds: string[],
+  pinned: { [key: string]: IPinnedDetails }
   setPinned: (details: IPinnedDetails) => void,
-  setPinnedCollapse: (flag: boolean) => void,
-  deletePinned: () => void,
-  isPinnedCollapsed: boolean,
-  isPinnedOptions: boolean,
-  setPinnedOptions: (flag: boolean) => void,
+  setPinnedVisibility: (flag?: boolean) => void,
+  deletePinned: (id: string) => void,
+  setChartPinVisibility: (id: string, flag: boolean) => void,
+  isPinnedOpen: boolean,
+  setPinnedOptions: (id: string, flag: boolean) => void,
 }
 
 
 export const usePinnedState = create<PinnedState>((set) => ({
-  isPinned: false,
-  isPinnedCollapsed: false,
+  isPinnedOpen: false,
   isPinnedOptions: false,
-  pinnedDetails: INIT_PINNED,
-  setPinned: (details) => set(() => {
+  pinned: {},
+  pinnedIds: [],
+  setPinned: (details) => set((state) => {
+    const pinnedSet = new Set(state.pinnedIds);
+    pinnedSet.add(details.id)
     return ({
-      pinnedDetails: details,
-      isPinned: true,
+      pinnedIds: Array.from(pinnedSet),
+      pinned: {
+        ...state.pinned,
+        [details.id]: details ?? INIT_PINNED
+      },
     });
   }),
-  setPinnedCollapse: (flag) => set(() => {
+  setPinnedVisibility: (flag) => set((state) => {
     return ({
-      isPinnedCollapsed: flag,
+      isPinnedOpen: flag === undefined ? !state.isPinnedOpen : flag,
     });
   }),
-  setPinnedOptions: (flag) => set(() => {
+  setPinnedOptions: (id, flag) => set((state) => {
     return ({
-      isPinnedOptions: flag,
+      pinned: {...state.pinned, [id]: { ...state.pinned[id], isPinnedOptions: flag }},
     });
   }),
-  deletePinned: () => set(() => ({ isPinned: false, pinnedDetails: INIT_PINNED, isPinnedCollapsed: false, isPinnedOptions: false }))
+  setChartPinVisibility: (id, flag) => set((state) => {
+    const currPinned = state.pinned;
+    return ({
+      pinned: { ...currPinned, [id]: { ...currPinned[id], isPinned: flag } },
+    })
+  }),
+  deletePinned: (id) => set((state) => {
+    const currPinned = state.pinned;
+    delete currPinned[id];
+    return ({
+      pinnedIds: state.pinnedIds.filter(ids => ids !== id),
+      pinned: currPinned,
+    })
+  })
 }));

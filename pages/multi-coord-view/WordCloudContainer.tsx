@@ -11,7 +11,7 @@ import {useAppStore} from "../../store/app";
 import {ICommonChartProps, ID3Object, IExportReq, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
 import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
-const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing, recursive = { ids: [], graphKey: '' } }) => {
+const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 } }) => {
     const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const [isLoading, setLoading] = useState(true);
@@ -38,7 +38,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
         };
     }, []);
 
-  const { ids, graphKey } = recursive;
+  const { ids, graphKey, prevDescription, depth } = recursive;
 
     useEffect(() => {
         const fetchWordCloud = async () => {
@@ -112,7 +112,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
                 createDashboard(
                   allIds,
                   { 'tweet-time-map': true, 'top-interacted': true, 'sentiment': true },
-                  { date, container: 'Word Cloud', description: `Subset: ${selectedWord?.text} \n Tweet Count: ${allIds.length}` },
+                  { date, container: 'Word Cloud', depth, description: `Subset: ${selectedWord?.text} \n Tweet Count: ${allIds.length}${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
                   { setGraphToRender, setTweetIds, setTitle, setDashboard }
                 );
                 setMenu(false);
