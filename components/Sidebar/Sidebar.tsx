@@ -20,7 +20,7 @@ const Sidebar: React.FC<ISidebarProps> = ({ isInside, sidebarRef, isSidebar, tit
   return (
     <div
       ref={sidebarRef}
-      className={`drop-shadow-md fixed top-0 right-0 text-left z-20 h-full bg-gray-200 w-10/12 text-white w-${width} overflow-x-hidden transition-all duration-300 overflow-y-scroll`}
+      className={`drop-shadow-md fixed top-0 right-0 text-left z-20 h-full bg-gray-200 text-white w-${width} overflow-x-hidden transition-all duration-300 overflow-y-scroll`}
     >
       <div className="sticky top-0 z-10 bg-black p-4">
         <div className="flex justify-between items-center p-4">
