@@ -66,6 +66,7 @@ const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData, s
   const renderCharts = () => {
     const { depth, title, description } = selectedDash ?? {};
      const commonProps = {
+       insideComponent: 'chart-switcher',
        key: 'recursive',
        date,
        updateDateRange: noop,
