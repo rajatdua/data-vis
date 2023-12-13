@@ -35,10 +35,10 @@ export default function Web() {
                         <h1 className="flex flex-col text-5xl font-extrabold leading-10 tracking-tight text-left text-gray-900 md:text-center sm:leading-none md:text-6xl lg:text-7xl">
                             <span className="inline md:block">Explore the</span> <span
                             className="relative mt-2 text-transparent bg-clip-text bg-gradient-to-br from-indigo-600 to-indigo-500 md:inline-block">US 2016 Elections</span>
-                            <span className="inline md:block">Overview</span>
+                            {/*<span className="inline md:block">Overview</span>*/}
                         </h1>
                         <div
-                            className="mx-auto mt-5 text-gray-500 md:mt-12 md:max-w-lg md:text-center lg:text-lg">Take a glance over how trump&apos;s social media presence mainly on twitter affected US 2016 elections.
+                            className="mx-auto mt-5 text-gray-500 md:mt-12 md:max-w-lg md:text-center lg:text-lg">Take a glance on how trump&apos;s social media presence mainly on twitter affected US 2016 elections.
                         </div>
                         <div className="flex flex-col items-center mt-12 text-center">
                             <span className="relative inline-flex w-full md:w-auto">

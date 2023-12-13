@@ -11,7 +11,7 @@ import {useAppStore} from "../../store/app";
 import {ICommonChartProps, ID3Object, IExportReq, IFetchWordData, IFetchWordReq, IInterimWordData} from "../../types";
 import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/client";
 
-const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, version2, setRefreshing, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 } }) => {
+const WordCloudContainer: React.FC<ICommonChartProps>  = ({ insideComponent, date, refreshCount, version2, setRefreshing, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 } }) => {
     const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
     const sidebarRef = useRef<HTMLDivElement>(null);
     const [isLoading, setLoading] = useState(true);
@@ -148,7 +148,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
               )}
           </div>
           {isSidebar && (
-            <Sidebar isSidebar={isSidebar} sidebarRef={sidebarRef} onClose={() => {
+            <Sidebar isInside={!!insideComponent} isSidebar={isSidebar} sidebarRef={sidebarRef} onClose={() => {
                 setSidebar(false); setWord(null);
             }} title={`Some Tweets for "${(selectedWord?.text?.length ?? 0) > 20 ? `${selectedWord?.text.substring(0,20)}...` : selectedWord?.text}"`}>
                 {sidebarChildren()}

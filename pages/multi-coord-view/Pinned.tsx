@@ -42,7 +42,7 @@ const Pinned: React.FC<IPinnedProps> = ({ isSidebarOpen }) => {
           <div id="overlay"
                // className='absolute bg-black opacity-10 top-0 inset-x-0'
                className='absolute bg-gradient-to-t from-black via-transparent to-transparent opacity-100 top-0 inset-x-0'
-               style={{ bottom: '7rem' }}/>
+               style={{ bottom: '5rem' }}/>
 
           <div className='flex justify-end absolute top-5 right-1 p-2 bg-white rounded-full'>
             <Image src='/menu-icon.svg' alt='menu' width={30} height={30} onClick={() => {

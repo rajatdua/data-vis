@@ -4,21 +4,23 @@ import React, {useEffect} from "react";
 interface ISidebarProps {
   sidebarRef?: React.Ref<HTMLDivElement>
   isSidebar: boolean
+  isInside: boolean,
   title: string
   onClose: () => void
   children: React.ReactNode
 }
 
-const Sidebar: React.FC<ISidebarProps> = ({ sidebarRef, isSidebar, title, onClose, children }) => {
+const Sidebar: React.FC<ISidebarProps> = ({ isInside, sidebarRef, isSidebar, title, onClose, children }) => {
   useEffect(() => {
     if (isSidebar) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "auto"
     return () => { document.body.style.overflow = "auto" }
   }, [isSidebar]);
+  const width = isSidebar ? isInside ? '10/12' : '1/2' : '0';
   return (
     <div
       ref={sidebarRef}
-      className={`drop-shadow-md fixed top-0 right-0 text-left z-20 h-full bg-gray-200 text-white w-${isSidebar ? '1/2' : '0'} overflow-x-hidden transition-all duration-300 overflow-y-scroll`}
+      className={`drop-shadow-md fixed top-0 right-0 text-left z-20 h-full bg-gray-200 w-10/12 text-white w-${width} overflow-x-hidden transition-all duration-300 overflow-y-scroll`}
     >
       <div className="sticky top-0 z-10 bg-black p-4">
         <div className="flex justify-between items-center p-4">
