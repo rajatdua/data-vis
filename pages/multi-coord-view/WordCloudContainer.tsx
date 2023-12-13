@@ -150,7 +150,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ insideComponent, dat
           {isSidebar && (
             <Sidebar isInside={!!insideComponent} isSidebar={isSidebar} sidebarRef={sidebarRef} onClose={() => {
                 setSidebar(false); setWord(null);
-            }} title={`Some Tweets for "${(selectedWord?.text?.length ?? 0) > 20 ? `${selectedWord?.text.substring(0,20)}...` : selectedWord?.text}"`}>
+            }} title={`Some Tweets for "${(selectedWord?.text?.length ?? 0) > 20 ? `${selectedWord?.text.substring(0,20)}...` : selectedWord?.text}" (Total: ${selectedWord?.textMeta.count})`}>
                 {sidebarChildren()}
             </Sidebar>
           )}
