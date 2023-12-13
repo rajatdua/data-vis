@@ -43,8 +43,8 @@ const ChartSwitcher: React.FC<IChartSwitcher> = ({ date, chartType, chartData, s
 
   const chartOptions = [
     {
-      label: 'Pin', icon: '/pin-icon.svg', clickEvent: async () => {
-        setPinned({ id: nanoid() , node: renderCharts(), dashboard: selectedDash, isPinnedOptions: false, isPinned: scratchRef.current.length <= 1, chartTitle: getChartTitle(chartType) });
+      label: scratchRef.current.length <= 1 ? 'Save & Pin' : 'Save', icon: scratchRef.current.length <= 1 ? '/pin-icon.svg' : '/save-icon.svg', clickEvent: async () => {
+        setPinned({ id: nanoid() , node: renderCharts(), dashboard: selectedDash, isPinnedOptions: false, isPinned: scratchRef.current.length <= 1, chartTitle: getChartTitle(chartType), chartType });
         setDashFlag(false);
         setMenu(false);
       }

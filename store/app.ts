@@ -8,6 +8,7 @@ export interface IDashboardType {
   tweetIds: string[],
   graphsToRender: { [key: string]: boolean },
   depth: number,
+  container: string,
 }
 
 interface IGraphType { type: string, value: boolean }
@@ -15,7 +16,7 @@ interface IGraphType { type: string, value: boolean }
 export interface ISetters {
   setGraphToRender: (dashboardId: string, value: IGraphType) => void;
   setTweetIds: (dashboardId: string, ids: string[]) => void;
-  setTitle: (dashboardId: string, title: string, description: string, depth: number) => void;
+  setTitle: (dashboardId: string, title: string, description: string, depth: number, container: string) => void;
   setDashboard: (opts: IDashboardType) => void,
 }
 
@@ -68,7 +69,7 @@ export const useAppStore = create<AppState>((set) => ({
       }
     });
   }),
-  setTitle: (dashboardId, title, description, depth) => set((state) => {
+  setTitle: (dashboardId, title, description, depth, container) => set((state) => {
     const dashboardSet = new Set(state.dashboardIds);
     dashboardSet.add(dashboardId)
     const selectedDashboard = state.dashboards[dashboardId] ?? INIT_DASHBOARD;
@@ -78,6 +79,7 @@ export const useAppStore = create<AppState>((set) => ({
       description,
       depth: depth + 1,
       id: dashboardId,
+      container,
     };
     return ({
       dashboardIds: Array.from(dashboardSet),

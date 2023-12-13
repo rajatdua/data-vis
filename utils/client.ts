@@ -1,3 +1,4 @@
+import {capitalize} from "lodash";
 import { nanoid } from 'nanoid'
 import {DateValueType} from "react-tailwindcss-datepicker";
 import {END_DATE, INIT_DASHBOARD, START_DATE} from "../constants";
@@ -91,8 +92,8 @@ export const createDashboard = (tweetIds: string[], graphs: IDashboardGraphs, me
   const { date, container, description, depth = 0 } = meta;
   const { setTitle, setGraphToRender, setTweetIds, setDashboard } = setters;
   const dashboardId = nanoid();
-  const title = `${dashboardId.slice(0, 5)}: ${container} (${date?.startDate} - ${date?.endDate})`;
-  setTitle(dashboardId, title, description, depth);
+  const title = `${capitalize(container.split('-').join(' '))} (${date?.startDate} - ${date?.endDate})`;
+  setTitle(dashboardId, title, description, depth, container);
   Object.entries(graphs).forEach(([type, value]) => {
     setGraphToRender(dashboardId, { type, value });
   })

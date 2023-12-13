@@ -4,7 +4,11 @@ import Popup from "../../components/Popup/Popup";
 import {useModalState} from "../../store/modal";
 import {usePinnedState} from "../../store/pinned";
 
-const Pinned = () => {
+interface IPinnedProps {
+  isSidebarOpen: boolean,
+}
+
+const Pinned: React.FC<IPinnedProps> = ({ isSidebarOpen }) => {
   const { setPinnedOptions, deletePinned, pinnedIds, pinned, isPinnedOpen, setPinnedVisibility, setChartPinVisibility } = usePinnedState();
   const { setModal, setModalVisibility } = useModalState();
 
@@ -32,10 +36,15 @@ const Pinned = () => {
         { label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => { setPinnedOptions(pinnedId, false); }}
       ];
       return (
-        <div key={pinnedId} className="max-w-sm rounded overflow-hidden shadow-lg mr-2 [&:nth-child(odd)]:ml-4 pt-2">
+        <div key={pinnedId} className="max-w-sm rounded overflow-hidden shadow-lg mr-2 [&:nth-child(odd)]:ml-4 pt-2 relative">
 
-          {/*<Image className="w-full" src="/pattern.png" alt="pattern"  width={200} height={100} />*/}
-          <div className='bg-gray-400 w-full h-36 flex justify-end border-gray-500 border-2 relative'>
+          <Image className="w-full" src={`/${selectedPin.chartType}.png`} alt="pattern"  width={200} height={100} />
+          <div id="overlay"
+               // className='absolute bg-black opacity-10 top-0 inset-x-0'
+               className='absolute bg-gradient-to-t from-black via-transparent to-transparent opacity-100 top-0 inset-x-0'
+               style={{ bottom: '7rem' }}/>
+
+          <div className='flex justify-end absolute top-5 right-1 p-2 bg-white rounded-full'>
             <Image src='/menu-icon.svg' alt='menu' width={30} height={30} onClick={() => {
               setPinnedOptions(pinnedId, true);
             }} />
@@ -50,7 +59,7 @@ const Pinned = () => {
     });
   };
   return (
-    <div className={`fixed z-30 transition-all h-full bg-white drop-shadow-md`} style={{ width: '40rem', left: isPinnedOpen ? 0 : '-40rem', top: 0 }}>
+    <div className={`fixed z-30 transition-all h-full bg-white drop-shadow-md`} style={{ width: '40rem', left: isPinnedOpen ? 0 : '-40rem', top: 0, display: isSidebarOpen ? 'none': '' }}>
       <div className='relative h-full w-full'>
         <p
           className='-rotate-90 absolute top-44 bg-indigo-600 text-white text-sm font-medium px-5 py-3 text-center rounded-b-md z-40 cursor-pointer flex '
@@ -59,17 +68,17 @@ const Pinned = () => {
             left: pinnedIds.length > 0 ? '38rem' : '38.5rem'
           }}
         >
-          Pinned {pinnedIds.length > 0 ? <span>&nbsp;{`(${pinnedIds.length})`}</span> : ''}
+          Saved {pinnedIds.length > 0 ? <span>&nbsp;{`(${pinnedIds.length})`}</span> : ''}
         </p>
         <div className='h-full w-full overflow-hidden flex flex-col justify-between'>
-          <div>
-            <h3 className='text-2xl py-2 px-5'>Explored Pinned Charts</h3>
-            <div className={`overflow-y-scroll grid ${pinnedIds.length > 0 ? 'grid-cols-2' : 'grid-cols-1'} gap-1 place-items-center items-start`}>
-              {pinnedIds.length > 0 ? renderPinnedCards(): <div className='text-lg font-light'>No Explored Pinned Charts</div>}
+          <div className='h-full'>
+            <h3 className='text-2xl py-2 px-5'>Explored Saved Charts</h3>
+            <div className={`h-full overflow-y-scroll grid ${pinnedIds.length > 0 ? 'grid-cols-2' : 'grid-cols-1'} gap-1 place-items-center items-start`}>
+              {pinnedIds.length > 0 ? renderPinnedCards(): <div className='text-lg font-light'>No Explored Saved Charts</div>}
             </div>
           </div>
           <div className='text-lg text-white bg-gray-800 p-3'>
-            <b>Note:</b> Only 2 charts at a time are visible from pinned section by default. You can pin more as you like.
+            <b>Note:</b> Only 2 charts at a time are visible from saved section by default. You can pin more as you like.
           </div>
         </div>
       </div>

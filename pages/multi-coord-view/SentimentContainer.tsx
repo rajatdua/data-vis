@@ -131,7 +131,13 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
         createDashboard(
           tweetsToView,
           { 'word-cloud': true, 'tweet-time-map': true, 'top-interacted': true },
-          { date, container: 'Sentiment', depth, description: `<p>Subset: ${selectedType} <br/> Tweet Count: ${tweetsToView.length}</p>${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
+          {
+            date,
+            container: 'sentiment',
+            depth,
+            description: `<p>Subset: "${selectedType}", <br/> Tweet Count: ${tweetsToView.length}</p>${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}`,
+
+          },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);

@@ -119,7 +119,7 @@ const TopInteractedContainer: React.FC<ICommonChartProps> = ({ date, refreshCoun
         createDashboard(
           [selectedTweet.id],
           { 'word-cloud': true, 'tweet-time-map': true, 'sentiment': true },
-          { date, container: 'Top Interacted', depth, description: `Subset: #${getTitle() + 1} Tweet${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
+          { date, container: 'top-interacted', depth, description: `Subset: "#${getTitle() + 1} Tweet", ${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);

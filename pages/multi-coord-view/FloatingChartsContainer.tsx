@@ -83,15 +83,21 @@ const FloatingChartsContainer: React.FC<IFloatingChartProps> = ({date, dashboard
           }
         ];
         return (
-          <div key={dashboardId} className="max-w-sm rounded overflow-hidden shadow-lg ml-2 [&:nth-child(even)]:mr-4 pt-2">
+          <div key={dashboardId} className="max-w-sm rounded overflow-hidden shadow-lg ml-2 [&:nth-child(even)]:mr-4 pt-2 relative">
 
-            {/*<Image className="w-full" src="/pattern.png" alt="pattern"  width={200} height={100} />*/}
-            <div className='bg-gray-400 w-full h-20 flex justify-end border-gray-500 border-2 relative'>
+            <Image className="w-full" src={`/${selectedDashboard.container}.png`} alt="pattern"  width={200} height={100} />
+            <div id="overlay"
+                 // className='absolute bg-black opacity-10 top-0 inset-x-0'
+                 className='absolute bg-gradient-to-t from-black via-transparent to-transparent opacity-100 top-0 inset-x-0'
+                 style={{ bottom: '7rem' }}
+            />
+            <div className='flex justify-end absolute top-5 right-1 p-2 bg-white rounded-full'>
               <Image src='/menu-icon.svg' alt='menu' width={30} height={30} onClick={() => setMenu((prevState) => ({ ...prevState, [dashboardId]: true }))} />
               {!!isMenuOpen[dashboardId] && <Popup options={mainDashOptions}/>}
             </div>
               <div className="px-6 py-4">
                 <div className="font-bold text-lg mb-2">{selectedDashboard.title}</div>
+                <div className='text-sm'>ID: {selectedDashboard.id.slice(0, 5)}</div>
               </div>
           </div>
         );

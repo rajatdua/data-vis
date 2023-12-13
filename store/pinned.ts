@@ -9,6 +9,7 @@ export interface IPinnedDetails {
   isPinned: boolean,
   isPinnedOptions: boolean,
   chartTitle: string,
+  chartType: string,
 }
 
 export interface PinnedState{

@@ -75,6 +75,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-draggable": "^4.4.6",
+    "react-rnd": "^10.4.1",
     "react-tailwindcss-datepicker": "^1.6.6",
     "sql.js": "^1.8.0",
     "stopword": "^2.0.8",

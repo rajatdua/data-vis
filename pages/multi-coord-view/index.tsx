@@ -231,7 +231,7 @@ export default function MultiVariateData() {
                 </div>
             </section>
 
-            <Pinned />
+            <Pinned isSidebarOpen={isSidebarOpen} />
             <ActivePinned />
 
             <div className="flex flex-row">
