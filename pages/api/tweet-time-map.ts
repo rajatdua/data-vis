@@ -44,6 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             id: true,
             time_after: true,
             time_before: true,
+            date: true,
           },
         });
         res.status(200).json({ success: true, data: tweetsFiltered })

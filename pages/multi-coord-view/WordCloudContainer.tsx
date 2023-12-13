@@ -83,7 +83,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
         value: item.textMeta.count
     }));
     const options = [
-        { label: 'Select', icon: '/select-icon.svg', clickEvent: () => setMenu(false) },
+        // { label: 'Select', icon: '/select-icon.svg', clickEvent: () => setMenu(false) },
         { label: 'Export Tweets', icon: '/export-icon.svg', clickEvent: async () => {
             setMenu(false);
             setExportLoader(true);
@@ -112,7 +112,7 @@ const WordCloudContainer: React.FC<ICommonChartProps>  = ({ date, refreshCount, 
                 createDashboard(
                   allIds,
                   { 'tweet-time-map': true, 'top-interacted': true, 'sentiment': true },
-                  { date, container: 'Word Cloud', depth, description: `Subset: ${selectedWord?.text} \n Tweet Count: ${allIds.length}${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
+                  { date, container: 'word-cloud', depth, description: `<p>Subset: "${selectedWord?.text}", <br/> Tweet Count: ${allIds.length}</p>${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
                   { setGraphToRender, setTweetIds, setTitle, setDashboard }
                 );
                 setMenu(false);

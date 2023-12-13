@@ -105,13 +105,13 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
     // Add legends
     const legends = svg.append('g')
       .attr('class', 'legends')
-      .attr('transform', `translate(${width - 120}, 30)`);
+      .attr('transform', `translate(${width - 180}, 30)`);
 
     const legendItems = legends.selectAll('.legend')
       .data([{ name: 'Democrat (Clinton)', color: 'blue' }, { name: 'Republican (Trump)', color: 'red' }])
       .enter().append('g')
       .attr('class', 'legend')
-      .attr('transform', (d, i) => `translate(0, ${i * 20})`);
+      .attr('transform', (d, i) => `translate(0, ${(i * 20)})`);
 
     legendItems.append('rect')
       .attr('width', 18)
@@ -123,7 +123,7 @@ const createLineGraph = (ref: React.MutableRefObject<SVGSVGElement | null>, data
       .attr('x', 24)
       .attr('y', 9)
       .attr('dy', '0.35em')
-      .attr('dx', '-2em')
+      .attr('dx', '-1.5em')
       .style('text-anchor', 'start')
       .style('font-size', '12')
       .text((d) => d.name);

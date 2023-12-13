@@ -98,10 +98,16 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
     },
     { label: 'Explore', icon: '/explore-icon.svg', clickEvent: () => {
         const allIds = selectedDataPoints.map(point => point.id);
+        const timeAfter = selectedDataPoints.map(point => point.time_after);
+        const timeBefore = selectedDataPoints.map(point => point.time_before);
+        const maxAfter = Math.max(...timeAfter);
+        const minAfter = Math.min(...timeAfter);
+        const maxBefore = Math.max(...timeBefore);
+        const minBefore = Math.min(...timeBefore);
         createDashboard(
           allIds,
           { 'word-cloud': true, 'top-interacted': true, 'sentiment': true },
-          { date, container: 'Tweet Time Map', depth, description: `Tweet Count: ${allIds.length}${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
+          { date, container: 'tweet-time-map', depth, description: `Tweet Count: ${allIds.length} <br/><br/> <b>N-Axis: [Min, Max]</b> <br/> X-Axis: [${minBefore} seconds, ${maxBefore} seconds] <br/> Y-Axis: [${minAfter} seconds, ${maxAfter} seconds]${prevDescription === '' ? '' : `<p><br/>${prevDescription}</p>`}` },
           { setGraphToRender, setTweetIds, setTitle, setDashboard }
         );
         setMenu(false);

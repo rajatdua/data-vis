@@ -101,7 +101,8 @@ export interface IFetchWordReq {
 export interface IFetchTweetMapData {
     id: string;
     time_after: number,
-    time_before: number
+    time_before: number,
+    date: number,
 }
 
 export interface IFetchTweetMapReq {

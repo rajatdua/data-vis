@@ -14,6 +14,7 @@ export const INIT_DASHBOARD = {
     tweetIds: [],
     graphsToRender: {},
     depth: 0,
+    container: '',
 };
 
 export const INIT_SELECTED_TWEET = {
@@ -23,7 +24,7 @@ export const INIT_SELECTED_TWEET = {
     totalInteractions: 0
 };
 
-export const INIT_PINNED = { id: '', node: React.createElement('div', null), dashboard: INIT_DASHBOARD, isPinned: false, isPinnedOptions: false, chartTitle: '' }
+export const INIT_PINNED = { id: '', node: React.createElement('div', null), dashboard: INIT_DASHBOARD, isPinned: false, isPinnedOptions: false, chartTitle: '', chartType: '' }
 
 const CONSTANTS = {
     START_DATE,
