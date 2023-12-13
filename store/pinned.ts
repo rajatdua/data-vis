@@ -4,7 +4,7 @@ import {IDashboardType} from "./app";
 import {INIT_PINNED} from "../constants";
 export interface IPinnedDetails {
   id: string,
-  node: React.ReactNode,
+  node: React.ReactElement,
   dashboard: IDashboardType,
   isPinned: boolean,
   isPinnedOptions: boolean,

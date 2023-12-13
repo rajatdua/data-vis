@@ -19,7 +19,7 @@ import {createDashboard, createDateQuery, fetchFloatingType} from "../../utils/c
 
 const scaleOptions = [{value: 'log', label: 'Log Scale'}, {value: 'linear', label: 'Linear Scale'}];
 
-const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 }}) => {
+const TweetPatternContainer: React.FC<ICommonChartProps> = ({ insideComponent, date, refreshCount, setRefreshing, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 }}) => {
   const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
   const [isLoading, setLoading] = useState(true);
   const [isLoadingTweets, setLoadingTweets] = useState(true);
@@ -150,7 +150,9 @@ const TweetPatternContainer: React.FC<ICommonChartProps> = ({date, refreshCount,
           <Popup options={options}/>
         )}
         {isSidebar && (
-          <Sidebar isSidebar={isSidebar} onClose={() => {
+          <Sidebar
+            isInside={!!insideComponent}
+            isSidebar={isSidebar} onClose={() => {
             setSidebar(false);
             setLoadingTweets(true);
             setDataPoints([]);

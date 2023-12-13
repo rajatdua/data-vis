@@ -84,6 +84,7 @@ export interface ICommonChartProps {
     version2?: boolean;
     setTotalTweets?: (count: number) => void
     recursive?: IRecursiveType
+    insideComponent?: string
 }
 
 export type tweetMetaType = { count: number, tweets: string[], ids: string[] }

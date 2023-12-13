@@ -39,7 +39,7 @@ export function convertToSentimentArray(sentimentCounts: IFetchSentimentData, se
 
 const scaleOptions = [{value: 'name', label: 'Sort by Name'}, {value: 'value', label: 'Sort by Value'}];
 
-const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, setRefreshing, setTotalTweets, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 } }) => {
+const SentimentContainer: React.FC<ICommonChartProps> = ({ insideComponent, date, refreshCount, setRefreshing, setTotalTweets, recursive = { ids: [], graphKey: '', prevDescription: '', depth: 0 } }) => {
   const { setGraphToRender, setTweetIds, setTitle, setDashboard } = useAppStore();
 
   const [sentimentData, setSentimentData] = useState<IFetchSentimentData>(INIT_SENTIMENT);
@@ -172,7 +172,9 @@ const SentimentContainer: React.FC<ICommonChartProps> = ({ date, refreshCount, s
         <Popup options={options}/>
       )}
       {isSidebar && (
-        <Sidebar isSidebar={isSidebar} onClose={() => {
+        <Sidebar
+          isInside={!!insideComponent}
+          isSidebar={isSidebar} onClose={() => {
           setSidebar(false);
           setLoadingTweets(true);
           setTweets([]);

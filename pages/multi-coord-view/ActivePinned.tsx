@@ -1,5 +1,6 @@
 import Image from "next/image";
-import React, {useState} from "react";
+// import React, {useState} from "react";
+import React from "react";
 // import {Rnd} from "react-rnd";
 import Draggable from 'react-draggable';
 import Popup from "../../components/Popup/Popup";
@@ -8,7 +9,7 @@ import {usePinnedState} from "../../store/pinned";
 
 const ActivePinned = () => {
   const { pinned, pinnedIds, setPinnedOptions, setChartPinVisibility, deletePinned } = usePinnedState();
-  const [dimensions, setDimensions] = useState({ x: 0, y: 0, width: '200', height: '100' });
+  // const [dimensions, setDimensions] = useState({ x: 0, y: 0, width: '200', height: '100' });
   const { setModal, setModalVisibility } = useModalState();
   return pinnedIds.map(pinnedId => {
     const selectedPin = pinned[pinnedId];
@@ -22,7 +23,7 @@ const ActivePinned = () => {
           setPinnedOptions(pinnedId, false);
         }
       },
-      { label: 'Remove', icon: '/delete-icon.svg', clickEvent: () => { deletePinned(pinnedId); setPinnedOptions(pinnedId, false); }},
+      { label: 'Delete', icon: '/delete-icon.svg', clickEvent: () => { deletePinned(pinnedId); setPinnedOptions(pinnedId, false); }},
       { label: 'Close', icon: '/close-b-icon.svg', clickEvent: () => { setPinnedOptions(pinnedId, false); }}
     ];
     if (isPinned) {
@@ -45,7 +46,8 @@ const ActivePinned = () => {
           // }}
         ><div className='bg-white absolute z-50 border-2 border-black rounded' style={{ width: '42rem' }} key={pinnedId}>
           <div className='relative p-4'>
-            {selectedPin.node}
+            {React.cloneElement(selectedPin.node, { insideComponent: 'active-pinned' })}
+            {/*{selectedPin.node}*/}
             <div className='absolute -top-10 -inset-x-1 bg-black h-11 rounded border-2 border-black flex justify-center items-center'>
               <p className='text-white text-lg pl-2 select-none'>Drag from here</p>
             </div>
